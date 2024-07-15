@@ -386,15 +386,10 @@ function createSquareWithButton(color, id, isClaimed) {
             method: "eth_requestAccounts",
           })
 
-          // Create an ethers provider using the selected provider
-          const ethersProvider = new ethers.BrowserProvider(
-            selectedProvider.provider
-          )
+          const provider = new ethers.BrowserProvider(selectedProvider.provider)
 
-          // Get the signer
-          const signer = await ethersProvider.getSigner()
+          const signer = await provider.getSigner()
 
-          // Create the contract instance
           const contract = new ethers.Contract(contractAddress, abi, signer)
 
           showTransactionNotification("Claim in progress...")
@@ -403,7 +398,6 @@ function createSquareWithButton(color, id, isClaimed) {
 
           await listenForTransactionMine(transactionResponse, ethersProvider)
 
-          // Update button state upon successful minting
           button.textContent = `Claimed!`
           button.style.opacity = "0.9"
           button.disabled = true
@@ -461,7 +455,7 @@ async function renderSquaresWithButtons(colors) {
 }
 
 const notif = document.getElementById("notif")
-function showTransactionNotification(message, fail) {
+function showTransactionNotification(message) {
   if (message) {
     notif.style.display = "block"
     notif.textContent = message
