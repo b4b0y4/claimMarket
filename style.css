@@ -420,21 +420,28 @@ svg {
   opacity: 0.9;
 }
 
-#notif {
+#notification {
   position: absolute;
-  display: none;
   bottom: 10px;
-  right: 10px;
+  right: -100%;
   padding: 10px;
-  color: var(--color-indic);
   background-color: var(--color-bg);
-  border: 1px solid var(--color-indic);
   border-radius: 15px;
-  opacity: 0.9;
+  opacity: 0;
   z-index: 100;
+  transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
-#notif.fail {
+#notification.info {
+  right: 10px;
+  opacity: 0.9;
+  color: var(--color-indic);
+  border: 1px solid var(--color-indic);
+}
+
+#notification.warning {
+  right: 10px;
+  opacity: 0.9;
   color: var(--color-wrong);
   border: 1px solid var(--color-wrong);
 }

@@ -12,7 +12,7 @@ const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
-const notif = document.getElementById("notif")
+const notification = document.getElementById("notification")
 
 const providers = []
 
@@ -185,13 +185,11 @@ function updateNetworkButton(chainId) {
     toggleDisplay(overlay, false)
     localStorage.setItem("currentChainId", chainId)
     showNotification("")
-    notif.classList.remove("fail")
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
-    notif.classList.add("fail")
-    showNotification("Switch to Sepolia!")
+    showNotification("Switch to Sepolia!", "warning")
   }
   renderChainList()
 }
@@ -413,11 +411,9 @@ function createSquareWithButton(color, id, isClaimed) {
           }, 3000)
         } catch (error) {
           console.error("Claim action failed:", error)
-          notif.classList.add("fail")
-          showNotification("Claim failed.")
+          showNotification("Claim failed.", "warning")
           setTimeout(() => {
             showNotification("")
-            notif.classList.remove("fail")
           }, 3000)
         }
       } else {
@@ -458,13 +454,13 @@ async function renderSquaresWithButtons(colors) {
   })
 }
 
-function showNotification(message) {
+function showNotification(message, type = "info") {
   if (message) {
-    notif.style.display = "block"
-    notif.textContent = message
+    notification.classList.add(type)
+    notification.textContent = message
   } else {
-    notif.style.display = "none"
-    notif.textContent = ""
+    notification.classList.remove("info", "warning")
+    notification.textContent = ""
   }
 }
 
