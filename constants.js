@@ -65,7 +65,7 @@ export const networkConfigs = {
   },
 }
 
-export const contractAddress = "0xbcaA4326B57fE7EC195674AC27eF2456351dC690"
+export const contractAddress = "0x3Ec8975ca97f10306655412B81bbDcD3BE743537"
 
 export const abi = [
   { inputs: [], stateMutability: "nonpayable", type: "constructor" },
