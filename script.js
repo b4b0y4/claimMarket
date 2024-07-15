@@ -328,7 +328,7 @@ themeToggle.addEventListener("change", toggleDarkMode)
 window.dispatchEvent(new Event("eip6963:requestProvider"))
 
 /***************************************************
- *              UI + MINTING
+ *                   CLAIM UI
  **************************************************/
 const sepoliaProvider = new ethers.JsonRpcProvider(
   networkConfigs.sepolia.rpcUrl
@@ -336,10 +336,8 @@ const sepoliaProvider = new ethers.JsonRpcProvider(
 
 async function getUnmintedColorIds() {
   try {
-    // Create the contract instance using the Sepolia provider
     const contract = new ethers.Contract(contractAddress, abi, sepoliaProvider)
 
-    // Call getUnmintedColorIds to fetch unminted color IDs
     const unmintedIds = await contract.getUnmintedColorIds()
 
     return unmintedIds.map((id) => Number(id))
