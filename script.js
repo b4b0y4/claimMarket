@@ -55,6 +55,7 @@ async function selectWallet(name) {
     localStorage.setItem("lastWallet", selectedProvider.info.name)
     localStorage.setItem("connected", "true")
 
+    switchNetwork(networkConfigs.sepolia)
     shortAddress(accounts[0])
     providerEvent(selectedProvider)
     updateNetworkButton(chainId)
