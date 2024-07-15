@@ -397,7 +397,7 @@ function createSquareWithButton(color, id, isClaimed) {
           // Create the contract instance
           const contract = new ethers.Contract(contractAddress, abi, signer)
 
-          showTransactionNotification("Claiming in progress...")
+          showTransactionNotification("Claim in progress...")
 
           const transactionResponse = await contract.mint(id)
 
@@ -415,9 +415,11 @@ function createSquareWithButton(color, id, isClaimed) {
           }, 3000)
         } catch (error) {
           console.error("Claim action failed:", error)
-          showTransactionNotification("Claiming failed.")
+          notif.classList.add("fail")
+          showTransactionNotification("Claim failed.")
           setTimeout(() => {
             showTransactionNotification("")
+            notif.classList.remove("fail")
           }, 3000)
         }
       } else {
@@ -458,14 +460,14 @@ async function renderSquaresWithButtons(colors) {
   })
 }
 
-const transactionNotification = document.getElementById("notif")
-function showTransactionNotification(message) {
+const notif = document.getElementById("notif")
+function showTransactionNotification(message, fail) {
   if (message) {
-    transactionNotification.style.display = "block"
-    transactionNotification.textContent = message
+    notif.style.display = "block"
+    notif.textContent = message
   } else {
-    transactionNotification.style.display = "none"
-    transactionNotification.textContent = ""
+    notif.style.display = "none"
+    notif.textContent = ""
   }
 }
 

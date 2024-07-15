@@ -9,6 +9,7 @@
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
   --color-indic: #2ecc71;
+  --color-wrong: #ea3323;
 }
 
 :root.dark-mode {
@@ -22,6 +23,7 @@
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
   --color-indic: #2ecc71;
+  --color-wrong: #ea3323;
 }
 
 .no-flash {
@@ -423,10 +425,16 @@ svg {
   bottom: 10px;
   right: 10px;
   padding: 10px;
+  color: var(--color-indic);
   background-color: var(--color-bg);
-  border: 1px solid var(--color-btn);
+  border: 1px solid var(--color-indic);
   border-radius: 15px;
   opacity: 0.9;
+}
+
+#notif.fail {
+  color: var(--color-wrong);
+  border: 1px solid var(--color-wrong);
 }
 
 footer {
