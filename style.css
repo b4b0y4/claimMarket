@@ -58,6 +58,7 @@ header {
   z-index: 100;
   width: 100%;
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   background-color: rgba(
     var(--color-bg-r),
     var(--color-bg-g),
