@@ -12,6 +12,7 @@ const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
+const notif = document.getElementById("notif")
 
 const providers = []
 
@@ -183,10 +184,14 @@ function updateNetworkButton(chainId) {
     networkIcon.src = network.icon
     toggleDisplay(overlay, false)
     localStorage.setItem("currentChainId", chainId)
+    showNotification("")
+    notif.classList.remove("fail")
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
+    notif.classList.add("fail")
+    showNotification("Switch to Sepolia!")
   }
   renderChainList()
 }
@@ -391,7 +396,7 @@ function createSquareWithButton(color, id, isClaimed) {
 
           const contract = new ethers.Contract(contractAddress, abi, signer)
 
-          showTransactionNotification("Claim in progress...")
+          showNotification("Claim in progress...")
 
           const transactionResponse = await contract.mint(id)
 
@@ -402,16 +407,16 @@ function createSquareWithButton(color, id, isClaimed) {
           button.disabled = true
           svg.style.filter = "brightness(0.5)"
 
-          showTransactionNotification("Successfully claimed!")
+          showNotification("Successfully claimed!")
           setTimeout(() => {
-            showTransactionNotification("")
+            showNotification("")
           }, 3000)
         } catch (error) {
           console.error("Claim action failed:", error)
           notif.classList.add("fail")
-          showTransactionNotification("Claim failed.")
+          showNotification("Claim failed.")
           setTimeout(() => {
-            showTransactionNotification("")
+            showNotification("")
             notif.classList.remove("fail")
           }, 3000)
         }
@@ -453,8 +458,7 @@ async function renderSquaresWithButtons(colors) {
   })
 }
 
-const notif = document.getElementById("notif")
-function showTransactionNotification(message) {
+function showNotification(message) {
   if (message) {
     notif.style.display = "block"
     notif.textContent = message
