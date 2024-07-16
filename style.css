@@ -108,6 +108,7 @@ header {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
+  transition: background 0.3s ease-in-out, filter 0.3s ease-in-out;
 }
 
 .network button {
@@ -171,7 +172,7 @@ header {
 .network button span i {
   display: inline-block;
   font-size: 0.8em;
-  transition: transform 0.2s ease-in-out;
+  transition: transform 0.3s ease-in-out;
 }
 
 .network button span i.rotate {
@@ -188,7 +189,7 @@ header {
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
-  transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   transform: scale(0.9);
   pointer-events: none;
 }
@@ -281,6 +282,7 @@ header {
   width: 60px;
   border-radius: 32px;
   filter: brightness(90%);
+  transition: background 0.3s ease-in-out;
 }
 
 #disconnect:hover {
@@ -320,6 +322,7 @@ header {
   background: var(--color-sec);
   filter: brightness(90%);
   border-radius: 32px;
+  transition: background 0.3s ease-in-out;
 }
 
 .slider:hover {
@@ -434,7 +437,7 @@ svg {
 
 #notification.show {
   right: 10px;
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 #notification.info {
