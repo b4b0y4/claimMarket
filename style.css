@@ -93,7 +93,6 @@ header {
   position: relative;
   user-select: none;
   -webkit-user-select: none;
-  z-index: 100;
 }
 
 .network button,
@@ -142,7 +141,7 @@ header {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  background: var(--color-sec);
+  background: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 @keyframes gradientFlow {
