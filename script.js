@@ -398,7 +398,7 @@ function createSquareWithButton(color, id, isClaimed) {
 
           const transactionResponse = await contract.mint(id)
 
-          await listenForTransactionMine(transactionResponse, ethersProvider)
+          await listenForTransactionMine(transactionResponse, provider)
 
           button.textContent = `Claimed!`
           button.style.opacity = "0.9"
