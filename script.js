@@ -410,7 +410,7 @@ function createSquareWithButton(color, id, isClaimed) {
             showNotification("")
           }, 3000)
         } catch (error) {
-          console.error("Claim action failed:", error)
+          console.error("Claim failed:", error)
           showNotification("Claim failed.", "warning")
           setTimeout(() => {
             showNotification("")
