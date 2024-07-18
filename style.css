@@ -111,7 +111,6 @@ header {
 }
 
 .network button {
-  margin-right: 5px;
   background-color: transparent;
 }
 
@@ -141,7 +140,7 @@ header {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
+  background-color: var(--color-sec);
 }
 
 @keyframes gradientFlow {
