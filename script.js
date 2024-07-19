@@ -13,10 +13,14 @@ const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
 const notification = document.getElementById("notification")
+const squaresBox = document.getElementById("squaresBox")
 const profileBtn = document.getElementById("profileBtn")
 const mySVGs = document.getElementById("mySVGs")
 
 const providers = []
+const sepoliaProvider = new ethers.JsonRpcProvider(
+  networkConfigs.sepolia.rpcUrl
+)
 
 /***************************************************
  *                CONNECTIVITY
@@ -294,10 +298,6 @@ function toggleDarkMode() {
 /***************************************************
  *                   CLAIM UI
  **************************************************/
-const sepoliaProvider = new ethers.JsonRpcProvider(
-  networkConfigs.sepolia.rpcUrl
-)
-
 async function getUnmintedColorIds() {
   try {
     const contract = new ethers.Contract(contractAddress, abi, sepoliaProvider)
@@ -369,6 +369,7 @@ function createSquareWithButton(color, id, isClaimed) {
           setTimeout(() => {
             showNotification("")
           }, 3000)
+          showMySVGs()
         } catch (error) {
           console.error("Claim failed:", error)
           showNotification("Claim failed.", "warning")
@@ -401,7 +402,6 @@ function listenForTransactionMine(transactionResponse, provider) {
 }
 
 async function renderSquaresWithButtons(colors) {
-  const container = document.getElementById("squaresBox")
   const unmintedIds = await getUnmintedColorIds()
   const unmintedIdsSet = new Set(unmintedIds)
 
@@ -409,7 +409,7 @@ async function renderSquaresWithButtons(colors) {
     const colorId = index + 1
     const isClaimed = !unmintedIdsSet.has(colorId)
     const squareWithButton = createSquareWithButton(color, colorId, isClaimed)
-    container.appendChild(squareWithButton)
+    squaresBox.appendChild(squareWithButton)
   })
 }
 
@@ -431,20 +431,30 @@ renderSquaresWithButtons(rainbowColors)
 /***************************************************
  *                  DISPLAY MY SVG
  **************************************************/
+function toggleMySVGs() {
+  mySVGs.classList.toggle("show")
+  squaresBox.classList.toggle("mySVGs-open")
+  walletList.classList.remove("show")
+
+  renderSquaresWithButtons(rainbowColors)
+}
+
 async function showMySVGs() {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
-  mySVGs.classList.add("show")
-  walletList.classList.remove("show")
 
   if (selectedProvider) {
     try {
       const accounts = await selectedProvider.provider.request({
         method: "eth_requestAccounts",
       })
-      const provider = new ethers.JsonRpcProvider(networkConfigs.sepolia.rpcUrl)
-      const contract = new ethers.Contract(contractAddress, abi, provider)
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        abi,
+        sepoliaProvider
+      )
       const balance = await contract.balanceOf(accounts[0])
 
       mySVGs.innerHTML = ""
@@ -556,7 +566,6 @@ connectBtn.addEventListener("click", (event) => {
 document.addEventListener("click", () => {
   chainList.classList.remove("show")
   walletList.classList.remove("show")
-  mySVGs.classList.remove("show")
   chevron.classList.remove("rotate")
 })
 
@@ -564,12 +573,13 @@ chainList.addEventListener("click", (event) => event.stopPropagation())
 
 walletList.addEventListener("click", (event) => event.stopPropagation())
 
-mySVGs.addEventListener("click", (event) => event.stopPropagation())
-
 disconnectBtn.addEventListener("click", disconnect)
 
 themeToggle.addEventListener("change", toggleDarkMode)
 
-profileBtn.addEventListener("click", showMySVGs)
+profileBtn.addEventListener("click", () => {
+  toggleMySVGs()
+  if (mySVGs.classList.contains("show")) showMySVGs()
+})
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
