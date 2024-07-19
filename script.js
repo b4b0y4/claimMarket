@@ -2,6 +2,7 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs, contractAddress, abi } from "./constants.js"
 
 // DOM Elements
+const squaresBox = document.getElementById("squaresBox")
 const networkBtn = document.getElementById("networkBtn")
 const chevron = networkBtn.querySelector("span i")
 const chainList = document.getElementById("chainList")
@@ -13,8 +14,14 @@ const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
 const notification = document.getElementById("notification")
+const profileBtn = document.getElementById("profileBtn")
+const mySVGs = document.getElementById("mySVGs")
 
 const providers = []
+
+/***************************************************
+ *                CONNECTIVITY
+ **************************************************/
 
 // Helper functions
 const toggleDisplay = (element, show) => {
@@ -37,9 +44,6 @@ const createButton = (config, onClick) => {
   return button
 }
 
-/***************************************************
- *                CONNECTIVITY
- **************************************************/
 async function selectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
   if (!selectedProvider) return
@@ -130,6 +134,7 @@ function togglewalletList() {
 
   toggleDisplay(whatsBtn, connected ? false : true)
   toggleDisplay(disconnectBtn, connected ? true : false)
+  toggleDisplay(profileBtn, connected ? true : false)
 }
 
 function updateSettings() {
@@ -236,6 +241,19 @@ async function disconnect() {
   location.reload()
 }
 
+function showNotification(message, type = "info") {
+  if (message) {
+    notification.textContent = message
+    notification.classList.add("show", type)
+  } else {
+    notification.classList.remove("show")
+    setTimeout(() => {
+      notification.classList.remove("info", "warning")
+      notification.textContent = ""
+    }, 500)
+  }
+}
+
 function providerEvent(provider) {
   provider.provider.on("accountsChanged", async function (accounts) {
     if (accounts.length > 0) {
@@ -273,63 +291,6 @@ function toggleDarkMode() {
   const isDarkMode = themeToggle.checked
   setDarkMode(isDarkMode)
 }
-
-/***************************************************
- *              EVENT LISTENERS
- **************************************************/
-window.addEventListener("eip6963:announceProvider", (event) => {
-  const providerDetail = event.detail
-  providers.push(providerDetail)
-  renderWallets()
-
-  if (localStorage.getItem("connected"))
-    selectWallet(localStorage.getItem("lastWallet"))
-
-  console.log(`Discovered provider: ${providerDetail.info.name}`)
-})
-
-window.addEventListener("load", async () => {
-  const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetworkButton(storedChainId)
-  updateSettings()
-  const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
-  )
-  if (selectedProvider) providerEvent(selectedProvider)
-  renderChainList()
-
-  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
-  setDarkMode(savedDarkMode === true)
-  root.classList.remove("no-flash")
-})
-
-networkBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  chainList.classList.toggle("show")
-  chevron.classList.toggle("rotate")
-  walletList.classList.remove("show")
-})
-
-connectBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  togglewalletList()
-})
-
-document.addEventListener("click", () => {
-  chainList.classList.remove("show")
-  walletList.classList.remove("show")
-  chevron.classList.remove("rotate")
-})
-
-chainList.addEventListener("click", (event) => event.stopPropagation())
-
-walletList.addEventListener("click", (event) => event.stopPropagation())
-
-disconnectBtn.addEventListener("click", disconnect)
-
-themeToggle.addEventListener("change", toggleDarkMode)
-
-window.dispatchEvent(new Event("eip6963:requestProvider"))
 
 /***************************************************
  *                   CLAIM UI
@@ -441,8 +402,6 @@ function listenForTransactionMine(transactionResponse, provider) {
 }
 
 async function renderSquaresWithButtons(colors) {
-  const container = document.getElementById("squaresBox")
-
   const unmintedIds = await getUnmintedColorIds()
   const unmintedIdsSet = new Set(unmintedIds)
 
@@ -450,21 +409,8 @@ async function renderSquaresWithButtons(colors) {
     const colorId = index + 1
     const isClaimed = !unmintedIdsSet.has(colorId)
     const squareWithButton = createSquareWithButton(color, colorId, isClaimed)
-    container.appendChild(squareWithButton)
+    squaresBox.appendChild(squareWithButton)
   })
-}
-
-function showNotification(message, type = "info") {
-  if (message) {
-    notification.textContent = message
-    notification.classList.add("show", type)
-  } else {
-    notification.classList.remove("show")
-    setTimeout(() => {
-      notification.classList.remove("info", "warning")
-      notification.textContent = ""
-    }, 500)
-  }
 }
 
 function generateRainbowColors(numColors) {
@@ -481,3 +427,147 @@ function generateRainbowColors(numColors) {
 
 const rainbowColors = generateRainbowColors(250)
 renderSquaresWithButtons(rainbowColors)
+
+/***************************************************
+ *                  DISPLAY MY SVG
+ **************************************************/
+async function showMySVGs() {
+  const selectedProvider = providers.find(
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+  )
+  squaresBox.style.display = "none"
+  mySVGs.style.display = "flex"
+  walletList.classList.remove("show")
+
+  if (selectedProvider) {
+    try {
+      const provider = new ethers.BrowserProvider(selectedProvider.provider)
+      const signer = await provider.getSigner()
+      const address = await signer.getAddress()
+
+      const contract = new ethers.Contract(contractAddress, abi, provider)
+      const balance = await contract.balanceOf(address)
+
+      mySVGs.innerHTML = ""
+
+      if (balance.toString() === "0") {
+        mySVGs.textContent = "You don't own any Rainbow SVGs yet."
+        return
+      }
+
+      const ownedTokenIds = await getSVGOwned(contract, address, balance)
+
+      for (const tokenId of ownedTokenIds) {
+        const tokenURI = await contract.tokenURI(tokenId)
+        const svg = await extractSVGFromTokenURI(tokenURI)
+        displaySVG(svg, tokenId)
+      }
+    } catch (error) {
+      console.error("Error fetching SVGs:", error)
+      mySVGs.textContent = "Error fetching your SVGs"
+    }
+  } else {
+    mySVGs.textContent = "Please connect your wallet first"
+  }
+}
+
+async function getSVGOwned(contract, address) {
+  const MAX_SUPPLY = 250
+  const ownedTokenIds = []
+  const promises = []
+
+  for (let i = 1; i <= MAX_SUPPLY; i++) {
+    promises.push(
+      contract
+        .ownerOf(i)
+        .then((owner) => {
+          if (owner.toLowerCase() === address.toLowerCase()) {
+            ownedTokenIds.push(i)
+          }
+        })
+        .catch(() => {})
+    )
+  }
+  await Promise.all(promises)
+  return ownedTokenIds
+}
+
+async function extractSVGFromTokenURI(tokenURI) {
+  const base64Data = tokenURI.split(",")[1]
+  const jsonString = atob(base64Data)
+  const jsonData = JSON.parse(jsonString)
+  const svgBase64 = jsonData.image.split(",")[1]
+  return atob(svgBase64)
+}
+
+function displaySVG(svg, tokenId) {
+  const container = document.createElement("div")
+  container.innerHTML = svg
+  container.querySelector("svg").setAttribute("width", "100")
+  container.querySelector("svg").setAttribute("height", "100")
+
+  const label = document.createElement("p")
+  label.textContent = `SVG #${tokenId}`
+
+  container.appendChild(label)
+  mySVGs.appendChild(container)
+}
+
+/***************************************************
+ *              EVENT LISTENERS
+ **************************************************/
+window.addEventListener("eip6963:announceProvider", (event) => {
+  const providerDetail = event.detail
+  providers.push(providerDetail)
+  renderWallets()
+
+  if (localStorage.getItem("connected"))
+    selectWallet(localStorage.getItem("lastWallet"))
+
+  console.log(`Discovered provider: ${providerDetail.info.name}`)
+})
+
+window.addEventListener("load", async () => {
+  const storedChainId = localStorage.getItem("currentChainId")
+  if (storedChainId) updateNetworkButton(storedChainId)
+  updateSettings()
+  const selectedProvider = providers.find(
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+  )
+  if (selectedProvider) providerEvent(selectedProvider)
+  renderChainList()
+
+  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+  setDarkMode(savedDarkMode === true)
+  root.classList.remove("no-flash")
+})
+
+networkBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  chainList.classList.toggle("show")
+  chevron.classList.toggle("rotate")
+  walletList.classList.remove("show")
+})
+
+connectBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  togglewalletList()
+})
+
+document.addEventListener("click", () => {
+  chainList.classList.remove("show")
+  walletList.classList.remove("show")
+  chevron.classList.remove("rotate")
+})
+
+chainList.addEventListener("click", (event) => event.stopPropagation())
+
+walletList.addEventListener("click", (event) => event.stopPropagation())
+
+disconnectBtn.addEventListener("click", disconnect)
+
+themeToggle.addEventListener("change", toggleDarkMode)
+
+profileBtn.addEventListener("click", showMySVGs)
+
+window.dispatchEvent(new Event("eip6963:requestProvider"))

@@ -41,12 +41,18 @@ html {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  height: 100vh;
+  height: 100%;
   overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background-color: var(--color-bg);
   color: var(--color-btn);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
@@ -273,18 +279,15 @@ header {
   margin-bottom: 0;
 }
 
+#profileBtn,
 #disconnect {
   justify-content: center;
   font-size: 16px;
   height: 32px;
-  width: 60px;
+  width: 40px;
   border-radius: 32px;
   filter: brightness(90%);
   transition: background 0.3s ease-in-out;
-}
-
-#disconnect:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 #whats a {
@@ -382,6 +385,12 @@ header {
   margin-left: 5px;
 }
 
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
 #squaresBox {
   display: flex;
   flex-wrap: wrap;
@@ -419,6 +428,19 @@ svg {
 
 .square-container:hover .claim-button {
   opacity: 0.9;
+}
+
+#mySVGs {
+  display: none;
+  flex-wrap: wrap;
+  justify-content: center;
+  width: 100%;
+  gap: 10px;
+  margin: 30px 0;
+}
+
+#mySVGs p {
+  line-height: 0;
 }
 
 #notification {
