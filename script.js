@@ -331,7 +331,7 @@ function createSquareWithButton(color, id, isClaimed) {
   svg.appendChild(rect)
 
   const button = document.createElement("button")
-  button.textContent = isClaimed ? `Claimed` : `Claim ${id}`
+  button.textContent = isClaimed ? `Claimed` : `Claim #${id}`
   button.classList.add("claim-button")
   button.disabled = isClaimed
 
