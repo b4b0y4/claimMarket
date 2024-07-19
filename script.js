@@ -2,7 +2,6 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs, contractAddress, abi } from "./constants.js"
 
 // DOM Elements
-const squaresBox = document.getElementById("squaresBox")
 const networkBtn = document.getElementById("networkBtn")
 const chevron = networkBtn.querySelector("span i")
 const chainList = document.getElementById("chainList")
@@ -402,6 +401,7 @@ function listenForTransactionMine(transactionResponse, provider) {
 }
 
 async function renderSquaresWithButtons(colors) {
+  const container = document.getElementById("squaresBox")
   const unmintedIds = await getUnmintedColorIds()
   const unmintedIdsSet = new Set(unmintedIds)
 
@@ -409,7 +409,7 @@ async function renderSquaresWithButtons(colors) {
     const colorId = index + 1
     const isClaimed = !unmintedIdsSet.has(colorId)
     const squareWithButton = createSquareWithButton(color, colorId, isClaimed)
-    squaresBox.appendChild(squareWithButton)
+    container.appendChild(squareWithButton)
   })
 }
 
@@ -435,8 +435,7 @@ async function showMySVGs() {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
-  squaresBox.style.display = "none"
-  mySVGs.style.display = "flex"
+  mySVGs.classList.add("show")
   walletList.classList.remove("show")
 
   if (selectedProvider) {
@@ -557,12 +556,15 @@ connectBtn.addEventListener("click", (event) => {
 document.addEventListener("click", () => {
   chainList.classList.remove("show")
   walletList.classList.remove("show")
+  mySVGs.classList.remove("show")
   chevron.classList.remove("rotate")
 })
 
 chainList.addEventListener("click", (event) => event.stopPropagation())
 
 walletList.addEventListener("click", (event) => event.stopPropagation())
+
+mySVGs.addEventListener("click", (event) => event.stopPropagation())
 
 disconnectBtn.addEventListener("click", disconnect)
 

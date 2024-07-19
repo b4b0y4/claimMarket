@@ -49,12 +49,6 @@ html {
   color: var(--color-btn);
 }
 
-body {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
 header {
   display: flex;
   justify-content: space-between;
@@ -385,12 +379,6 @@ header {
   margin-left: 5px;
 }
 
-main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
 #squaresBox {
   display: flex;
   flex-wrap: wrap;
@@ -431,16 +419,33 @@ svg {
 }
 
 #mySVGs {
-  display: none;
+  position: fixed;
+  top: 10px;
+  bottom: 10px;
+  right: -100%;
+  padding: 20px;
+  display: flex;
   flex-wrap: wrap;
-  justify-content: center;
-  width: 100%;
+  justify-content: flex-start;
+  align-items: flex-start;
+  width: 360px;
   gap: 10px;
-  margin: 30px 0;
+  opacity: 0;
+  z-index: 100;
+  background-color: var(--color-sec);
+  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  border-radius: 15px;
+  overflow-y: auto;
+  transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
+}
+
+#mySVGs.show {
+  right: 10px;
+  opacity: 1;
 }
 
 #mySVGs p {
-  line-height: 0;
+  margin: 5px 0 0 0;
   font-size: 0.8em;
 }
 
@@ -484,5 +489,9 @@ footer {
 
   .claim-button {
     opacity: 0.9;
+  }
+
+  #mySVGs {
+    top: 70px;
   }
 }
