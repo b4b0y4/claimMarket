@@ -441,6 +441,7 @@ svg {
 
 #mySVGs p {
   line-height: 0;
+  font-size: 0.8em;
 }
 
 #notification {
