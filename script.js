@@ -441,12 +441,12 @@ async function showMySVGs() {
 
   if (selectedProvider) {
     try {
-      const provider = new ethers.BrowserProvider(selectedProvider.provider)
-      const signer = await provider.getSigner()
-      const address = await signer.getAddress()
-
+      const accounts = await selectedProvider.provider.request({
+        method: "eth_requestAccounts",
+      })
+      const provider = new ethers.JsonRpcProvider(networkConfigs.sepolia.rpcUrl)
       const contract = new ethers.Contract(contractAddress, abi, provider)
-      const balance = await contract.balanceOf(address)
+      const balance = await contract.balanceOf(accounts[0])
 
       mySVGs.innerHTML = ""
 
@@ -455,7 +455,7 @@ async function showMySVGs() {
         return
       }
 
-      const ownedTokenIds = await getSVGOwned(contract, address, balance)
+      const ownedTokenIds = await getSVGOwned(contract, accounts[0], balance)
 
       for (const tokenId of ownedTokenIds) {
         const tokenURI = await contract.tokenURI(tokenId)
