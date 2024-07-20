@@ -507,7 +507,6 @@ function displaySVG(tokenId) {
   const container = document.createElement("div")
   container.classList.add("svg-card")
 
-  // Create SVG
   const svgNamespace = "http://www.w3.org/2000/svg"
   const svg = document.createElementNS(svgNamespace, "svg")
   svg.setAttribute("width", "100")
@@ -537,11 +536,11 @@ function displaySVG(tokenId) {
   buttonContainer.classList.add("button-container")
 
   const saleButton = document.createElement("button")
-  saleButton.textContent = "Sale"
+  saleButton.textContent = "List"
   saleButton.classList.add("sale-button")
 
   const acceptBidButton = document.createElement("button")
-  acceptBidButton.textContent = "Accept Bid"
+  acceptBidButton.textContent = "Accept"
   acceptBidButton.classList.add("accept-bid-button")
 
   buttonContainer.appendChild(saleButton)
