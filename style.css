@@ -528,7 +528,7 @@ header {
 .bid-button:hover,
 .sale-button:hover,
 .accept-bid-button:hover {
-  filter: brightness(0.9);
+  filter: brightness(1.2);
 }
 
 .buy-button,
