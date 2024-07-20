@@ -52,7 +52,6 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
-  touch-action: pan-y;
 }
 
 header {
@@ -541,12 +540,14 @@ header {
 .sale-button {
   background-color: var(--color-indic);
   color: white;
+  border-bottom-left-radius: 10px;
 }
 
 .bid-button,
 .accept-bid-button {
   background-color: var(--color-bg-btn);
   color: white;
+  border-bottom-right-radius: 10px;
 }
 
 .cancel-sale-button,
@@ -596,12 +597,6 @@ footer {
 
   .the-market {
     margin-right: 15px;
-  }
-
-  #market.mySVGs-open,
-  #squaresBox.mySVGs-open {
-    width: 100%;
-    margin-right: 0;
   }
 
   .claim-button {
