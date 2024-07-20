@@ -402,7 +402,7 @@ function listenForTransactionMine(transactionResponse, provider) {
   })
 }
 
-async function renderSquaresWithButtons(colors) {
+async function renderSVGsClaim(colors) {
   const unmintedIds = await getUnmintedColorIds()
   const unmintedIdsSet = new Set(unmintedIds)
 
@@ -431,7 +431,6 @@ const rainbowColors = generateRainbowColors(250)
 /***************************************************
  *                   MARKET UI
  **************************************************/
-
 function displayAllSVGs() {
   rainbowColors.forEach((color, index) => {
     const tokenId = index + 1
@@ -634,7 +633,7 @@ function getCurrentPage() {
 }
 
 function initializeIndexPage() {
-  renderSquaresWithButtons(rainbowColors)
+  renderSVGsClaim(rainbowColors)
 }
 
 function initializeMarketPage() {
@@ -707,5 +706,3 @@ themeToggle.addEventListener("change", toggleDarkMode)
 profileBtn.addEventListener("click", toggleMySVGs)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
-
-document.addEventListener("DOMContentLoaded", initializePage)
