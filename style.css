@@ -42,7 +42,6 @@ html {
   padding: 0;
   box-sizing: border-box;
   height: 100%;
-  overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background-color: var(--color-bg);
@@ -53,6 +52,7 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  overflow-x: hidden;
 }
 
 header {
@@ -541,14 +541,12 @@ header {
 .sale-button {
   background-color: var(--color-indic);
   color: white;
-  border-bottom-left-radius: 10px;
 }
 
 .bid-button,
 .accept-bid-button {
   background-color: var(--color-bg-btn);
   color: white;
-  border-bottom-right-radius: 10px;
 }
 
 .cancel-sale-button,
