@@ -428,6 +428,7 @@ header {
   position: absolute;
   bottom: 0;
   width: 100%;
+  height: 30px;
   left: 50%;
   transform: translateX(-50%);
   padding: 5px;
@@ -502,8 +503,9 @@ header {
   bottom: 0;
   left: 0;
   right: 0;
-  height: 35px;
+  height: 60px;
   display: flex;
+  flex-wrap: wrap;
   margin: 0;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -516,18 +518,22 @@ header {
 .buy-button,
 .bid-button,
 .sale-button,
-.accept-bid-button {
+.accept-bid-button,
+.cancel-sale-button,
+.cancel-bid-button {
   font-size: 14px;
   border: none;
-  width: 100%;
   cursor: pointer;
   transition: filter 0.3s ease-in-out;
+  flex: 1 1 auto;
 }
 
 .buy-button:hover,
 .bid-button:hover,
 .sale-button:hover,
-.accept-bid-button:hover {
+.accept-bid-button:hover,
+.cancel-sale-button:hover,
+.cancel-bid-button:hover {
   filter: brightness(1.2);
 }
 
@@ -540,6 +546,12 @@ header {
 .bid-button,
 .accept-bid-button {
   background-color: var(--color-bg-btn);
+  color: white;
+}
+
+.cancel-sale-button,
+.cancel-bid-button {
+  background-color: var(--color-wrong);
   color: white;
 }
 

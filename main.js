@@ -473,8 +473,13 @@ function displayAllSVGs() {
     bidButton.textContent = "Offer"
     bidButton.classList.add("bid-button")
 
+    const cancelBidButton = document.createElement("button")
+    cancelBidButton.textContent = "Cancel Bid"
+    cancelBidButton.classList.add("cancel-bid-button")
+
     buttonContainer.appendChild(buyButton)
     buttonContainer.appendChild(bidButton)
+    buttonContainer.appendChild(cancelBidButton)
 
     container.appendChild(svg)
     container.appendChild(label)
@@ -602,8 +607,13 @@ function displaySVG(tokenId) {
   acceptBidButton.textContent = "Accept"
   acceptBidButton.classList.add("accept-bid-button")
 
+  const cancelSaleButton = document.createElement("button")
+  cancelSaleButton.textContent = "Cancel Listing"
+  cancelSaleButton.classList.add("cancel-sale-button")
+
   buttonContainer.appendChild(saleButton)
   buttonContainer.appendChild(acceptBidButton)
+  buttonContainer.appendChild(cancelSaleButton)
 
   container.appendChild(svg)
   container.appendChild(label)
