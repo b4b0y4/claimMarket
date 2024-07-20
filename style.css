@@ -482,7 +482,7 @@ header {
 }
 
 .svg-card:hover {
-  transform: scale(1.03);
+  transform: scale(1.02);
 }
 
 .svg-label {
@@ -541,12 +541,14 @@ header {
 .sale-button {
   background-color: var(--color-indic);
   color: white;
+  border-bottom-left-radius: 10px;
 }
 
 .bid-button,
 .accept-bid-button {
   background-color: var(--color-bg-btn);
   color: white;
+  border-bottom-right-radius: 10px;
 }
 
 .cancel-sale-button,
