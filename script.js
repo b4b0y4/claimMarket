@@ -215,11 +215,11 @@ async function disconnect() {
   } catch (error) {
     console.error("Error disconnecting:", error)
   }
-
   ;[
     "connected",
     "currentChainId",
     "lastWallet",
+    "mySVGsVisible",
     "-walletlink:https://www.walletlink.org:DefaultJsonRpcUrl",
     "-walletlink:https://www.walletlink.org:session:secret",
     "-walletlink:https://www.walletlink.org:Addresses",
@@ -368,8 +368,8 @@ function createSquareWithButton(color, id, isClaimed) {
           showNotification("Successfully claimed!")
           setTimeout(() => {
             showNotification("")
+            showMySVGs()
           }, 3000)
-          showMySVGs()
         } catch (error) {
           console.error("Claim failed:", error)
           showNotification("Claim failed.", "warning")
@@ -432,11 +432,14 @@ renderSquaresWithButtons(rainbowColors)
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
-  mySVGs.classList.toggle("show")
+  const isVisible = mySVGs.classList.toggle("show")
+  localStorage.setItem("mySVGsVisible", isVisible)
   squaresBox.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
-  renderSquaresWithButtons(rainbowColors)
+  if (isVisible) {
+    showMySVGs()
+  }
 }
 
 async function showMySVGs() {
@@ -467,9 +470,7 @@ async function showMySVGs() {
       const ownedTokenIds = await getSVGOwned(contract, accounts[0], balance)
 
       for (const tokenId of ownedTokenIds) {
-        const tokenURI = await contract.tokenURI(tokenId)
-        const svg = await extractSVGFromTokenURI(tokenURI)
-        displaySVG(svg, tokenId)
+        displaySVG(tokenId)
       }
     } catch (error) {
       console.error("Error fetching SVGs:", error)
@@ -501,24 +502,57 @@ async function getSVGOwned(contract, address) {
   return ownedTokenIds
 }
 
-async function extractSVGFromTokenURI(tokenURI) {
-  const base64Data = tokenURI.split(",")[1]
-  const jsonString = atob(base64Data)
-  const jsonData = JSON.parse(jsonString)
-  const svgBase64 = jsonData.image.split(",")[1]
-  return atob(svgBase64)
-}
-
-function displaySVG(svg, tokenId) {
+function displaySVG(tokenId) {
+  const color = rainbowColors[tokenId - 1]
   const container = document.createElement("div")
-  container.innerHTML = svg
-  container.querySelector("svg").setAttribute("width", "100")
-  container.querySelector("svg").setAttribute("height", "100")
+  container.classList.add("svg-card")
+
+  // Create SVG
+  const svgNamespace = "http://www.w3.org/2000/svg"
+  const svg = document.createElementNS(svgNamespace, "svg")
+  svg.setAttribute("width", "100")
+  svg.setAttribute("height", "100")
+  svg.setAttribute("xmlns", svgNamespace)
+  svg.setAttribute("id", `svg-${tokenId}`)
+
+  const rect = document.createElementNS(svgNamespace, "rect")
+  rect.setAttribute("width", "100")
+  rect.setAttribute("height", "100")
+  rect.setAttribute("fill", color)
+  svg.appendChild(rect)
 
   const label = document.createElement("p")
   label.textContent = `SVG #${tokenId}`
+  label.classList.add("svg-label")
 
+  const priceInfo = document.createElement("p")
+  priceInfo.classList.add("price-info")
+  priceInfo.textContent = "Sale: 0.1 ETH"
+
+  const bidInfo = document.createElement("p")
+  bidInfo.classList.add("bid-info")
+  bidInfo.textContent = "Offer: 0.05 ETH"
+
+  const buttonContainer = document.createElement("div")
+  buttonContainer.classList.add("button-container")
+
+  const saleButton = document.createElement("button")
+  saleButton.textContent = "Sale"
+  saleButton.classList.add("sale-button")
+
+  const acceptBidButton = document.createElement("button")
+  acceptBidButton.textContent = "Accept Bid"
+  acceptBidButton.classList.add("accept-bid-button")
+
+  buttonContainer.appendChild(saleButton)
+  buttonContainer.appendChild(acceptBidButton)
+
+  container.appendChild(svg)
   container.appendChild(label)
+  container.appendChild(priceInfo)
+  container.appendChild(bidInfo)
+  container.appendChild(buttonContainer)
+
   mySVGs.appendChild(container)
 }
 
@@ -540,6 +574,7 @@ window.addEventListener("load", async () => {
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
   updateSettings()
+
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
@@ -549,6 +584,13 @@ window.addEventListener("load", async () => {
   const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
   setDarkMode(savedDarkMode === true)
   root.classList.remove("no-flash")
+
+  const isVisible = localStorage.getItem("mySVGsVisible") === "true"
+  if (isVisible) {
+    mySVGs.classList.add("show")
+    squaresBox.classList.add("mySVGs-open")
+    showMySVGs()
+  }
 })
 
 networkBtn.addEventListener("click", (event) => {
@@ -577,9 +619,6 @@ disconnectBtn.addEventListener("click", disconnect)
 
 themeToggle.addEventListener("change", toggleDarkMode)
 
-profileBtn.addEventListener("click", () => {
-  toggleMySVGs()
-  if (mySVGs.classList.contains("show")) showMySVGs()
-})
+profileBtn.addEventListener("click", toggleMySVGs)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))

@@ -49,6 +49,12 @@ html {
   color: var(--color-btn);
 }
 
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 header {
   display: flex;
   justify-content: space-between;
@@ -380,6 +386,7 @@ header {
 }
 
 #squaresBox {
+  flex: 1;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -425,7 +432,7 @@ svg {
 }
 
 #mySVGs {
-  position: fixed;
+  position: absolute;
   top: 75px;
   bottom: 10px;
   right: -370px;
@@ -449,10 +456,73 @@ svg {
   opacity: 1;
 }
 
-#mySVGs p {
-  margin: 2px 0 0 0;
-  font-size: 0.8em;
-  width: 100%;
+.svg-card {
+  position: relative;
+  width: 100px;
+  height: 160px;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease-in-out;
+}
+
+.svg-card:hover {
+  transform: scale(1.05);
+}
+
+.svg-label {
+  margin: 5px 0;
+  font-size: 12px;
+  padding-left: 5px;
+}
+
+.price-info,
+.bid-info {
+  font-size: 10px;
+  margin: 2px 0;
+  padding-left: 5px;
+}
+
+.button-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 35px;
+  display: flex;
+  justify-content: space-around;
+  padding: 5px;
+  background-color: var(--color-bg);
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.svg-card:hover .button-container {
+  opacity: 1;
+}
+
+.sale-button,
+.accept-bid-button {
+  font-size: 10px;
+  padding: 2px 5px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.sale-button {
+  background-color: var(--color-indic);
+  color: white;
+}
+
+.accept-bid-button {
+  background-color: var(--color-bg-btn);
+  color: white;
+}
+
+.svg-card:hover .price-info,
+.svg-card:hover .bid-info {
+  display: none;
 }
 
 #notification {
