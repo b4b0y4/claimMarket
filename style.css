@@ -526,7 +526,6 @@ header {
   cursor: pointer;
   height: 35px;
   flex: 1 1 auto;
-  box-sizing: border-box;
   transition: filter 0.3s ease-in-out;
 }
 
