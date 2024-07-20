@@ -409,8 +409,8 @@ header {
 
 #market.mySVGs-open,
 #squaresBox.mySVGs-open {
-  width: calc(100% - 370px);
-  margin-left: 370px;
+  width: calc(100% - 380px);
+  margin-right: 380px;
 }
 
 .square-container {
@@ -448,7 +448,7 @@ header {
   position: absolute;
   top: 75px;
   bottom: 10px;
-  left: -370px;
+  right: -380px;
   padding: 20px;
   display: flex;
   flex-wrap: wrap;
@@ -465,7 +465,7 @@ header {
 }
 
 #mySVGs.show {
-  left: 10px;
+  right: 10px;
   opacity: 1;
 }
 
@@ -505,7 +505,6 @@ header {
   right: 0;
   height: 35px;
   display: flex;
-  flex-wrap: wrap;
   margin: 0;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -524,8 +523,8 @@ header {
   font-size: 14px;
   border: none;
   cursor: pointer;
+  width: 100%;
   transition: filter 0.3s ease-in-out;
-  flex: 1 1 auto;
 }
 
 .buy-button:hover,
@@ -551,13 +550,9 @@ header {
 
 .cancel-sale-button,
 .cancel-bid-button {
+  display: none;
   background-color: var(--color-wrong);
   color: white;
-}
-
-.svg-card:hover .price-info,
-.svg-card:hover .bid-info {
-  display: none;
 }
 
 #notification {
