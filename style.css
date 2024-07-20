@@ -521,7 +521,7 @@ header {
 .accept-bid-button,
 .cancel-sale-button,
 .cancel-bid-button {
-  font-size: 14px;
+  font-size: 12px;
   border: none;
   cursor: pointer;
   height: 35px;
