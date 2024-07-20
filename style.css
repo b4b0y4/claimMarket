@@ -524,6 +524,7 @@ header {
   border: none;
   cursor: pointer;
   width: 100%;
+  box-sizing: border-box;
   transition: filter 0.3s ease-in-out;
 }
 
@@ -593,7 +594,17 @@ footer {
     display: none;
   }
 
+  .the-market {
+    margin-right: 15px;
+  }
+
   .claim-button {
     opacity: 0.9;
+  }
+
+  #mySVGs.show {
+    right: 0;
+    bottom: 0;
+    width: 100%;
   }
 }
