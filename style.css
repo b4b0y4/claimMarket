@@ -1,10 +1,10 @@
 :root {
-  --color-bg: #f1f1f2;
-  --color-bg-r: 241;
-  --color-bg-g: 241;
-  --color-bg-b: 242;
+  --color-bg: #fafafa;
+  --color-bg-r: 250;
+  --color-bg-g: 250;
+  --color-bg-b: 250;
   --color-btn: #5c5c5c;
-  --color-sec: #e7e7e7;
+  --color-sec: #ffffff;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
@@ -13,12 +13,12 @@
 }
 
 :root.dark-mode {
-  --color-bg: #212122;
-  --color-bg-r: 33;
-  --color-bg-g: 33;
-  --color-bg-b: 34;
+  --color-bg: #121212;
+  --color-bg-r: 18;
+  --color-bg-g: 18;
+  --color-bg-b: 18;
   --color-btn: #adadae;
-  --color-sec: #1e1e1e;
+  --color-sec: #202020;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
@@ -92,6 +92,18 @@ header {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.wrapper a {
+  font-size: 1.1em;
+  text-decoration: none;
+  color: var(--color-btn);
+  margin-right: 30px;
+  transition: filter 0.3s ease-in-out;
+}
+
+.wrapper a:hover {
+  filter: brightness(150%);
 }
 
 .network,
@@ -320,14 +332,13 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background: var(--color-sec);
-  filter: brightness(90%);
+  background: color-mix(in srgb, var(--color-sec) 90%, black);
   border-radius: 32px;
   transition: background 0.3s ease-in-out;
 }
 
 .slider:hover {
-  background: color-mix(in srgb, var(--color-sec) 90%, black);
+  background: color-mix(in srgb, var(--color-sec) 80%, black);
 }
 
 .slider:before {
@@ -338,7 +349,6 @@ header {
   left: 4px;
   bottom: 4px;
   background-color: var(--color-bg);
-  filter: brightness(150%);
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -385,6 +395,7 @@ header {
   margin-left: 5px;
 }
 
+#market,
 #squaresBox {
   flex: 1;
   display: flex;
@@ -396,6 +407,7 @@ header {
   transition: width 0.5s ease-in-out, margin-right 0.5s ease-in-out;
 }
 
+#market.mySVGs-open,
 #squaresBox.mySVGs-open {
   width: calc(100% - 370px);
   margin-right: 360px;
@@ -408,7 +420,7 @@ header {
   border-radius: 10px;
 }
 
-svg {
+.square-container svg {
   border-radius: 10px;
 }
 
@@ -462,6 +474,7 @@ svg {
   height: 160px;
   border-radius: 10px;
   overflow: hidden;
+  background-color: var(--color-sec);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
@@ -472,7 +485,7 @@ svg {
 }
 
 .svg-label {
-  margin: 5px 0;
+  margin: 3px 0;
   font-size: 12px;
   padding-left: 5px;
 }
@@ -491,10 +504,7 @@ svg {
   right: 0;
   height: 35px;
   display: flex;
-  justify-content: space-around;
-  padding: 5px;
   margin: 0;
-  background-color: var(--color-bg);
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
 }
@@ -503,20 +513,31 @@ svg {
   opacity: 1;
 }
 
+.buy-button,
+.bid-button,
 .sale-button,
 .accept-bid-button {
   font-size: 14px;
-  padding: 5px;
   border: none;
-  border-radius: 5px;
+  width: 100%;
   cursor: pointer;
+  transition: filter 0.3s ease-in-out;
 }
 
+.buy-button:hover,
+.bid-button:hover,
+.sale-button:hover,
+.accept-bid-button:hover {
+  filter: brightness(0.9);
+}
+
+.buy-button,
 .sale-button {
   background-color: var(--color-indic);
   color: white;
 }
 
+.bid-button,
 .accept-bid-button {
   background-color: var(--color-bg-btn);
   color: white;

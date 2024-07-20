@@ -14,6 +14,7 @@ const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
 const notification = document.getElementById("notification")
 const squaresBox = document.getElementById("squaresBox")
+const market = document.getElementById("market")
 const profileBtn = document.getElementById("profileBtn")
 const mySVGs = document.getElementById("mySVGs")
 
@@ -426,7 +427,65 @@ function generateRainbowColors(numColors) {
 }
 
 const rainbowColors = generateRainbowColors(250)
-renderSquaresWithButtons(rainbowColors)
+
+/***************************************************
+ *                   MARKET UI
+ **************************************************/
+
+function displayAllSVGs() {
+  rainbowColors.forEach((color, index) => {
+    const tokenId = index + 1
+    const container = document.createElement("div")
+    container.classList.add("svg-card")
+
+    const svgNamespace = "http://www.w3.org/2000/svg"
+    const svg = document.createElementNS(svgNamespace, "svg")
+    svg.setAttribute("width", "100")
+    svg.setAttribute("height", "100")
+    svg.setAttribute("xmlns", svgNamespace)
+    svg.setAttribute("id", `svg-${tokenId}`)
+
+    const rect = document.createElementNS(svgNamespace, "rect")
+    rect.setAttribute("width", "100")
+    rect.setAttribute("height", "100")
+    rect.setAttribute("fill", color)
+    svg.appendChild(rect)
+
+    const label = document.createElement("p")
+    label.textContent = `SVG #${tokenId}`
+    label.classList.add("svg-label")
+
+    const priceInfo = document.createElement("p")
+    priceInfo.classList.add("price-info")
+    priceInfo.textContent = ""
+
+    const bidInfo = document.createElement("p")
+    bidInfo.classList.add("bid-info")
+    bidInfo.textContent = ""
+
+    const buttonContainer = document.createElement("div")
+    buttonContainer.classList.add("button-container")
+
+    const buyButton = document.createElement("button")
+    buyButton.textContent = "Buy"
+    buyButton.classList.add("buy-button")
+
+    const bidButton = document.createElement("button")
+    bidButton.textContent = "Offer"
+    bidButton.classList.add("bid-button")
+
+    buttonContainer.appendChild(buyButton)
+    buttonContainer.appendChild(bidButton)
+
+    container.appendChild(svg)
+    container.appendChild(label)
+    container.appendChild(priceInfo)
+    container.appendChild(bidInfo)
+    container.appendChild(buttonContainer)
+
+    market.appendChild(container)
+  })
+}
 
 /***************************************************
  *                  DISPLAY MY SVG
@@ -434,7 +493,8 @@ renderSquaresWithButtons(rainbowColors)
 function toggleMySVGs() {
   const isVisible = mySVGs.classList.toggle("show")
   localStorage.setItem("mySVGsVisible", isVisible)
-  squaresBox.classList.toggle("mySVGs-open")
+  if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
+  if (market) market.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
   if (isVisible) {
@@ -556,7 +616,7 @@ function displaySVG(tokenId) {
 }
 
 /***************************************************
- *              EVENT LISTENERS
+ *         EVENTS AND INITIALIZATION FUNCTIONS
  **************************************************/
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
@@ -569,7 +629,21 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
 
-window.addEventListener("load", async () => {
+function getCurrentPage() {
+  return document.body.id
+}
+
+function initializeIndexPage() {
+  renderSquaresWithButtons(rainbowColors)
+}
+
+function initializeMarketPage() {
+  displayAllSVGs()
+}
+
+function initializePage() {
+  const currentPage = getCurrentPage()
+
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
   updateSettings()
@@ -585,12 +659,24 @@ window.addEventListener("load", async () => {
   root.classList.remove("no-flash")
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
-  if (isVisible) {
-    mySVGs.classList.add("show")
-    squaresBox.classList.add("mySVGs-open")
-    showMySVGs()
+  if (currentPage === "index-page") {
+    initializeIndexPage()
+    if (isVisible) {
+      mySVGs.classList.add("show")
+      squaresBox.classList.add("mySVGs-open")
+      showMySVGs()
+    }
+  } else if (currentPage === "market-page") {
+    initializeMarketPage()
+    if (isVisible) {
+      mySVGs.classList.add("show")
+      market.classList.add("mySVGs-open")
+      showMySVGs()
+    }
   }
-})
+}
+
+window.addEventListener("load", initializePage)
 
 networkBtn.addEventListener("click", (event) => {
   event.stopPropagation()
@@ -621,3 +707,5 @@ themeToggle.addEventListener("change", toggleDarkMode)
 profileBtn.addEventListener("click", toggleMySVGs)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
+
+document.addEventListener("DOMContentLoaded", initializePage)

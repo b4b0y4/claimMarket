@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en" class="no-flash">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Claim</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+    crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body id="market-page">
+
+  <header>
+    <div class="title">
+      <a href="/">
+        <img src="./logo/claim.png" alt="">
+      </a>
+      <h1>The Rainbow</h1>
+    </div>
+    <!--  connectivity  -->
+    <div class="wrapper">
+      <a href="./market.html">The Market</a>
+      <div class="network">
+        <button id="networkBtn">
+          <img id="networkIcon" src="./logo/sepolia.png" alt="Network Icon">
+          <span><i class="fa-solid fa-chevron-down"></i></span>
+        </button>
+        <div class="chain-list" id="chainList"> -->
+        </div>
+      </div>
+      <div class="connectivity">
+        <button id="connectBtn">Connect Wallet</button>
+        <div id="walletList" class="wallet-list">
+          <div id="settings">
+            <label class="theme">
+              <input id="checkbox" type="checkbox">
+              <span class="slider">
+                <i class="fa-solid fa-sun"></i>
+                <i class="fa-solid fa-moon"></i>
+              </span>
+            </label>
+            <div id="whats">
+              <a href="https://ethereum.org/en/wallets/" target="_blank">What's a Wallet?</a>
+            </div>
+            <button id="profileBtn"><i class="fa-solid fa-user"></i></button>
+            <button id="disconnect"><i class="fa-solid fa-power-off"></i></button>
+          </div>
+          <div id="wallets"></div>
+          <!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
+        </div>
+      </div>
+    </div>
+    <!--  connectivity  -->
+  </header>
+  <div id="market"></div>
+  <div id="mySVGs"></div>
+  <div id="notification"></div>
+  <footer>
+    <p>☺︎ 2024 Claim The Rainbow</p>
+  </footer>
+  <div id="overlay"></div>
+  <script src="./main.js" type="module"></script>
+</body>
+</html>
