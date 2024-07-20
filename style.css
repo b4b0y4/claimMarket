@@ -41,6 +41,7 @@ html {
   margin: 0;
   padding: 0;
   height: 100%;
+  overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background-color: var(--color-bg);
@@ -48,11 +49,9 @@ html {
 }
 
 body {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  overflow-y: scroll;
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
 header {
