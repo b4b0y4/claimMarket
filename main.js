@@ -16,7 +16,9 @@ const notification = document.getElementById("notification")
 const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
 const profileBtn = document.getElementById("profileBtn")
+const myProfile = document.getElementById("myProfile")
 const mySVGs = document.getElementById("mySVGs")
+const closeBtn = document.getElementById("closeBtn")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -495,7 +497,7 @@ function displayAllSVGs() {
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
-  const isVisible = mySVGs.classList.toggle("show")
+  const isVisible = myProfile.classList.toggle("show")
   localStorage.setItem("mySVGsVisible", isVisible)
   if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
   if (market) market.classList.toggle("mySVGs-open")
@@ -671,14 +673,14 @@ function initializePage() {
   if (currentPage === "index-page") {
     initializeIndexPage()
     if (isVisible) {
-      mySVGs.classList.add("show")
+      myProfile.classList.add("show")
       squaresBox.classList.add("mySVGs-open")
       showMySVGs()
     }
   } else if (currentPage === "market-page") {
     initializeMarketPage()
     if (isVisible) {
-      mySVGs.classList.add("show")
+      myProfile.classList.add("show")
       market.classList.add("mySVGs-open")
       showMySVGs()
     }
@@ -714,5 +716,7 @@ disconnectBtn.addEventListener("click", disconnect)
 themeToggle.addEventListener("change", toggleDarkMode)
 
 profileBtn.addEventListener("click", toggleMySVGs)
+
+closeBtn.addEventListener("click", toggleMySVGs)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
