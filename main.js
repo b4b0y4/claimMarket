@@ -15,10 +15,7 @@ const networkIcon = document.getElementById("networkIcon")
 const notification = document.getElementById("notification")
 const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
-const profileBtn = document.getElementById("profileBtn")
-const myProfile = document.getElementById("myProfile")
 const mySVGs = document.getElementById("mySVGs")
-const closeBtn = document.getElementById("closeBtn")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -140,7 +137,6 @@ function togglewalletList() {
 
   toggleDisplay(whatsBtn, connected ? false : true)
   toggleDisplay(disconnectBtn, connected ? true : false)
-  toggleDisplay(profileBtn, connected ? true : false)
 }
 
 function updateSettings() {
@@ -471,17 +467,17 @@ function displayAllSVGs() {
     buyButton.textContent = "Buy"
     buyButton.classList.add("buy-button")
 
-    const bidButton = document.createElement("button")
-    bidButton.textContent = "Offer"
-    bidButton.classList.add("bid-button")
-
     const cancelBidButton = document.createElement("button")
     cancelBidButton.textContent = "Cancel"
     cancelBidButton.classList.add("cancel-bid-button")
 
+    const bidButton = document.createElement("button")
+    bidButton.textContent = "Offer"
+    bidButton.classList.add("bid-button")
+
     buttonContainer.appendChild(buyButton)
-    buttonContainer.appendChild(bidButton)
     buttonContainer.appendChild(cancelBidButton)
+    buttonContainer.appendChild(bidButton)
 
     container.appendChild(svg)
     container.appendChild(label)
@@ -497,7 +493,7 @@ function displayAllSVGs() {
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
-  const isVisible = myProfile.classList.toggle("show")
+  const isVisible = mySVGs.classList.toggle("show")
   localStorage.setItem("mySVGsVisible", isVisible)
   if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
   if (market) market.classList.toggle("mySVGs-open")
@@ -605,17 +601,17 @@ function displaySVG(tokenId) {
   saleButton.textContent = "List"
   saleButton.classList.add("sale-button")
 
-  const acceptBidButton = document.createElement("button")
-  acceptBidButton.textContent = "Accept"
-  acceptBidButton.classList.add("accept-bid-button")
-
   const cancelSaleButton = document.createElement("button")
   cancelSaleButton.textContent = "Cancel"
   cancelSaleButton.classList.add("cancel-sale-button")
 
+  const acceptBidButton = document.createElement("button")
+  acceptBidButton.textContent = "Accept"
+  acceptBidButton.classList.add("accept-bid-button")
+
   buttonContainer.appendChild(saleButton)
-  buttonContainer.appendChild(acceptBidButton)
   buttonContainer.appendChild(cancelSaleButton)
+  buttonContainer.appendChild(acceptBidButton)
 
   container.appendChild(svg)
   container.appendChild(label)
@@ -673,14 +669,14 @@ function initializePage() {
   if (currentPage === "index-page") {
     initializeIndexPage()
     if (isVisible) {
-      myProfile.classList.add("show")
+      mySVGs.classList.add("show")
       squaresBox.classList.add("mySVGs-open")
       showMySVGs()
     }
   } else if (currentPage === "market-page") {
     initializeMarketPage()
     if (isVisible) {
-      myProfile.classList.add("show")
+      mySVGs.classList.add("show")
       market.classList.add("mySVGs-open")
       showMySVGs()
     }
@@ -715,8 +711,6 @@ disconnectBtn.addEventListener("click", disconnect)
 
 themeToggle.addEventListener("change", toggleDarkMode)
 
-profileBtn.addEventListener("click", toggleMySVGs)
-
-closeBtn.addEventListener("click", toggleMySVGs)
+document.getElementById("profileBtn").addEventListener("click", toggleMySVGs)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
