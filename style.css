@@ -123,7 +123,7 @@ header {
 
 .the-market:hover {
   background-color: var(--color-sec);
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.5px var(--color-ph);
 }
 
 .network,
@@ -168,7 +168,7 @@ header {
 
 #connectBtn:hover {
   filter: brightness(0.9);
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.5px var(--color-ph);
 }
 
 #connectBtn.connected {
@@ -182,7 +182,7 @@ header {
 #networkBtn:hover,
 #connectBtn.connected:hover {
   background-color: var(--color-sec);
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.5px var(--color-ph);
 }
 
 @keyframes gradientFlow {
@@ -290,7 +290,7 @@ header {
 #filters:hover,
 #profileBtn:hover {
   background-color: var(--color-sec);
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 0 0 0.5px var(--color-ph);
 }
 
 .chain-list,
@@ -299,7 +299,7 @@ header {
   background-color: var(--color-bg);
   top: 100%;
   margin-top: 10px;
-  box-shadow: 0 2px 4px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 5px;
   border-radius: 15px;
   opacity: 0;
@@ -664,7 +664,7 @@ main {
 }
 
 #notification {
-  position: absolute;
+  position: fixed;
   bottom: 20px;
   right: -100%;
   max-width: 300px;
@@ -710,5 +710,10 @@ footer {
     width: 100%;
     bottom: 0;
     justify-content: center;
+  }
+
+  #market.mySVGs-open,
+  #squaresBox.mySVGs-open {
+    visibility: hidden;
   }
 }
