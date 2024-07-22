@@ -698,10 +698,10 @@ footer {
   }
 
   #mySVGs.show {
-    right: 5px;
-    width: calc(100% - 10px);
-    bottom: 5px;
     justify-content: center;
+    right: 5px;
+    bottom: 5px;
+    width: calc(100% - 10px);
   }
 
   #market.mySVGs-open,
