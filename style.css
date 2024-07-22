@@ -201,17 +201,6 @@ header {
 .network img {
   width: 20px;
   height: 20px;
-  margin-right: 5px;
-}
-
-.network button span i {
-  display: inline-block;
-  font-size: 0.8em;
-  transition: transform 0.3s ease-in-out;
-}
-
-.network button span i.rotate {
-  transform: rotate(180deg);
 }
 
 .filter-bar {
@@ -287,7 +276,6 @@ header {
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
-.chain-list,
 .wallet-list,
 #filterList {
   position: fixed;
@@ -310,7 +298,6 @@ header {
 }
 
 #filterList.show,
-.chain-list.show,
 .wallet-list.show {
   pointer-events: auto;
   opacity: 1;
@@ -319,7 +306,6 @@ header {
 
 #filterList button,
 .wallet-list button,
-.chain-list button,
 #settings {
   display: flex;
   align-items: center;
@@ -336,15 +322,8 @@ header {
 }
 
 #filterList button:hover,
-.wallet-list button:hover,
-.chain-list button:hover {
+.wallet-list button:hover {
   box-shadow: 0 0 0 0.5px var(--color-btn);
-}
-
-.chain-list {
-  top: 55px;
-  width: 150px;
-  right: 20px;
 }
 
 .wallet-list {
@@ -353,24 +332,12 @@ header {
   right: 10px;
 }
 
-.chain-list button {
-  height: 40px;
-}
-
-.chain-list img {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
-#filterList button:first-child,
-.chain-list button:first-child {
+#filterList button:first-child {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
 }
 
 #filterList button:last-child,
-.chain-list button:last-child,
 .wallet-list button:last-child {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
