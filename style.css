@@ -54,7 +54,6 @@ html {
 body {
   display: flex;
   flex-direction: column;
-  /* min-height: 100vh; */
 }
 
 .box {
@@ -496,8 +495,7 @@ header {
 main {
   display: flex;
   flex: 1;
-  height: 100%;
-  padding: 20px;
+  min-height: 100%;
 }
 
 #market,
@@ -508,6 +506,7 @@ main {
   justify-content: center;
   width: 100%;
   gap: 10px;
+  padding: 20px;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
 }
 
