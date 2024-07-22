@@ -334,8 +334,8 @@ function createSquareWithButton(color, id, isClaimed) {
   button.disabled = isClaimed
 
   if (isClaimed) {
-    button.style.opacity = "0.9"
-    svg.style.filter = "brightness(0.5)"
+    button.style.opacity = "0.3"
+    svg.style.filter = "brightness(0.6)"
   } else {
     button.addEventListener("click", async function () {
       const selectedProvider = providers.find(
@@ -432,61 +432,89 @@ const rainbowColors = generateRainbowColors(250)
 function displayAllSVGs() {
   rainbowColors.forEach((color, index) => {
     const tokenId = index + 1
-    const container = document.createElement("div")
-    container.classList.add("svg-card")
-
-    const svgNamespace = "http://www.w3.org/2000/svg"
-    const svg = document.createElementNS(svgNamespace, "svg")
-    svg.setAttribute("width", "100")
-    svg.setAttribute("height", "100")
-    svg.setAttribute("xmlns", svgNamespace)
-    svg.setAttribute("id", `svg-${tokenId}`)
-
-    const rect = document.createElementNS(svgNamespace, "rect")
-    rect.setAttribute("width", "100")
-    rect.setAttribute("height", "100")
-    rect.setAttribute("fill", color)
-    svg.appendChild(rect)
-
-    const label = document.createElement("p")
-    label.textContent = `SVG #${tokenId}`
-    label.classList.add("svg-label")
-
-    const priceInfo = document.createElement("p")
-    priceInfo.classList.add("price-info")
-    priceInfo.textContent = ""
-
-    const bidInfo = document.createElement("p")
-    bidInfo.classList.add("bid-info")
-    bidInfo.textContent = ""
-
-    const buttonContainer = document.createElement("div")
-    buttonContainer.classList.add("button-container")
-
-    const buyButton = document.createElement("button")
-    buyButton.textContent = "Buy"
-    buyButton.classList.add("buy-button")
-
-    const cancelBidButton = document.createElement("button")
-    cancelBidButton.textContent = "Cancel"
-    cancelBidButton.classList.add("cancel-bid-button")
-
-    const bidButton = document.createElement("button")
-    bidButton.textContent = "Offer"
-    bidButton.classList.add("bid-button")
-
-    buttonContainer.appendChild(buyButton)
-    buttonContainer.appendChild(cancelBidButton)
-    buttonContainer.appendChild(bidButton)
-
-    container.appendChild(svg)
-    container.appendChild(label)
-    container.appendChild(priceInfo)
-    container.appendChild(bidInfo)
-    container.appendChild(buttonContainer)
-
-    market.appendChild(container)
+    const card = createSVGCard(tokenId, color, {
+      buttons: [
+        { text: "Buy", className: "buy-btn" },
+        { text: "Cancel", className: "cancel-offer-btn" },
+        { text: "Offer", className: "offer-btn" },
+      ],
+    })
+    market.appendChild(card)
   })
+}
+
+function createSVGCard(tokenId, color, options = {}) {
+  const {
+    container = document.createElement("div"),
+    priceText = "",
+    bidText = "",
+    buttons = [],
+    dynamicInfoLabel = null,
+  } = options
+
+  container.classList.add("svg-card")
+
+  const svgNamespace = "http://www.w3.org/2000/svg"
+  const svg = document.createElementNS(svgNamespace, "svg")
+  svg.setAttribute("width", "100")
+  svg.setAttribute("height", "100")
+  svg.setAttribute("xmlns", svgNamespace)
+  svg.setAttribute("id", `svg-${tokenId}`)
+
+  const rect = document.createElementNS(svgNamespace, "rect")
+  rect.setAttribute("width", "100")
+  rect.setAttribute("height", "100")
+  rect.setAttribute("fill", color)
+  svg.appendChild(rect)
+
+  const label = document.createElement("p")
+  label.textContent = `SVG #${tokenId}`
+  label.classList.add("svg-label")
+
+  const priceInfo = document.createElement("p")
+  priceInfo.classList.add("price-info")
+  priceInfo.id = `price-info-${tokenId}`
+  priceInfo.textContent = priceText
+
+  const bidInfo = document.createElement("p")
+  bidInfo.classList.add("bid-info")
+  bidInfo.id = `bid-info-${tokenId}`
+  bidInfo.textContent = bidText
+
+  const buttonContainer = document.createElement("div")
+  buttonContainer.classList.add("button-container")
+
+  buttons.forEach(({ text, className }) => {
+    const button = document.createElement("button")
+    button.textContent = text
+    button.classList.add(className)
+    buttonContainer.appendChild(button)
+  })
+
+  container.append(svg, label, priceInfo, bidInfo, buttonContainer)
+
+  if (dynamicInfoLabel) {
+    const dynamicInfo = document.createElement("p")
+    dynamicInfo.classList.add("dynamic-info")
+    dynamicInfo.id = `dynamic-info-${tokenId}`
+    container.appendChild(dynamicInfo)
+  }
+
+  return container
+}
+
+function updatePriceInfo(tokenId, info) {
+  const priceInfoElement = document.getElementById(`price-info-${tokenId}`)
+  if (priceInfoElement) {
+    priceInfoElement.textContent = info
+  }
+}
+
+function updateBidInfo(tokenId, info) {
+  const bidInfoElement = document.getElementById(`bid-info-${tokenId}`)
+  if (bidInfoElement) {
+    bidInfoElement.textContent = info
+  }
 }
 
 /***************************************************
@@ -566,60 +594,52 @@ async function getSVGOwned(contract, address) {
 
 function displaySVG(tokenId) {
   const color = rainbowColors[tokenId - 1]
-  const container = document.createElement("div")
-  container.classList.add("svg-card")
+  const card = createSVGCard(tokenId, color, {
+    priceText: "Sale: 0.1 ETH",
+    bidText: "Offer: 0.05 ETH",
+    buttons: [
+      { text: "List", className: "list-btn" },
+      { text: "Cancel", className: "cancel-list-btn" },
+      { text: "Accept", className: "accept-offer-btn" },
+    ],
+  })
+  mySVGs.appendChild(card)
+}
 
-  const svgNamespace = "http://www.w3.org/2000/svg"
-  const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100")
-  svg.setAttribute("height", "100")
-  svg.setAttribute("xmlns", svgNamespace)
-  svg.setAttribute("id", `svg-${tokenId}`)
+function showTokenById() {
+  const tokenIdInput = document.getElementById("searchInput").value
+  if (tokenIdInput === "") {
+    if (squaresBox) {
+      squaresBox.innerHTML = ""
+      renderSVGsClaim(rainbowColors)
+    }
+    if (market) {
+      market.innerHTML = ""
+      displayAllSVGs()
+    }
+    return
+  }
 
-  const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100")
-  rect.setAttribute("height", "100")
-  rect.setAttribute("fill", color)
-  svg.appendChild(rect)
+  const tokenId = Number(tokenIdInput)
+  if (isNaN(tokenId)) {
+    console.error("Invalid Token ID")
+    return
+  }
 
-  const label = document.createElement("p")
-  label.textContent = `SVG #${tokenId}`
-  label.classList.add("svg-label")
+  if (squaresBox) squaresBox.innerHTML = ""
+  if (market) market.innerHTML = ""
 
-  const priceInfo = document.createElement("p")
-  priceInfo.classList.add("price-info")
-  priceInfo.textContent = "Sale: 0.1 ETH"
+  const color = rainbowColors[tokenId - 1]
+  const card = createSVGCard(tokenId, color, {
+    buttons: [
+      { text: "Buy", className: "buy-btn" },
+      { text: "Cancel", className: "cancel-offer-btn" },
+      { text: "Offer", className: "offer-btn" },
+    ],
+  })
 
-  const bidInfo = document.createElement("p")
-  bidInfo.classList.add("bid-info")
-  bidInfo.textContent = "Offer: 0.05 ETH"
-
-  const buttonContainer = document.createElement("div")
-  buttonContainer.classList.add("button-container")
-
-  const saleButton = document.createElement("button")
-  saleButton.textContent = "List"
-  saleButton.classList.add("sale-button")
-
-  const cancelSaleButton = document.createElement("button")
-  cancelSaleButton.textContent = "Cancel"
-  cancelSaleButton.classList.add("cancel-sale-button")
-
-  const acceptBidButton = document.createElement("button")
-  acceptBidButton.textContent = "Accept"
-  acceptBidButton.classList.add("accept-bid-button")
-
-  buttonContainer.appendChild(saleButton)
-  buttonContainer.appendChild(cancelSaleButton)
-  buttonContainer.appendChild(acceptBidButton)
-
-  container.appendChild(svg)
-  container.appendChild(label)
-  container.appendChild(priceInfo)
-  container.appendChild(bidInfo)
-  container.appendChild(buttonContainer)
-
-  mySVGs.appendChild(container)
+  if (squaresBox) squaresBox.appendChild(card)
+  if (market) market.appendChild(card)
 }
 
 /***************************************************
@@ -712,5 +732,7 @@ disconnectBtn.addEventListener("click", disconnect)
 themeToggle.addEventListener("change", toggleDarkMode)
 
 document.getElementById("profileBtn").addEventListener("click", toggleMySVGs)
+
+document.getElementById("searchInput").addEventListener("input", showTokenById)
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))

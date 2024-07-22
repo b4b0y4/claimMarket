@@ -4,6 +4,7 @@
   --color-bg-g: 250;
   --color-bg-b: 250;
   --color-btn: #5c5c5c;
+  --color-ph: #b1b1b1;
   --color-sec: #ffffff;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -18,6 +19,7 @@
   --color-bg-g: 18;
   --color-bg-b: 18;
   --color-btn: #adadae;
+  --color-ph: #656565;
   --color-sec: #202020;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -40,7 +42,7 @@ body,
 html {
   margin: 0;
   padding: 0;
-  height: 100%;
+  height: 100vh;
   overflow-x: hidden;
   overflow-y: auto;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
@@ -52,7 +54,7 @@ html {
 body {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
+  /* min-height: 100vh; */
 }
 
 .box {
@@ -221,13 +223,58 @@ header {
 
 .filter-bar {
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
   top: 70px;
   width: 100%;
-  padding: 0;
+  padding: 0 20px 10px;
 }
 
+.filter-buttons {
+  display: flex;
+}
+
+.search-box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-left: 10px;
+}
+
+#searchInput {
+  border: none;
+  background-color: transparent;
+  color: var(--color-btn);
+  font-size: 1em;
+  width: 105px;
+  height: 35px;
+  text-align: start;
+  border-radius: 15px;
+  padding-left: 30px;
+  outline: 0.5px solid var(--color-ph);
+}
+
+#searchInput::placeholder {
+  color: var(--color-ph);
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 7.5px;
+  color: var(--color-ph);
+  padding: 0;
+  font-size: 1em;
+  background-color: transparent;
+  border: none;
+  outline: none;
+  cursor: default;
+  transition: color 0.1s ease-in-out;
+}
+
+#filters,
 #profileBtn {
   color: var(--color-btn);
   background-color: transparent;
@@ -238,11 +285,10 @@ header {
   padding: 7.5px;
   height: 35px;
   border-radius: 15px;
-  margin-right: 20px;
-
   transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
+#filters:hover,
 #profileBtn:hover {
   background-color: var(--color-sec);
   box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
@@ -447,6 +493,13 @@ header {
   margin-left: 5px;
 }
 
+main {
+  display: flex;
+  flex: 1;
+  height: 100%;
+  padding: 20px;
+}
+
 #market,
 #squaresBox {
   flex: 1;
@@ -455,7 +508,6 @@ header {
   justify-content: center;
   width: 100%;
   gap: 10px;
-  padding: 20px;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
 }
 
@@ -493,7 +545,7 @@ header {
 }
 
 .square-container:hover .claim-button {
-  opacity: 0.9;
+  opacity: 0.6;
 }
 
 #mySVGs {
@@ -508,7 +560,7 @@ header {
   width: 360px;
   border-radius: 15px;
   overflow-y: auto;
-  box-shadow: 0px 0px 4px 2px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   padding: 20px;
   gap: 10px;
   background-color: var(--color-bg);
@@ -567,12 +619,12 @@ header {
   opacity: 1;
 }
 
-.buy-button,
-.bid-button,
-.sale-button,
-.accept-bid-button,
-.cancel-sale-button,
-.cancel-bid-button {
+.buy-btn,
+.offer-btn,
+.list-btn,
+.accept-offer-btn,
+.cancel-list-btn,
+.cancel-offer-btn {
   font-size: 12px;
   border: none;
   cursor: pointer;
@@ -581,31 +633,31 @@ header {
   transition: filter 0.3s ease-in-out;
 }
 
-.buy-button:hover,
-.bid-button:hover,
-.sale-button:hover,
-.accept-bid-button:hover,
-.cancel-sale-button:hover,
-.cancel-bid-button:hover {
+.buy-btn:hover,
+.offer-btn:hover,
+.list-btn:hover,
+.accept-offer-btn:hover,
+.cancel-list-btn:hover,
+.cancel-offer-btn:hover {
   filter: brightness(1.2);
 }
 
-.buy-button,
-.sale-button {
+.buy-btn,
+.list-btn {
   background-color: var(--color-indic);
   color: white;
   border-bottom-left-radius: 10px;
 }
 
-.bid-button,
-.accept-bid-button {
+.offer-btn,
+.accept-offer-btn {
   background-color: var(--color-bg-btn);
   color: white;
   border-bottom-right-radius: 10px;
 }
 
-.cancel-sale-button,
-.cancel-bid-button {
+.cancel-list-btn,
+.cancel-offer-btn {
   display: none;
   background-color: var(--color-wrong);
   color: white;
@@ -653,12 +705,10 @@ footer {
     margin-right: 15px;
   }
 
-  .claim-button {
-    opacity: 0.9;
-  }
-
-  #market.mySVGs-open,
-  #squaresBox.mySVGs-open {
-    display: none;
+  #mySVGs.show {
+    right: 0;
+    width: 100%;
+    bottom: 0;
+    justify-content: center;
   }
 }
