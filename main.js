@@ -15,6 +15,7 @@ const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
 const filtersBtn = document.getElementById("filtersBtn")
 const filterList = document.getElementById("filterList")
+const mySVGBtn = document.getElementById("mySVGBtn")
 const mySVGs = document.getElementById("mySVGs")
 
 const providers = []
@@ -501,6 +502,8 @@ function toggleMySVGs() {
   if (market) market.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
+  mySVGBtn.innerHTML = "My SVGs"
+
   if (isVisible) {
     showMySVGs()
   }
@@ -525,6 +528,8 @@ async function showMySVGs() {
       const balance = await contract.balanceOf(accounts[0])
 
       mySVGs.innerHTML = ""
+      mySVGBtn.innerHTML = ""
+      mySVGBtn.innerHTML = `${balance} SVGs`
 
       if (balance.toString() === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
@@ -720,7 +725,7 @@ disconnectBtn.addEventListener("click", disconnect)
 
 themeToggle.addEventListener("change", toggleDarkMode)
 
-document.getElementById("profileBtn").addEventListener("click", toggleMySVGs)
+mySVGBtn.addEventListener("click", toggleMySVGs)
 
 document.getElementById("searchInput").addEventListener("input", showTokenById)
 

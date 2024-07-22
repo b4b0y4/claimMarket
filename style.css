@@ -258,7 +258,7 @@ header {
 }
 
 #filtersBtn,
-#profileBtn {
+#mySVGBtn {
   color: var(--color-txt);
   background-color: transparent;
   border: none;
@@ -272,7 +272,7 @@ header {
 }
 
 #filtersBtn:hover,
-#profileBtn:hover {
+#mySVGBtn:hover {
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
