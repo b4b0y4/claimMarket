@@ -663,7 +663,7 @@ main {
   border-radius: 15px;
   opacity: 0;
   z-index: 100;
-  text-shadow: 2px 1px #232323;
+  text-shadow: 1px 1px #232323;
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
@@ -686,20 +686,22 @@ main {
   right: 0;
   bottom: 0;
   border-radius: 15px;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.8);
   z-index: -1;
 }
 
 #notification.info .notif-content {
-  color: rgba(var(--color-indic), 1);
-  border: 1px solid rgba(var(--color-indic), 1);
+  color: rgba(var(--color-indic), 0.8);
+  border: 1px solid rgba(var(--color-indic), 0.8);
   background-color: rgba(var(--color-indic), 0.2);
+  box-shadow: 0 0 2px rgba(var(--color-indic), 0.6);
 }
 
 #notification.warning .notif-content {
-  color: rgba(var(--color-wrong), 1);
-  border: 1px solid rgba(var(--color-wrong), 1);
+  color: rgba(var(--color-wrong), 0.8);
+  border: 1px solid rgba(var(--color-wrong), 0.8);
   background-color: rgba(var(--color-wrong), 0.2);
+  box-shadow: 0 0 2px rgba(var(--color-wrong), 0.6);
 }
 
 footer {
