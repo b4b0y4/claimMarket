@@ -3,8 +3,8 @@
   --color-bg-r: 255;
   --color-bg-g: 255;
   --color-bg-b: 255;
-  --color-btn: #5c5c5c;
-  --color-ph: #b1b1b1;
+  --color-txt: #5c5c5c;
+  --color-btn: #b1b1b1;
   --color-sec: #f5f5f5;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -18,8 +18,8 @@
   --color-bg-r: 23;
   --color-bg-g: 23;
   --color-bg-b: 23;
-  --color-btn: #adadae;
-  --color-ph: #656565;
+  --color-txt: #adadae;
+  --color-btn: #656565;
   --color-sec: #262626;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
@@ -54,7 +54,7 @@ html {
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   background-color: var(--color-bg);
-  color: var(--color-btn);
+  color: var(--color-txt);
 }
 
 body {
@@ -120,7 +120,7 @@ header {
 .the-market {
   font-size: 1.1em;
   text-decoration: none;
-  color: var(--color-btn);
+  color: var(--color-txt);
   margin-right: 30px;
   height: 35px;
   padding: 7.5px;
@@ -130,7 +130,7 @@ header {
 
 .the-market:hover {
   background-color: var(--color-sec);
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 .network,
@@ -145,7 +145,7 @@ header {
   display: flex;
   align-items: center;
   font-size: 1em;
-  color: var(--color-btn);
+  color: var(--color-txt);
   background-color: var(--color-bg);
   border: none;
   height: 35px;
@@ -175,11 +175,11 @@ header {
 
 #connectBtn:hover {
   filter: brightness(0.9);
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 #connectBtn.connected {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background: transparent;
   background-size: initial;
   animation: none;
@@ -189,7 +189,7 @@ header {
 #networkBtn:hover,
 #connectBtn.connected:hover {
   background-color: var(--color-sec);
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 @keyframes gradientFlow {
@@ -250,24 +250,19 @@ header {
 #searchInput {
   border: none;
   background-color: transparent;
-  color: var(--color-btn);
+  color: var(--color-txt);
   font-size: 1em;
   width: 105px;
   height: 35px;
   text-align: start;
   border-radius: 15px;
   padding-left: 30px;
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
   transition: background-color 0.3s ease-in-out;
 }
 
 #searchInput::placeholder {
-  color: var(--color-ph);
-}
-
-#searchInput:hover,
-#searchInput:focus {
-  background-color: var(--color-sec);
+  color: var(--color-btn);
 }
 
 .search-icon {
@@ -275,7 +270,7 @@ header {
   top: 50%;
   transform: translateY(-50%);
   left: 7.5px;
-  color: var(--color-ph);
+  color: var(--color-btn);
   padding: 0;
   font-size: 1em;
   background-color: transparent;
@@ -287,7 +282,7 @@ header {
 
 #filters,
 #profileBtn {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background-color: transparent;
   border: none;
   cursor: pointer;
@@ -302,13 +297,13 @@ header {
 #filters:hover,
 #profileBtn:hover {
   background-color: var(--color-sec);
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 .chain-list,
 .wallet-list {
   position: absolute;
-  background-color: var(--color-sec);
+  background-color: var(--color-bg);
   top: 100%;
   margin-top: 10px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -341,8 +336,8 @@ header {
 .wallet-list button,
 .chain-list button,
 #settings {
-  color: var(--color-btn);
-  background-color: var(--color-bg);
+  color: var(--color-txt);
+  background-color: var(--color-sec);
   background-image: none;
   width: 100%;
   height: 40px;
@@ -353,7 +348,7 @@ header {
 
 .wallet-list button:hover,
 .chain-list button:hover {
-  background-color: var(--color-sec);
+  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
 }
 
 .chain-list button:first-child {
@@ -408,19 +403,19 @@ header {
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  background-color: var(--color-sec);
+  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 #disconnect:hover,
 .slider:hover {
-  box-shadow: 0 0 0 0.5px var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 #whats a {
   font-size: 14.5px;
   text-decoration: none;
-  color: var(--color-btn);
+  color: var(--color-txt);
 }
 
 #whats a:hover {
@@ -447,7 +442,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--color-sec);
+  background-color: color-mix(in srgb, var(--color-sec) 90%, black);
   border-radius: 32px;
   transition: box-shadow 0.3s ease-in-out;
 }
@@ -472,7 +467,7 @@ header {
 .slider .fa-moon {
   position: absolute;
   top: 50%;
-  color: var(--color-btn);
+  color: var(--color-txt);
   transform: translateY(-50%);
   font-size: 16px;
   transition: 0.4s;
@@ -518,6 +513,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
+  align-content: flex-start;
   width: 100%;
   gap: 10px;
   padding: 20px;
@@ -551,7 +547,7 @@ main {
   padding: 5px;
   cursor: pointer;
   background-color: var(--color-bg);
-  color: var(--color-btn);
+  color: var(--color-txt);
   border: none;
   opacity: 0;
   transition: opacity 0.3s ease-in-out;
@@ -567,13 +563,13 @@ main {
   align-content: flex-start;
   justify-content: flex-start;
   position: fixed;
-  top: 100px;
+  top: 105px;
   bottom: 10px;
   right: -100%;
   width: 360px;
   border-radius: 15px;
   overflow-y: auto;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.6);
   padding: 20px;
   gap: 10px;
   background-color: var(--color-bg);
@@ -705,7 +701,7 @@ main {
 }
 
 footer {
-  color: var(--color-btn);
+  color: var(--color-txt);
   text-align: center;
 }
 

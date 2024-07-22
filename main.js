@@ -607,7 +607,8 @@ function displaySVG(tokenId) {
 }
 
 function showTokenById() {
-  const tokenIdInput = document.getElementById("searchInput").value
+  const tokenIdInput = document.getElementById("searchInput").value.trim()
+
   if (tokenIdInput === "") {
     if (squaresBox) {
       squaresBox.innerHTML = ""
@@ -620,26 +621,39 @@ function showTokenById() {
     return
   }
 
-  const tokenId = Number(tokenIdInput)
-  if (isNaN(tokenId)) {
-    console.error("Invalid Token ID")
+  const tokenIds = tokenIdInput.split(",").map((id) => id.trim())
+  const validTokenIds = tokenIds
+    .filter((id) => {
+      const num = Number(id)
+      if (isNaN(num) || num < 1 || num > rainbowColors.length) {
+        console.error(`Invalid Token ID: ${id}`)
+        return false
+      }
+      return true
+    })
+    .map(Number)
+
+  if (validTokenIds.length === 0) {
+    console.error("No valid Token IDs provided")
     return
   }
 
   if (squaresBox) squaresBox.innerHTML = ""
   if (market) market.innerHTML = ""
 
-  const color = rainbowColors[tokenId - 1]
-  const card = createSVGCard(tokenId, color, {
-    buttons: [
-      { text: "Buy", className: "buy-btn" },
-      { text: "Cancel", className: "cancel-offer-btn" },
-      { text: "Offer", className: "offer-btn" },
-    ],
-  })
+  validTokenIds.forEach((tokenId) => {
+    const color = rainbowColors[tokenId - 1]
+    const card = createSVGCard(tokenId, color, {
+      buttons: [
+        { text: "Buy", className: "buy-btn" },
+        { text: "Cancel", className: "cancel-offer-btn" },
+        { text: "Offer", className: "offer-btn" },
+      ],
+    })
 
-  if (squaresBox) squaresBox.appendChild(card)
-  if (market) market.appendChild(card)
+    if (squaresBox) squaresBox.appendChild(card)
+    if (market) market.appendChild(card)
+  })
 }
 
 /***************************************************
