@@ -125,11 +125,10 @@ header {
   height: 35px;
   padding: 7.5px;
   border-radius: 15px;
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .the-market:hover {
-  background-color: var(--color-sec);
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
@@ -152,8 +151,7 @@ header {
   padding: 7.5px;
   border-radius: 15px;
   cursor: pointer;
-  transition: background 0.3s ease-in-out, filter 0.3s ease-in-out,
-    box-shadow 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 .network button {
@@ -188,7 +186,6 @@ header {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  background-color: var(--color-sec);
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
@@ -291,12 +288,11 @@ header {
   padding: 7.5px;
   height: 35px;
   border-radius: 15px;
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 #filters:hover,
 #profileBtn:hover {
-  background-color: var(--color-sec);
   box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
@@ -344,6 +340,7 @@ header {
   padding: 7.5px;
   border-radius: 0;
   margin: 2.5px 0;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .wallet-list button:hover,
