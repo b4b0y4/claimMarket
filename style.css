@@ -290,11 +290,13 @@ header {
   z-index: 101;
   transform: scale(0.9);
   pointer-events: none;
+  overflow-y: auto;
 }
 
 #filterList {
   top: 99px;
   left: 20px;
+  height: 180px;
 }
 
 #filterList.show,
