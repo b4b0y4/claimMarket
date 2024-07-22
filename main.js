@@ -15,6 +15,8 @@ const networkIcon = document.getElementById("networkIcon")
 const notification = document.getElementById("notification")
 const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
+const filtersBtn = document.getElementById("filtersBtn")
+const filterList = document.getElementById("filterList")
 const mySVGs = document.getElementById("mySVGs")
 
 const providers = []
@@ -132,6 +134,7 @@ function togglewalletList() {
   walletList.classList.toggle("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
+  filterList.classList.remove("show")
 
   const connected = localStorage.getItem("connected")
 
@@ -724,6 +727,7 @@ networkBtn.addEventListener("click", (event) => {
   chainList.classList.toggle("show")
   chevron.classList.toggle("rotate")
   walletList.classList.remove("show")
+  filterList.classList.remove("show")
 })
 
 connectBtn.addEventListener("click", (event) => {
@@ -734,12 +738,23 @@ connectBtn.addEventListener("click", (event) => {
 document.addEventListener("click", () => {
   chainList.classList.remove("show")
   walletList.classList.remove("show")
+  filterList.classList.remove("show")
   chevron.classList.remove("rotate")
 })
 
 chainList.addEventListener("click", (event) => event.stopPropagation())
 
 walletList.addEventListener("click", (event) => event.stopPropagation())
+
+filterList.addEventListener("click", (event) => event.stopPropagation())
+
+filtersBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  filterList.classList.toggle("show")
+  walletList.classList.remove("show")
+  chainList.classList.remove("show")
+  chevron.classList.remove("rotate")
+})
 
 disconnectBtn.addEventListener("click", disconnect)
 

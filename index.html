@@ -11,6 +11,30 @@
 </head>
 <body id="index-page">
 	<div class="box">
+		<div id="filterList">
+			<button>filter</button>
+			<button>filter</button>
+			<button>filter</button>
+		</div>
+		<div class="chain-list" id="chainList"></div>
+
+		<div id="walletList" class="wallet-list">
+			<div id="settings">
+				<label class="theme">
+					<input id="checkbox" type="checkbox">
+					<span class="slider">
+						<i class="fa-solid fa-sun"></i>
+						<i class="fa-solid fa-moon"></i>
+					</span>
+				</label>
+				<div id="whats">
+					<a href="https://ethereum.org/en/wallets/" target="_blank">What's a Wallet?</a>
+				</div>
+				<button id="disconnect"><i class="fa-solid fa-power-off"></i></button>
+			</div>
+			<div id="wallets"></div>
+			<!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
+		</div>
 		<header>
 			<div class="head">
 				<div class="title">
@@ -27,35 +51,16 @@
 							<img id="networkIcon" src="./logo/sepolia.png" alt="Network Icon">
 							<span><i class="fa-solid fa-chevron-down"></i></span>
 						</button>
-						<div class="chain-list" id="chainList"> -->
-						</div>
 					</div>
 					<div class="connectivity">
 						<button id="connectBtn">Connect Wallet</button>
-						<div id="walletList" class="wallet-list">
-							<div id="settings">
-								<label class="theme">
-									<input id="checkbox" type="checkbox">
-									<span class="slider">
-										<i class="fa-solid fa-sun"></i>
-										<i class="fa-solid fa-moon"></i>
-									</span>
-								</label>
-								<div id="whats">
-									<a href="https://ethereum.org/en/wallets/" target="_blank">What's a Wallet?</a>
-								</div>
-								<button id="disconnect"><i class="fa-solid fa-power-off"></i></button>
-							</div>
-							<div id="wallets"></div>
-							<!-- <button id="walletConnect"><img src="./logo/walletConnect.svg">WalletConnect</button> -->
-						</div>
 					</div>
 				</div>
 				<!--  connectivity  -->
 			</div>
 			<div class="filter-bar">
-				<div class="filter-buttons">
-					<button id="filters">Filters</button>
+				<div class="filter-items">
+					<button id="filtersBtn">filters</button>
 					<div class="search-box">
 						<input id="searchInput" placeholder="Token ID" autocomplete="off">
 						<i class="search-icon fa-solid fa-magnifying-glass"></i>
