@@ -251,6 +251,7 @@ header {
   border-radius: 15px;
   padding-left: 30px;
   box-shadow: 0 0 0 0.5px var(--color-ph);
+  outline: none;
 }
 
 #searchInput::placeholder {
