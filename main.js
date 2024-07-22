@@ -529,7 +529,7 @@ async function showMySVGs() {
 
       mySVGs.innerHTML = ""
       mySVGBtn.innerHTML = ""
-      mySVGBtn.innerHTML = `${balance} SVGs`
+      mySVGBtn.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
 
       if (balance.toString() === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
