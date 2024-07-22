@@ -250,7 +250,7 @@ header {
   text-align: start;
   border-radius: 15px;
   padding-left: 30px;
-  outline: 0.5px solid var(--color-ph);
+  box-shadow: 0 0 0 0.5px var(--color-ph);
 }
 
 #searchInput::placeholder {
@@ -303,6 +303,7 @@ header {
   border-radius: 15px;
   opacity: 0;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  z-index: 100;
   transform: scale(0.9);
   pointer-events: none;
 }
