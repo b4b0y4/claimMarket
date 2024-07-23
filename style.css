@@ -635,7 +635,7 @@ main {
   cursor: pointer;
   height: 30px;
   flex: 1 1 auto;
-  transition: filter 0.3s ease-in-out;
+  transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
   color: white;
 }
 
@@ -646,6 +646,7 @@ main {
 .cancel-list-btn:hover,
 .cancel-offer-btn:hover {
   filter: brightness(1.1);
+  transform: scale(1.03);
 }
 
 .buy-btn,
