@@ -1,8 +1,8 @@
 :root {
-  --color-bg: 255, 255, 255;
+  --color-bg: 250, 250, 250;
   --color-txt: #5c5c5c;
   --color-btn: #b1b1b1;
-  --color-card: #f9f9f9;
+  --color-card: #efefef;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
@@ -11,10 +11,10 @@
 }
 
 :root.dark-mode {
-  --color-bg: 23, 23, 23;
+  --color-bg: 30, 30, 30;
   --color-txt: #adadae;
   --color-btn: #656565;
-  --color-card: #1d1d1d;
+  --color-card: #252525;
   --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
@@ -73,9 +73,8 @@ header {
   top: 0;
   z-index: 100;
   width: 100%;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  background-color: rgba(var(--color-bg), 0.9);
+  background-color: rgb(var(--color-bg));
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 .head {
@@ -111,14 +110,11 @@ header {
   text-decoration: none;
   color: var(--color-txt);
   margin-right: 30px;
-  height: 35px;
-  padding: 7.5px;
-  border-radius: 15px;
-  transition: box-shadow 0.3s ease-in-out;
+  transition: color 0.3s ease-in-out;
 }
 
 .the-market:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  color: var(--color-btn);
 }
 
 .network,
@@ -129,7 +125,8 @@ header {
 }
 
 .network button,
-.connectivity button {
+.connectivity button,
+#filterList button {
   display: flex;
   align-items: center;
   font-size: 1em;
@@ -162,7 +159,7 @@ header {
 
 #connectBtn:hover {
   filter: brightness(0.9);
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
 #connectBtn.connected {
@@ -175,7 +172,7 @@ header {
 
 #networkBtn:hover,
 #connectBtn.connected:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
 @keyframes gradientFlow {
@@ -271,15 +268,15 @@ header {
   padding: 7.5px;
   height: 35px;
   border-radius: 15px;
+  box-shadow: 0 0 0 0.5px var(--color-btn);
   transition: box-shadow 0.3s ease-in-out;
 }
 
 #filtersBtn:hover,
 #mySVGBtn:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
-.wallet-list,
 #filterList {
   position: fixed;
   backdrop-filter: blur(20px);
@@ -296,56 +293,96 @@ header {
   overflow-y: auto;
 }
 
-#filterList {
-  top: 99px;
-  left: 20px;
-  height: 180px;
+.network img {
+  width: 20px;
+  height: 20px;
+  margin-right: 5px;
 }
 
-#filterList.show,
-.wallet-list.show {
+.network button span i {
+  display: inline-block;
+  font-size: 0.8em;
+  transition: transform 0.3s ease-in-out;
+}
+
+.network button span i.rotate {
+  transform: rotate(180deg);
+}
+
+.chain-list,
+.wallet-list,
+#filterList {
+  position: absolute;
+  background-color: rgb(var(--color-bg));
+  top: 100%;
+  margin-top: 5px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  padding: 5px;
+  border-radius: 15px;
+  opacity: 0;
+  transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transform: scale(0.9);
+  pointer-events: none;
+}
+
+.chain-list {
+  width: 150px;
+  left: 0;
+}
+
+.wallet-list {
+  width: 200px;
+  right: 0;
+}
+
+#filterList {
+  top: 90px;
+  left: 20px;
+}
+
+.chain-list.show,
+.wallet-list.show,
+#filterList.show {
   pointer-events: auto;
   opacity: 1;
   transform: scale(1);
 }
 
-#filterList button,
 .wallet-list button,
+.chain-list button,
+#filterList button,
 #settings {
-  display: flex;
-  align-items: center;
-  font-size: 1em;
   color: var(--color-txt);
-  background-color: transparent;
+  background-color: var(--color-card);
+  background-image: none;
   border: none;
-  height: 35px;
-  padding: 7.5px;
   width: 100%;
-  cursor: pointer;
+  height: 40px;
+  padding: 7.5px;
   border-radius: 0;
-  transition: box-shadow 0.3s ease-in-out;
+  margin: 2.5px 0;
+  transition: background-color 0.3s ease-in-out;
 }
 
 #filterList button:hover,
-.wallet-list button:hover {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+.wallet-list button:hover,
+.chain-list button:hover {
+  background-color: color-mix(in srgb, var(--color-card) 90%, black);
 }
 
-.wallet-list {
-  top: 55px;
-  width: 200px;
-  right: 10px;
-}
-
+.chain-list button:first-child,
 #filterList button:first-child {
   border-top-left-radius: 15px;
   border-top-right-radius: 15px;
+  margin-top: 0;
 }
 
-#filterList button:last-child,
-.wallet-list button:last-child {
+#wallets button:last-child,
+.chain-list button:last-child,
+#filterList button:last-child {
   border-bottom-left-radius: 15px;
   border-bottom-right-radius: 15px;
+  margin-bottom: 0;
 }
 
 .wallet-list img {
@@ -376,25 +413,18 @@ header {
   margin-bottom: 0;
 }
 
-#wallets button:last-child {
-  border-bottom-left-radius: 15px;
-  border-bottom-right-radius: 15px;
-  margin-bottom: 0;
-}
-
 #disconnect {
   justify-content: center;
   font-size: 16px;
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  box-shadow: 0 0 0 0.5px var(--color-btn);
-  background-color: transparent;
+  background-color: color-mix(in srgb, var(--color-card) 90%, black);
   transition: box-shadow 0.3s ease-in-out;
 }
 
-#disconnect:hover,
-.slider:hover {
+.slider:hover,
+#disconnect:hover {
   box-shadow: 0 0 0 1px var(--color-btn);
 }
 
@@ -402,10 +432,11 @@ header {
   font-size: 14.5px;
   text-decoration: none;
   color: var(--color-txt);
+  transition: color 0.3s ease-in-out;
 }
 
 #whats a:hover {
-  text-decoration: underline;
+  color: var(--color-btn);
 }
 
 .theme {
@@ -428,8 +459,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: transparent;
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  background: color-mix(in srgb, var(--color-card) 90%, black);
   border-radius: 32px;
   transition: box-shadow 0.3s ease-in-out;
 }
@@ -441,8 +471,7 @@ header {
   width: 24px;
   left: 4px;
   bottom: 4px;
-  background-color: transparent;
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  background-color: rgb(var(--color-bg));
   transition: 0.4s;
   border-radius: 50%;
 }
@@ -559,7 +588,8 @@ main {
   padding: 20px;
   gap: 10px;
   background-color: rgb(var(--color-bg));
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.3),
+    inset 0 -2px 5px rgba(0, 0, 0, 0.3);
   transition: opacity 0.3s ease-in-out, right 0.3s ease-in-out;
 }
 
@@ -614,7 +644,7 @@ main {
   margin: 0;
   opacity: 0;
   overflow: hidden;
-  background-color: rgb(var(--color-bg));
+  background-color: var(--color-card);
   transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -630,21 +660,30 @@ main {
   border: none;
   cursor: pointer;
   height: 30px;
-  transition: filter 0.3s ease-in-out;
-  color: var(--color-txt);
+  color: white;
   flex: 1 1 auto;
-  background-color: var(--color-card);
-  box-shadow: 0 0 0 0.5px var(--color-btn);
+  transition: filter 0.3s ease-in-out;
 }
 
 .button-container button:hover {
-  filter: brightness(1.3);
+  filter: brightness(1.2);
 }
 
 .buy-btn,
 .accept-offer-btn {
+  background-color: rgb(var(--color-indic));
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
+}
+
+.list-btn,
+.offer-btn {
+  background-color: var(--color-bg-btn);
+}
+
+.cancel-list-btn,
+.cancel-offer-btn {
+  background-color: rgb(var(--color-wrong));
 }
 
 #notification {
