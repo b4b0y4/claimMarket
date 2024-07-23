@@ -674,7 +674,7 @@ main {
 
 #notification.show {
   right: 20px;
-  opacity: 0.9;
+  opacity: 1;
 }
 
 .notif-content {
@@ -691,7 +691,7 @@ main {
   right: 0;
   bottom: 0;
   border-radius: 15px;
-  background-color: rgba(0, 0, 0, 0.8);
+  background-color: rgba(0, 0, 0, 0.9);
   z-index: -1;
 }
 
