@@ -650,12 +650,12 @@ main {
 }
 
 .buy-btn,
-.list-btn {
+.accept-offer-btn {
   background-color: rgb(var(--color-indic));
 }
 
 .offer-btn,
-.accept-offer-btn {
+.list-btn {
   background-color: var(--color-bg-btn);
 }
 
