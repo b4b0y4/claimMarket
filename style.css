@@ -629,7 +629,6 @@ main {
   height: 30px;
   transition: filter 0.3s ease-in-out;
   color: white;
-  box-sizing: border-box;
   flex: 1 1 auto;
 }
 
@@ -642,7 +641,6 @@ main {
   background-color: rgb(var(--color-indic));
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
-  flex: 1 1 100%;
 }
 
 .offer-btn,
@@ -737,5 +735,9 @@ footer {
     right: 5px;
     bottom: 5px;
     width: calc(100% - 10px);
+  }
+
+  .button-container button {
+    font-size: 10px;
   }
 }
