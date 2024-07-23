@@ -1,6 +1,5 @@
 :root {
-  --color-bg: #ffffff;
-  --color-bg-rgb: 255, 255, 255;
+  --color-bg: 255, 255, 255;
   --color-txt: #5c5c5c;
   --color-btn: #b1b1b1;
   --color-card: #fcfcfc;
@@ -12,8 +11,7 @@
 }
 
 :root.dark-mode {
-  --color-bg: #171717;
-  --color-bg-rgb: 23, 23, 23;
+  --color-bg: 23, 23, 23;
   --color-txt: #adadae;
   --color-btn: #656565;
   --color-card: #1d1d1d;
@@ -49,7 +47,7 @@ html {
   overflow-x: hidden;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
-  background-color: var(--color-bg);
+  background-color: rgb(var(--color-bg));
   color: var(--color-txt);
 }
 
@@ -77,7 +75,7 @@ header {
   width: 100%;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background-color: rgba(var(--color-bg-rgb), 0.9);
+  background-color: rgba(var(--color-bg), 0.9);
 }
 
 .head {
@@ -136,7 +134,7 @@ header {
   align-items: center;
   font-size: 1em;
   color: var(--color-txt);
-  background-color: var(--color-bg);
+  background-color: rgb(var(--color-bg));
   border: none;
   height: 35px;
   padding: 7.5px;
@@ -151,7 +149,7 @@ header {
 
 #connectBtn {
   font-size: 1.1em;
-  color: var(--color-bg);
+  color: rgb(var(--color-bg));
   background: linear-gradient(
     270deg,
     var(--color-bg-btn-start),
@@ -286,7 +284,7 @@ header {
   position: fixed;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  background-color: rgba(var(--color-bg-rgb), 0.9);
+  background-color: rgba(var(--color-bg), 0.9);
   width: 150px;
   box-shadow: 0 0 0 0.5px var(--color-btn);
   border-radius: 15px;
@@ -485,7 +483,7 @@ header {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgba(var(--color-indic), 1);
+  background-color: rgb(var(--color-indic));
   margin-left: 5px;
 }
 
@@ -505,6 +503,7 @@ main {
   width: 100%;
   gap: 10px;
   padding: 20px;
+  background-color: rgb(var(--color-bg));
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
 }
 
@@ -534,7 +533,7 @@ main {
   transform: translateX(-50%);
   padding: 5px;
   cursor: pointer;
-  background-color: var(--color-bg);
+  background-color: rgb(var(--color-bg));
   color: var(--color-txt);
   border: none;
   opacity: 0;
@@ -559,7 +558,7 @@ main {
   overflow-y: auto;
   padding: 20px;
   gap: 10px;
-  background-color: var(--color-bg);
+  background-color: rgb(var(--color-bg));
   box-shadow: 0 0 0 0.5px var(--color-btn);
   transition: opacity 0.3s ease-in-out, right 0.3s ease-in-out;
 }
@@ -641,7 +640,7 @@ main {
 
 .buy-btn,
 .list-btn {
-  background-color: rgba(var(--color-indic), 1);
+  background-color: rgb(var(--color-indic));
   color: white;
   border-bottom-left-radius: 10px;
 }
@@ -656,7 +655,7 @@ main {
 .cancel-list-btn,
 .cancel-offer-btn {
   display: none;
-  background-color: rgba(var(--color-wrong), 1);
+  background-color: rgb(var(--color-wrong));
   color: white;
 }
 
@@ -668,7 +667,7 @@ main {
   border-radius: 15px;
   opacity: 0;
   z-index: 100;
-  text-shadow: 1px 1px #232323;
+  text-shadow: 1px 1px #171717;
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
@@ -691,7 +690,7 @@ main {
   right: 0;
   bottom: 0;
   border-radius: 15px;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(23, 23, 23, 0.9);
   z-index: -1;
 }
 
