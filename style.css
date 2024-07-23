@@ -718,15 +718,24 @@ footer {
     margin-right: 15px;
   }
 
+  #market,
+  #squaresBox {
+    position: absolute;
+    left: 0;
+    transition: left 0.3s ease-in-out;
+  }
+
+  #market.mySVGs-open,
+  #squaresBox.mySVGs-open {
+    width: 100%;
+    margin-right: -100%;
+    left: -100%;
+  }
+
   #mySVGs.show {
     justify-content: center;
     right: 5px;
     bottom: 5px;
     width: calc(100% - 10px);
-  }
-
-  #market.mySVGs-open,
-  #squaresBox.mySVGs-open {
-    visibility: hidden;
   }
 }
