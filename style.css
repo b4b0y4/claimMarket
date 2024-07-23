@@ -606,19 +606,22 @@ main {
 
 .button-container {
   display: flex;
+  flex-wrap: wrap;
   position: absolute;
-  height: 35px;
-  bottom: 0;
+  height: auto;
+  bottom: -100%;
   left: 0;
   right: 0;
   margin: 0;
   opacity: 0;
+  overflow: hidden;
   background-color: rgb(var(--color-bg));
-  transition: opacity 0.3s ease-in-out;
+  transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
 }
 
 .svg-card:hover .button-container {
   opacity: 1;
+  bottom: 0;
 }
 
 .buy-btn,
@@ -630,9 +633,10 @@ main {
   font-size: 12px;
   border: none;
   cursor: pointer;
-  height: 35px;
+  height: 30px;
   flex: 1 1 auto;
   transition: filter 0.3s ease-in-out;
+  color: white;
 }
 
 .buy-btn:hover,
@@ -647,32 +651,16 @@ main {
 .buy-btn,
 .list-btn {
   background-color: rgb(var(--color-indic));
-  color: white;
 }
 
 .offer-btn,
 .accept-offer-btn {
   background-color: var(--color-bg-btn);
-  color: white;
 }
 
 .cancel-list-btn,
 .cancel-offer-btn {
-  display: none;
   background-color: rgb(var(--color-wrong));
-  color: white;
-}
-
-.offer-btn,
-.list-btn,
-.cancel-list-btn,
-.cancel-offer-btn {
-  border-bottom-left-radius: 10px;
-}
-
-.buy-btn,
-.accept-offer-btn {
-  border-bottom-right-radius: 10px;
 }
 
 #notification {

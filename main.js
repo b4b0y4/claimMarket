@@ -412,7 +412,7 @@ function displayAllSVGs() {
       buttons: [
         { text: "Offer", className: "offer-btn" },
         { text: "Cancel", className: "cancel-offer-btn" },
-        { text: "Buy", className: "buy-btn" },
+        { text: "Buy Now", className: "buy-btn" },
       ],
     })
     market.appendChild(card)
@@ -580,7 +580,7 @@ function displaySVG(tokenId) {
     buttons: [
       { text: "List", className: "list-btn" },
       { text: "Cancel", className: "cancel-list-btn" },
-      { text: "Accept", className: "accept-offer-btn" },
+      { text: "Accept Offer", className: "accept-offer-btn" },
     ],
   })
   mySVGs.appendChild(card)
