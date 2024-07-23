@@ -538,8 +538,8 @@ main {
 
 #market.mySVGs-open,
 #squaresBox.mySVGs-open {
-  width: calc(100% - 360px);
-  margin-right: 360px;
+  width: calc(100% - 370px);
+  margin-right: 370px;
 }
 
 .square-container {
@@ -570,7 +570,7 @@ main {
 }
 
 .square-container:hover .claim-button {
-  opacity: 0.6;
+  opacity: 0.9;
 }
 
 #mySVGs {
