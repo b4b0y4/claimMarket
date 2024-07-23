@@ -636,7 +636,6 @@ main {
   flex: 1 1 auto;
   transition: filter 0.3s ease-in-out;
   color: white;
-  box-sizing: border-box;
 }
 
 .buy-btn:hover,
