@@ -608,7 +608,7 @@ main {
   display: flex;
   flex-wrap: wrap;
   position: absolute;
-  height: auto;
+  height: 60px;
   bottom: -100%;
   left: 0;
   right: 0;
@@ -635,8 +635,9 @@ main {
   cursor: pointer;
   height: 30px;
   flex: 1 1 auto;
-  transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+  transition: filter 0.3s ease-in-out;
   color: white;
+  box-sizing: border-box;
 }
 
 .buy-btn:hover,
@@ -646,7 +647,6 @@ main {
 .cancel-list-btn:hover,
 .cancel-offer-btn:hover {
   filter: brightness(1.1);
-  transform: scale(1.03);
 }
 
 .buy-btn,
