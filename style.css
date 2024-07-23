@@ -736,4 +736,8 @@ footer {
     bottom: 5px;
     width: calc(100% - 10px);
   }
+
+  .button-container button {
+    font-size: 10px;
+  }
 }
