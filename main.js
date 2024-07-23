@@ -410,9 +410,9 @@ function displayAllSVGs() {
     const tokenId = index + 1
     const card = createSVGCard(tokenId, color, {
       buttons: [
-        { text: "Buy", className: "buy-btn" },
-        { text: "Cancel", className: "cancel-offer-btn" },
         { text: "Offer", className: "offer-btn" },
+        { text: "Cancel", className: "cancel-offer-btn" },
+        { text: "Buy", className: "buy-btn" },
       ],
     })
     market.appendChild(card)
@@ -625,9 +625,9 @@ function showTokenById() {
     const color = rainbowColors[tokenId - 1]
     const card = createSVGCard(tokenId, color, {
       buttons: [
-        { text: "Buy", className: "buy-btn" },
-        { text: "Cancel", className: "cancel-offer-btn" },
         { text: "Offer", className: "offer-btn" },
+        { text: "Cancel", className: "cancel-offer-btn" },
+        { text: "Buy", className: "buy-btn" },
       ],
     })
 

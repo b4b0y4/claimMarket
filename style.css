@@ -641,21 +641,19 @@ main {
 .accept-offer-btn:hover,
 .cancel-list-btn:hover,
 .cancel-offer-btn:hover {
-  filter: brightness(1.2);
+  filter: brightness(1.1);
 }
 
 .buy-btn,
 .list-btn {
   background-color: rgb(var(--color-indic));
   color: white;
-  border-bottom-left-radius: 10px;
 }
 
 .offer-btn,
 .accept-offer-btn {
   background-color: var(--color-bg-btn);
   color: white;
-  border-bottom-right-radius: 10px;
 }
 
 .cancel-list-btn,
@@ -663,6 +661,18 @@ main {
   display: none;
   background-color: rgb(var(--color-wrong));
   color: white;
+}
+
+.offer-btn,
+.list-btn,
+.cancel-list-btn,
+.cancel-offer-btn {
+  border-bottom-left-radius: 10px;
+}
+
+.buy-btn,
+.accept-offer-btn {
+  border-bottom-right-radius: 10px;
 }
 
 #notification {
