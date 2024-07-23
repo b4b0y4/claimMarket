@@ -235,11 +235,16 @@ header {
   border-radius: 15px;
   padding-left: 30px;
   box-shadow: 0 0 0 0.5px var(--color-btn);
-  transition: background-color 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out;
 }
 
 #searchInput::placeholder {
   color: var(--color-btn);
+}
+
+#searchInput:hover,
+#searchInput:focus {
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
 .search-icon {
@@ -392,7 +397,7 @@ header {
 
 #disconnect:hover,
 .slider:hover {
-  box-shadow: 0 0 0 1.5px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
 #whats a {
