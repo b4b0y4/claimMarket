@@ -616,6 +616,8 @@ main {
   overflow: hidden;
   background-color: rgb(var(--color-bg));
   transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 
 .svg-card:hover .button-container {
