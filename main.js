@@ -450,12 +450,12 @@ function createSVGCard(tokenId, color, options = {}) {
   const priceInfo = document.createElement("p")
   priceInfo.classList.add("price-info")
   priceInfo.id = `price-info-${tokenId}`
-  priceInfo.textContent = priceText
+  priceInfo.innerHTML = priceText
 
   const bidInfo = document.createElement("p")
   bidInfo.classList.add("bid-info")
   bidInfo.id = `bid-info-${tokenId}`
-  bidInfo.textContent = bidText
+  bidInfo.innerHTML = bidText
 
   const buttonContainer = document.createElement("div")
   buttonContainer.classList.add("button-container")
@@ -575,8 +575,8 @@ async function getSVGOwned(contract, address) {
 function displaySVG(tokenId) {
   const color = rainbowColors[tokenId - 1]
   const card = createSVGCard(tokenId, color, {
-    priceText: "0.1 ETH",
-    bidText: "Offer 0.05 ETH",
+    priceText: "0.1 &Xi;",
+    bidText: "Offer 0.05 &Xi;",
     buttons: [
       { text: "List", className: "list-btn" },
       { text: "Cancel", className: "cancel-list-btn" },
