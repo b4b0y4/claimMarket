@@ -575,8 +575,8 @@ async function getSVGOwned(contract, address) {
 function displaySVG(tokenId) {
   const color = rainbowColors[tokenId - 1]
   const card = createSVGCard(tokenId, color, {
-    priceText: "Sale: 0.1 ETH",
-    bidText: "Offer: 0.05 ETH",
+    priceText: "0.1 ETH",
+    bidText: "Offer 0.05 ETH",
     buttons: [
       { text: "List", className: "list-btn" },
       { text: "Cancel", className: "cancel-list-btn" },
