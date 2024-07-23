@@ -410,7 +410,7 @@ function displayAllSVGs() {
     const tokenId = index + 1
     const card = createSVGCard(tokenId, color, {
       buttons: [
-        { text: "Offer", className: "offer-btn" },
+        { text: "Bid", className: "offer-btn" },
         { text: "Cancel", className: "cancel-offer-btn" },
         { text: "Buy Now", className: "buy-btn" },
       ],
