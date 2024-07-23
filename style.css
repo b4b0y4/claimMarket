@@ -608,7 +608,6 @@ main {
   display: flex;
   flex-wrap: wrap;
   position: absolute;
-  height: 60px;
   bottom: -100%;
   left: 0;
   right: 0;
@@ -623,26 +622,18 @@ main {
   bottom: 0;
 }
 
-.buy-btn,
-.offer-btn,
-.list-btn,
-.accept-offer-btn,
-.cancel-list-btn,
-.cancel-offer-btn {
+.button-container button {
   font-size: 12px;
   border: none;
   cursor: pointer;
-  flex: 1 1 auto;
+  height: 30px;
   transition: filter 0.3s ease-in-out;
   color: white;
+  box-sizing: border-box;
+  flex: 1 1 auto;
 }
 
-.buy-btn:hover,
-.offer-btn:hover,
-.list-btn:hover,
-.accept-offer-btn:hover,
-.cancel-list-btn:hover,
-.cancel-offer-btn:hover {
+.button-container button:hover {
   filter: brightness(1.1);
 }
 
