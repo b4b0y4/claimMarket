@@ -571,7 +571,7 @@ main {
 }
 
 .square-container:hover .claim-button {
-  opacity: 0.9;
+  opacity: 0.8;
 }
 
 #mySVGs {
