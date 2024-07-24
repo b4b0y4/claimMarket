@@ -315,7 +315,7 @@ header {
   position: absolute;
   background-color: rgb(var(--color-bg));
   top: 100%;
-  margin-top: 5px;
+  margin-top: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   padding: 5px;
   border-radius: 15px;
