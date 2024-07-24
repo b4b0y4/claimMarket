@@ -766,6 +766,7 @@ footer {
 
   #mySVGs.show {
     justify-content: center;
+    top: 105px;
     right: 5px;
     bottom: 5px;
     width: calc(100% - 10px);
