@@ -695,7 +695,7 @@ main {
   border-radius: 15px;
   opacity: 0;
   z-index: 100;
-  text-shadow: 1px 1px #171717;
+  text-shadow: 1px 1px rgb(30, 30, 30);
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
@@ -725,15 +725,15 @@ main {
 #notification.info .notif-content {
   color: rgba(var(--color-indic), 0.8);
   border: 1px solid rgba(var(--color-indic), 0.8);
-  background-color: rgba(var(--color-indic), 0.2);
-  box-shadow: 0 0 2px rgba(var(--color-indic), 0.6);
+  background-color: rgba(var(--color-indic), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-indic), 0.5);
 }
 
 #notification.warning .notif-content {
   color: rgba(var(--color-wrong), 0.8);
   border: 1px solid rgba(var(--color-wrong), 0.8);
-  background-color: rgba(var(--color-wrong), 0.2);
-  box-shadow: 0 0 2px rgba(var(--color-wrong), 0.6);
+  background-color: rgba(var(--color-wrong), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-wrong), 0.5);
 }
 
 footer {
