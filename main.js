@@ -203,7 +203,7 @@ function updateNetworkButton(chainId) {
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
     if (!networkWarningShown) {
-      showNotification("Switch Network!", "warning", true)
+      showNotification("Switch to Sepolia!", "warning", true)
       networkWarningShown = true
     }
   }
