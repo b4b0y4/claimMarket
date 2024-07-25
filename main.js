@@ -406,7 +406,7 @@ function createSquareWithButton(color, id, isClaimed) {
         } catch (error) {
           console.error("Claim failed:", error)
           showNotification("")
-          showNotification("Claim failed", "warning")
+          showNotification("Claim failed :(", "warning")
         }
       } else {
         console.error("No provider selected or available.")
