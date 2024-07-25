@@ -12,7 +12,6 @@ const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
-const notification = document.getElementById("notification")
 const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
 const filtersBtn = document.getElementById("filtersBtn")
@@ -187,6 +186,8 @@ async function switchNetwork(newNetwork) {
   }
 }
 
+let networkWarningShown = false
+
 function updateNetworkButton(chainId) {
   const network = Object.values(networkConfigs).find(
     (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
@@ -196,11 +197,15 @@ function updateNetworkButton(chainId) {
     toggleDisplay(overlay, false)
     localStorage.setItem("currentChainId", chainId)
     showNotification("")
+    networkWarningShown = false
   } else {
     networkIcon.src = "./logo/warning.svg"
     toggleDisplay(overlay, true)
     localStorage.removeItem("currentChainId")
-    showNotification("Switch Network!", "warning")
+    if (!networkWarningShown) {
+      showNotification("Switch Network!", "warning", true)
+      networkWarningShown = true
+    }
   }
   renderChainList()
 }
@@ -247,18 +252,45 @@ async function disconnect() {
   location.reload()
 }
 
-function showNotification(message, type = "info") {
-  const content = document.querySelector(".notif-content")
-  if (message) {
-    content.textContent = message
-    notification.classList.add("show", type)
-  } else {
-    notification.classList.remove("show")
-    setTimeout(() => {
-      notification.classList.remove("info", "warning")
-      content.textContent = ""
-    }, 500)
+function showNotification(message, type = "info", isPermanent = false) {
+  const notificationBox = document.getElementById("notificationBox")
+  const notifications = notificationBox.querySelectorAll("#notification")
+
+  if (!message) {
+    notifications.forEach((notification) => {
+      notification.classList.remove("show")
+      setTimeout(() => {
+        notificationBox.removeChild(notification)
+      }, 500)
+    })
+    return
   }
+
+  const notification = document.createElement("div")
+  notification.id = "notification"
+  notification.classList.add(type)
+
+  const content = document.createElement("div")
+  content.classList.add("notif-content")
+  content.textContent = message
+
+  notification.appendChild(content)
+  notificationBox.prepend(notification)
+
+  notification.offsetHeight
+
+  notification.classList.add("show")
+
+  if (!isPermanent) {
+    setTimeout(() => {
+      notification.classList.remove("show")
+      setTimeout(() => {
+        notificationBox.removeChild(notification)
+      }, 500)
+    }, 5000)
+  }
+
+  return notification
 }
 
 function providerEvent(provider) {
@@ -358,7 +390,7 @@ function createSquareWithButton(color, id, isClaimed) {
 
           const contract = new ethers.Contract(contractAddress, abi, signer)
 
-          showNotification("Claim in progress...")
+          showNotification("Claim in progress...", "info", true)
 
           const transactionResponse = await contract.mint(id)
 
@@ -369,17 +401,12 @@ function createSquareWithButton(color, id, isClaimed) {
           button.disabled = true
           svg.style.filter = "brightness(0.5)"
 
-          showNotification("Successfully claimed!")
-          setTimeout(() => {
-            showNotification("")
-            showMySVGs()
-          }, 3000)
+          showNotification("")
+          showNotification("Successfully claimed!", "success")
         } catch (error) {
           console.error("Claim failed:", error)
-          showNotification("Claim failed.", "warning")
-          setTimeout(() => {
-            showNotification("")
-          }, 3000)
+          showNotification("")
+          showNotification("Claim failed", "warning")
         }
       } else {
         console.error("No provider selected or available.")
@@ -696,12 +723,13 @@ function initializePage() {
 
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
-  updateSettings()
 
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
   if (selectedProvider) providerEvent(selectedProvider)
+
+  updateSettings()
   renderChainList()
 
   const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))

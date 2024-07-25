@@ -3,11 +3,11 @@
   --color-txt: #5c5c5c;
   --color-btn: #b1b1b1;
   --color-card: #efefef;
-  --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #e47fe6;
-  --color-indic: 46, 204, 113;
-  --color-wrong: 234, 51, 35;
+  --color-info: 75, 186, 231;
+  --color-success: 46, 204, 113;
+  --color-warning: 234, 51, 35;
 }
 
 :root.dark-mode {
@@ -15,11 +15,11 @@
   --color-txt: #adadae;
   --color-btn: #656565;
   --color-card: #252525;
-  --color-bg-btn: #4babe7;
   --color-bg-btn-start: #4babe7;
   --color-bg-btn-end: #57d47c;
-  --color-indic: 46, 204, 113;
-  --color-wrong: 234, 51, 35;
+  --color-info: 75, 186, 231;
+  --color-success: 46, 204, 113;
+  --color-warning: 234, 51, 35;
 }
 
 .no-flash {
@@ -75,6 +75,8 @@ header {
   width: 100%;
   background-color: rgb(var(--color-bg));
   box-shadow: 0 0 0 0.5px var(--color-btn);
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .head {
@@ -513,7 +515,7 @@ header {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgb(var(--color-indic));
+  background-color: rgb(var(--color-success));
   margin-left: 5px;
 }
 
@@ -672,35 +674,43 @@ main {
 
 .buy-btn,
 .accept-offer-btn {
-  background-color: rgb(var(--color-indic));
+  background-color: rgb(var(--color-success));
   border-bottom-left-radius: 9px;
   border-bottom-right-radius: 9px;
 }
 
 .list-btn,
 .offer-btn {
-  background-color: var(--color-bg-btn);
+  background-color: rgb(var(--color-info));
 }
 
 .cancel-list-btn,
 .cancel-offer-btn {
-  background-color: rgb(var(--color-wrong));
+  background-color: rgb(var(--color-warning));
+}
+
+#notificationBox {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 170px;
+  overflow: hidden;
+  z-index: 100;
 }
 
 #notification {
-  position: fixed;
-  bottom: 20px;
+  position: relative;
   right: -100%;
-  max-width: 300px;
+  margin-top: 10px;
   border-radius: 15px;
+  width: 100%;
   opacity: 0;
-  z-index: 100;
   text-shadow: 1px 1px rgb(30, 30, 30);
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
 #notification.show {
-  right: 20px;
+  right: 0;
   opacity: 1;
 }
 
@@ -723,17 +733,24 @@ main {
 }
 
 #notification.info .notif-content {
-  color: rgba(var(--color-indic), 0.8);
-  border: 1px solid rgba(var(--color-indic), 0.8);
-  background-color: rgba(var(--color-indic), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-indic), 0.5);
+  color: rgba(var(--color-info), 0.8);
+  border: 1px solid rgba(var(--color-info), 0.8);
+  background-color: rgba(var(--color-info), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-info), 0.5);
+}
+
+#notification.success .notif-content {
+  color: rgba(var(--color-success), 0.8);
+  border: 1px solid rgba(var(--color-success), 0.8);
+  background-color: rgba(var(--color-success), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-success), 0.5);
 }
 
 #notification.warning .notif-content {
-  color: rgba(var(--color-wrong), 0.8);
-  border: 1px solid rgba(var(--color-wrong), 0.8);
-  background-color: rgba(var(--color-wrong), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-wrong), 0.5);
+  color: rgba(var(--color-warning), 0.8);
+  border: 1px solid rgba(var(--color-warning), 0.8);
+  background-color: rgba(var(--color-warning), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-warning), 0.5);
 }
 
 footer {
