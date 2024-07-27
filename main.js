@@ -779,6 +779,7 @@ filtersBtn.addEventListener("click", (event) => {
 document.addEventListener("click", () => {
   walletList.classList.remove("show")
   filterList.classList.remove("show")
+  chevron.classList.remove("rotate")
   chainList.classList.remove("show")
 })
 
