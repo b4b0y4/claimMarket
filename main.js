@@ -278,7 +278,6 @@ function showNotification(message, type = "info", isPermanent = false) {
   notificationBox.prepend(notification)
 
   notification.offsetHeight
-
   notification.classList.add("show")
 
   if (!isPermanent) {

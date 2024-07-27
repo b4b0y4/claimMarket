@@ -281,8 +281,6 @@ header {
 
 #filterList {
   position: fixed;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
   background-color: rgba(var(--color-bg), 0.9);
   width: 150px;
   box-shadow: 0 0 0 0.5px var(--color-btn);
@@ -691,9 +689,9 @@ main {
 
 #notificationBox {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 170px;
+  top: 100px;
+  right: 10px;
+  width: 180px;
   overflow: hidden;
   z-index: 100;
 }
@@ -705,6 +703,8 @@ main {
   border-radius: 15px;
   width: 100%;
   opacity: 0;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   text-shadow: 1px 1px rgb(30, 30, 30);
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
@@ -715,7 +715,8 @@ main {
 }
 
 .notif-content {
-  position: relative;
+  display: flex;
+  justify-content: center;
   padding: 10px;
   border-radius: 15px;
 }
