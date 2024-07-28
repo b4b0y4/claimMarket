@@ -21,7 +21,18 @@
         </div>
         <!--  connectivity  -->
         <div class="wrapper">
-          <a href="./market.html" class="the-market">The Market</a>
+          <div class="filter-bar">
+            <a href="./market.html" class="the-market">The Market</a>
+            <button class="filters-btn">Filters</button>
+            <div class="filter-list">
+              <button>Offers made</button>
+            </div>
+            <div class="search-box">
+              <input class="search-input" placeholder="Token ID" autocomplete="off">
+              <i class="search-icon fa-solid fa-magnifying-glass"></i>
+            </div>
+            <button class="my-svg-btn">My SVGs</button>
+          </div>
           <div class="network">
             <button id="networkBtn">
               <img id="networkIcon" src="./logo/sepolia.png" alt="Network Icon">
@@ -53,18 +64,18 @@
         </div>
         <!--  connectivity  -->
       </div>
-      <div class="filter-bar">
+      <div class="filter-bar-phone">
         <div class="filter-items">
-          <button id="filtersBtn">Filters</button>
-          <div id="filterList">
+          <button class="filters-btn">Filters</button>
+          <div class="filter-list">
             <button>Offers made</button>
           </div>
           <div class="search-box">
-            <input id="searchInput" placeholder="Token ID" autocomplete="off">
+            <input class="search-input" placeholder="Token ID" autocomplete="off">
             <i class="search-icon fa-solid fa-magnifying-glass"></i>
           </div>
         </div>
-        <button id="mySVGBtn">My SVGs</button>
+        <button class="my-svg-btn">My SVGs</button>
       </div>
     </header>
     <main>

@@ -14,10 +14,11 @@ const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
 const squaresBox = document.getElementById("squaresBox")
 const market = document.getElementById("market")
-const filtersBtn = document.getElementById("filtersBtn")
-const filterList = document.getElementById("filterList")
-const mySVGBtn = document.getElementById("mySVGBtn")
 const mySVGs = document.getElementById("mySVGs")
+const filtersBtns = document.querySelectorAll(".filters-btn")
+const filterLists = document.querySelectorAll(".filter-list")
+const mySVGBtns = document.querySelectorAll(".my-svg-btn")
+const searchInputs = document.querySelectorAll(".search-input")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -134,7 +135,7 @@ function togglewalletList() {
   walletList.classList.toggle("show")
   chainList.classList.remove("show")
   chevron.classList.remove("rotate")
-  filterList.classList.remove("show")
+  filterLists.forEach((list) => list.classList.remove("show"))
 
   const connected = localStorage.getItem("connected")
 
@@ -558,7 +559,7 @@ function toggleMySVGs() {
   if (market) market.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
-  mySVGBtn.innerHTML = "My SVGs"
+  mySVGBtns.innerHTML = "My SVGs"
 
   if (isVisible) {
     showMySVGs()
@@ -584,8 +585,8 @@ async function showMySVGs() {
       const balance = await contract.balanceOf(accounts[0])
 
       mySVGs.innerHTML = ""
-      mySVGBtn.innerHTML = ""
-      mySVGBtn.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
+      mySVGBtns.innerHTML = ""
+      mySVGBtns.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
 
       if (balance.toString() === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
@@ -641,9 +642,7 @@ function displaySVG(tokenId) {
   mySVGs.appendChild(card)
 }
 
-function showTokenById() {
-  const tokenIdInput = document.getElementById("searchInput").value.trim()
-
+function showTokenById(tokenIdInput) {
   if (tokenIdInput === "") {
     if (squaresBox) {
       squaresBox.innerHTML = ""
@@ -760,7 +759,7 @@ networkBtn.addEventListener("click", (event) => {
   chainList.classList.toggle("show")
   chevron.classList.toggle("rotate")
   walletList.classList.remove("show")
-  filterList.classList.remove("show")
+  filterLists.forEach((list) => list.classList.remove("show"))
 })
 
 connectBtn.addEventListener("click", (event) => {
@@ -768,17 +767,19 @@ connectBtn.addEventListener("click", (event) => {
   togglewalletList()
 })
 
-filtersBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  filterList.classList.toggle("show")
-  chainList.classList.remove("show")
-  chevron.classList.remove("rotate")
-  walletList.classList.remove("show")
+filtersBtns.forEach((btn, index) => {
+  btn.addEventListener("click", (event) => {
+    event.stopPropagation()
+    filterLists[index].classList.toggle("show")
+    chainList.classList.remove("show")
+    chevron.classList.remove("rotate")
+    walletList.classList.remove("show")
+  })
 })
 
 document.addEventListener("click", () => {
   walletList.classList.remove("show")
-  filterList.classList.remove("show")
+  filterLists.forEach((list) => list.classList.remove("show"))
   chevron.classList.remove("rotate")
   chainList.classList.remove("show")
 })
@@ -787,14 +788,23 @@ walletList.addEventListener("click", (event) => event.stopPropagation())
 
 chainList.addEventListener("click", (event) => event.stopPropagation())
 
-filterList.addEventListener("click", (event) => event.stopPropagation())
+filterLists.forEach((btn) => {
+  btn.addEventListener("click", (event) => event.stopPropagation())
+})
 
 disconnectBtn.addEventListener("click", disconnect)
 
 themeToggle.addEventListener("change", toggleDarkMode)
 
-mySVGBtn.addEventListener("click", toggleMySVGs)
+mySVGBtns.forEach((btn) => {
+  btn.addEventListener("click", toggleMySVGs)
+})
 
-document.getElementById("searchInput").addEventListener("input", showTokenById)
+searchInputs.forEach((input) => {
+  input.addEventListener("input", (event) => {
+    const tokenIdInput = event.target.value.trim()
+    showTokenById(tokenIdInput)
+  })
+})
 
 window.dispatchEvent(new Event("eip6963:requestProvider"))
