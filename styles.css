@@ -672,7 +672,7 @@ main {
   right: 0;
   width: 190px;
   overflow: hidden;
-  z-index: 100;
+  z-index: 99;
   padding: 10px;
 }
 
