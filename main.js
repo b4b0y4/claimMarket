@@ -347,7 +347,7 @@ async function getUnmintedColorIds() {
   }
 }
 
-function createSquareWithButton(color, id, isClaimed) {
+function createSquareWithButton(color, id, isClaimed, allClaimed) {
   const container = document.createElement("div")
   container.classList.add("square-container")
 
@@ -366,13 +366,24 @@ function createSquareWithButton(color, id, isClaimed) {
   svg.appendChild(rect)
 
   const button = document.createElement("button")
-  button.textContent = isClaimed ? `Claimed` : `Claim #${id}`
+  button.textContent = isClaimed ? `Claimed!` : `Claim #${id}`
   button.classList.add("claim-button")
   button.disabled = isClaimed
 
-  if (isClaimed) {
+  if (allClaimed) {
+    button.textContent = `SVG #${id}`
+    button.disabled = true
+    button.style.opacity = "0.6"
+    button.style.backgroundColor = "transparent"
+    button.style.color = "rgb(30, 30, 30)"
+    button.style.display = "flex"
+    button.style.justifyContent = "flex-end"
+    button.style.height = "25px"
+  } else if (isClaimed) {
     button.style.opacity = "0.3"
     svg.style.filter = "brightness(0.6)"
+    button.style.backgroundColor = "transparent"
+    button.style.color = "rgb(250, 250, 250)"
   } else {
     button.addEventListener("click", async function () {
       const selectedProvider = providers.find(
@@ -435,11 +446,17 @@ function listenForTransactionMine(transactionResponse, provider) {
 async function renderSVGsClaim(colors) {
   const unmintedIds = await getUnmintedColorIds()
   const unmintedIdsSet = new Set(unmintedIds)
+  const allClaimed = unmintedIds.length === 0
 
   colors.forEach((color, index) => {
     const colorId = index + 1
-    const isClaimed = !unmintedIdsSet.has(colorId)
-    const squareWithButton = createSquareWithButton(color, colorId, isClaimed)
+    const isClaimed = allClaimed || !unmintedIdsSet.has(colorId)
+    const squareWithButton = createSquareWithButton(
+      color,
+      colorId,
+      isClaimed,
+      allClaimed
+    )
     squaresBox.appendChild(squareWithButton)
   })
 }
@@ -559,7 +576,7 @@ function toggleMySVGs() {
   if (market) market.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
-  mySVGBtns.innerHTML = "My SVGs"
+  mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
 
   if (isVisible) {
     showMySVGs()
@@ -585,8 +602,9 @@ async function showMySVGs() {
       const balance = await contract.balanceOf(accounts[0])
 
       mySVGs.innerHTML = ""
-      mySVGBtns.innerHTML = ""
-      mySVGBtns.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
+      mySVGBtns.forEach((btn) => {
+        btn.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
+      })
 
       if (balance.toString() === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
