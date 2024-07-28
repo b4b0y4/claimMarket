@@ -707,7 +707,7 @@ main {
   right: 0;
   bottom: 0;
   border-radius: 10px;
-  background-color: rgba(23, 23, 23, 0.9);
+  background-color: rgba(var(--color-bg), 0.9);
   z-index: -1;
 }
 
