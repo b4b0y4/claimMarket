@@ -737,7 +737,7 @@ footer {
   text-align: center;
 }
 
-@media (max-width: 650px) {
+@media (max-width: 730px) {
   .title h1 {
     display: none;
   }
