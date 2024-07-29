@@ -770,31 +770,20 @@ footer {
 
   #market,
   #squaresBox {
-    position: absolute;
-    top: 105px;
-    width: calc(100% - 10px);
-    left: 5px;
-    right: 5px;
-    transition: left 0.3s ease-in-out;
-    justify-content: center;
-    margin: 0;
-    background-color: rgb(var(--color-bg));
+    margin: 5px;
   }
 
   #market.mySVGs-open,
   #squaresBox.mySVGs-open {
-    width: 100%;
-    margin-right: -100%;
-    left: -100%;
+    display: none;
   }
 
   #mySVGs {
-    top: 100px;
+    justify-content: center;
+    top: 103px;
   }
 
   #mySVGs.show {
-    justify-content: center;
-    top: 105px;
     right: 5px;
     bottom: 5px;
     width: calc(100% - 10px);
