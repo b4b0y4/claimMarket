@@ -542,8 +542,8 @@ main {
 #squaresBox.mySVGs-open,
 .explanation.mySVGs-open,
 footer.mySVGs-open {
-  width: calc(100% - 377px);
-  margin-right: 377px;
+  width: calc(100% - 370px);
+  margin-right: 370px;
 }
 
 .square-container {
