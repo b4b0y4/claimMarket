@@ -514,7 +514,7 @@ main {
   justify-content: center;
   align-items: center;
   min-height: 100%;
-  padding: 20px;
+  padding: 0 20px;
 }
 
 .explanation {
@@ -583,8 +583,8 @@ footer.mySVGs-open {
   align-content: flex-start;
   justify-content: flex-start;
   position: fixed;
-  top: 82px;
-  bottom: 17px;
+  top: 63px;
+  bottom: 10px;
   right: -100%;
   width: 360px;
   border-radius: 10px;
@@ -596,7 +596,7 @@ footer.mySVGs-open {
 }
 
 #mySVGs.show {
-  right: 17px;
+  right: 10px;
   opacity: 1;
 }
 
@@ -688,12 +688,12 @@ footer.mySVGs-open {
 
 #notificationBox {
   position: fixed;
-  top: 65px;
+  top: 53px;
   right: 0;
-  width: 210px;
+  width: 190px;
   overflow: hidden;
   z-index: 99;
-  padding: 20px;
+  padding: 10px;
 }
 
 #notification {
