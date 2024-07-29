@@ -13,12 +13,14 @@ const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
 const networkIcon = document.getElementById("networkIcon")
 const squaresBox = document.getElementById("squaresBox")
+const explanation = document.querySelector(".explanation")
 const market = document.getElementById("market")
 const mySVGs = document.getElementById("mySVGs")
 const filtersBtns = document.querySelectorAll(".filters-btn")
 const filterLists = document.querySelectorAll(".filter-list")
 const mySVGBtns = document.querySelectorAll(".my-svg-btn")
 const searchInputs = document.querySelectorAll(".search-input")
+const footer = document.querySelector("footer")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -571,9 +573,14 @@ function updateBidInfo(tokenId, info) {
  **************************************************/
 function toggleMySVGs() {
   const isVisible = mySVGs.classList.toggle("show")
+
   localStorage.setItem("mySVGsVisible", isVisible)
-  if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
+  if (squaresBox) {
+    squaresBox.classList.toggle("mySVGs-open")
+    explanation.classList.toggle("mySVGs-open")
+  }
   if (market) market.classList.toggle("mySVGs-open")
+  footer.classList.toggle("mySVGs-open")
   walletList.classList.remove("show")
 
   mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
@@ -758,6 +765,8 @@ function initializePage() {
     if (isVisible) {
       mySVGs.classList.add("show")
       squaresBox.classList.add("mySVGs-open")
+      explanation.classList.add("mySVGs-open")
+      footer.classList.add("mySVGs-open")
       showMySVGs()
     }
   } else if (currentPage === "market-page") {
@@ -765,6 +774,7 @@ function initializePage() {
     if (isVisible) {
       mySVGs.classList.add("show")
       market.classList.add("mySVGs-open")
+      footer.classList.add("mySVGs-open")
       showMySVGs()
     }
   }
