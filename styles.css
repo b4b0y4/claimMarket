@@ -74,7 +74,6 @@ header {
   z-index: 100;
   width: 100%;
   background-color: rgb(var(--color-bg));
-  box-shadow: 0 0 0 0.5px var(--color-btn);
   user-select: none;
   -webkit-user-select: none;
 }
