@@ -88,6 +88,7 @@ header {
 .title a {
   display: flex;
   align-items: center;
+  margin-right: 0;
 }
 
 .title img {
@@ -761,10 +762,6 @@ footer {
 @media (max-width: 760px) {
   .title h1 {
     display: none;
-  }
-
-  header a {
-    margin-right: 0;
   }
 
   .filter-bar {
