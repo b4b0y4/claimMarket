@@ -668,7 +668,7 @@ main {
 
 #notificationBox {
   position: fixed;
-  top: 60px;
+  top: 55px;
   right: 0;
   width: 190px;
   overflow: hidden;
