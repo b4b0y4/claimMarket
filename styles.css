@@ -763,9 +763,10 @@ footer {
     display: flex;
   }
 
+  .search-input,
   .filters-btn,
   .my-svg-btn {
-    box-shadow: 0 0 0 0.5px var(--color-btn);
+    box-shadow: 0 0 0 1px var(--color-btn);
   }
 
   #market,
