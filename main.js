@@ -381,7 +381,7 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
     button.style.color = "rgb(30, 30, 30)"
     button.style.display = "flex"
     button.style.justifyContent = "flex-end"
-    button.style.height = "25px"
+    button.style.height = "20px"
   } else if (isClaimed) {
     button.style.opacity = "0.3"
     svg.style.filter = "brightness(0.6)"
