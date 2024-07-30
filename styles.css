@@ -110,7 +110,7 @@ header {
 header a {
   font-size: 1.1em;
   text-decoration: none;
-  color: var(--color-btn);
+  color: var(--color-txt);
   padding: 6.5px;
   margin-right: 10px;
   transition: color 0.3s ease-in-out;
@@ -118,11 +118,11 @@ header a {
 
 #index-page header a[href="./index.html"],
 #market-page header a[href="./market.html"] {
-  color: var(--color-txt);
+  color: var(--color-btn);
 }
 
 header a:hover {
-  color: var(--color-txt);
+  color: var(--color-btn);
 }
 
 .network,
@@ -148,10 +148,6 @@ header a:hover {
   transition: color 0.3s ease-in-out;
 }
 
-#networkBtn {
-  color: var(--color-btn);
-}
-
 #connectBtn {
   font-size: 1.1em;
   color: rgb(var(--color-bg));
@@ -170,7 +166,7 @@ header a:hover {
 }
 
 #connectBtn.connected {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background: transparent;
   background-size: initial;
   animation: none;
@@ -182,7 +178,7 @@ header a:hover {
 #connectBtn.connected:hover,
 #networkBtn:focus,
 #connectBtn.connected:focus {
-  color: var(--color-txt);
+  color: var(--color-btn);
 }
 
 @keyframes gradientFlow {
@@ -265,7 +261,7 @@ header a:hover {
 
 .filters-btn,
 .my-svg-btn {
-  color: var(--color-btn);
+  color: var(--color-txt);
   background: transparent;
   border: none;
   cursor: pointer;
@@ -277,9 +273,8 @@ header a:hover {
 
 .filters-btn:hover,
 .my-svg-btn:hover,
-.filters-btn:focus,
-.my-svg-btn:focus {
-  color: var(--color-txt);
+.filters-btn:focus {
+  color: var(--color-btn);
 }
 
 .network img {
@@ -305,7 +300,7 @@ header a:hover {
   background-color: rgb(var(--color-bg));
   top: 100%;
   margin-top: 8px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 0.5px var(--color-btn), 0 2px 5px rgba(0, 0, 0, 0.4);
   padding: 5px;
   border-radius: 10px;
   opacity: 0;
@@ -565,7 +560,6 @@ footer.mySVGs-open {
   height: 30px;
   left: 50%;
   transform: translateX(-50%);
-  padding: 5px;
   cursor: pointer;
   background-color: var(--color-card);
   color: var(--color-txt);
