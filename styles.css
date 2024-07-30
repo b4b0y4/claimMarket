@@ -772,7 +772,7 @@ footer {
   padding: 1px 0;
 }
 
-@media (max-width: 730px) {
+@media (max-width: 765px) {
   .title h1 {
     display: none;
   }
