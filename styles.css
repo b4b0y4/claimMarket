@@ -616,6 +616,7 @@ footer.mySVGs-open {
   -webkit-user-select: none;
   display: flex;
   flex-direction: column;
+  will-change: transform;
 }
 
 .svg-card:hover {
@@ -694,8 +695,6 @@ footer.mySVGs-open {
 .buy-btn,
 .accept-offer-btn {
   background-color: rgb(var(--color-success));
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
 }
 
 .list-btn,
