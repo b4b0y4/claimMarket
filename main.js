@@ -355,16 +355,17 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
 
   const svgNamespace = "http://www.w3.org/2000/svg"
   const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100")
-  svg.setAttribute("height", "100")
+  svg.setAttribute("width", "100%")
+  svg.setAttribute("height", "100%")
+  svg.setAttribute("viewBox", "0 0 100 100")
+  svg.setAttribute("preserveAspectRatio", "none")
   svg.setAttribute("xmlns", svgNamespace)
   svg.setAttribute("id", `svg-${id}`)
 
   const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100")
-  rect.setAttribute("height", "100")
+  rect.setAttribute("width", "100%")
+  rect.setAttribute("height", "100%")
   rect.setAttribute("fill", color)
-
   svg.appendChild(rect)
 
   const button = document.createElement("button")
@@ -507,14 +508,16 @@ function createSVGCard(tokenId, color, options = {}) {
 
   const svgNamespace = "http://www.w3.org/2000/svg"
   const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100")
-  svg.setAttribute("height", "100")
+  svg.setAttribute("width", "100%")
+  svg.setAttribute("height", "auto")
+  svg.setAttribute("viewBox", "0 0 100 100")
+  svg.setAttribute("preserveAspectRatio", "none")
   svg.setAttribute("xmlns", svgNamespace)
   svg.setAttribute("id", `svg-${tokenId}`)
 
   const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100")
-  rect.setAttribute("height", "100")
+  rect.setAttribute("width", "100%")
+  rect.setAttribute("height", "100%")
   rect.setAttribute("fill", color)
   svg.appendChild(rect)
 
@@ -572,16 +575,16 @@ function updateBidInfo(tokenId, info) {
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
-  const isVisible = mySVGs.classList.toggle("show")
+  const isVisible = mySVGs.classList.toggle("open")
 
   localStorage.setItem("mySVGsVisible", isVisible)
+
   if (squaresBox) {
     squaresBox.classList.toggle("mySVGs-open")
     explanation.classList.toggle("mySVGs-open")
   }
   if (market) market.classList.toggle("mySVGs-open")
   footer.classList.toggle("mySVGs-open")
-  walletList.classList.remove("show")
 
   mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
 
@@ -729,20 +732,8 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
 
-function getCurrentPage() {
-  return document.body.id
-}
-
-function initializeIndexPage() {
-  renderSVGsClaim(rainbowColors)
-}
-
-function initializeMarketPage() {
-  displayAllSVGs()
-}
-
-function initializePage() {
-  const currentPage = getCurrentPage()
+window.addEventListener("load", () => {
+  const currentPage = document.body.id
 
   const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkButton(storedChainId)
@@ -761,26 +752,24 @@ function initializePage() {
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
   if (currentPage === "index-page") {
-    initializeIndexPage()
+    renderSVGsClaim(rainbowColors)
     if (isVisible) {
-      mySVGs.classList.add("show")
+      mySVGs.classList.add("open")
       squaresBox.classList.add("mySVGs-open")
       explanation.classList.add("mySVGs-open")
       footer.classList.add("mySVGs-open")
       showMySVGs()
     }
   } else if (currentPage === "market-page") {
-    initializeMarketPage()
+    displayAllSVGs()
     if (isVisible) {
-      mySVGs.classList.add("show")
+      mySVGs.classList.add("open")
       market.classList.add("mySVGs-open")
       footer.classList.add("mySVGs-open")
       showMySVGs()
     }
   }
-}
-
-window.addEventListener("load", initializePage)
+})
 
 networkBtn.addEventListener("click", (event) => {
   event.stopPropagation()

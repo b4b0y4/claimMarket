@@ -511,7 +511,7 @@ main {
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   min-height: 100%;
   padding: 0 20px;
@@ -525,17 +525,15 @@ main {
 
 #market,
 #squaresBox {
-  flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-content: flex-start;
-  max-width: 90%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10px;
-  padding: 20px;
+  justify-content: center;
   border-radius: 10px;
-  background-color: var(--color-card);
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+  max-width: 90%;
+  width: 100%;
+  margin: 22px auto;
 }
 
 #market.mySVGs-open,
@@ -548,12 +546,14 @@ footer.mySVGs-open {
 
 .square-container {
   position: relative;
-  width: 100px;
-  height: 100px;
+  aspect-ratio: 1 / 1;
   border-radius: 10px;
+  overflow: hidden;
 }
 
 .square-container svg {
+  width: 100%;
+  height: 100%;
   border-radius: 10px;
 }
 
@@ -578,60 +578,80 @@ footer.mySVGs-open {
 }
 
 #mySVGs {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  justify-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-auto-rows: minmax(160px, auto);
+  gap: 10px;
+  align-content: start;
   position: fixed;
-  top: 63px;
+  top: 65px;
   bottom: 10px;
-  right: -100%;
+  right: -360px;
   width: 360px;
   border-radius: 10px;
   overflow-y: auto;
   padding: 20px;
-  gap: 10px;
-  background-color: var(--color-card);
-  transition: opacity 0.3s ease-in-out, right 0.3s ease-in-out;
+  background-color: rgb(var(--color-bg));
+  box-shadow: 0 0 0 0.5px var(--color-btn);
+  transition: right 0.3s ease-in-out;
 }
 
-#mySVGs.show {
+#mySVGs.open {
   right: 10px;
   opacity: 1;
 }
 
 .svg-card {
   position: relative;
-  width: 100px;
-  height: 160px;
-  border-radius: 10px;
+  padding-top: 160%;
+  width: 100%;
   overflow: hidden;
-  background-color: rgb(var(--color-bg));
+  border-radius: 10px;
+  background-color: var(--color-card);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
+  display: flex;
+  flex-direction: column;
 }
 
 .svg-card:hover {
   transform: scale(1.03);
 }
 
-.svg-label {
-  margin: 4px 0;
-  font-size: 12px;
-  padding-left: 5px;
+.svg-card > * {
+  position: absolute;
+  left: 0;
+  width: 100%;
 }
 
+.svg-card svg {
+  top: 0;
+  height: 62.5%;
+}
+
+.svg-label,
 .price-info,
 .bid-info {
-  font-size: 12px;
+  position: absolute;
+  padding: 5px;
+  margin: 0;
   margin: 3px 0;
-  padding-left: 5px;
+  font-size: 12px;
+}
+
+.svg-label {
+  top: 63.5%;
+}
+
+.price-info {
+  top: 73.5%;
 }
 
 .bid-info {
+  top: 83.5%;
   font-size: 10px;
   color: var(--color-btn);
 }
@@ -640,9 +660,10 @@ footer.mySVGs-open {
   display: flex;
   flex-wrap: wrap;
   position: absolute;
-  bottom: -100%;
+  bottom: -37.5%;
   left: 0;
   right: 0;
+  height: 37.5%;
   margin: 0;
   opacity: 0;
   overflow: hidden;
@@ -659,7 +680,7 @@ footer.mySVGs-open {
   font-size: 12px;
   border: none;
   cursor: pointer;
-  height: 30px;
+  height: 50%;
   color: white;
   flex: 1 1 auto;
   transition: filter 0.3s ease-in-out;
@@ -688,12 +709,11 @@ footer.mySVGs-open {
 
 #notificationBox {
   position: fixed;
-  top: 53px;
-  right: 0;
-  width: 190px;
+  top: 70px;
+  right: 15px;
+  width: 170px;
   overflow: hidden;
   z-index: 99;
-  padding: 10px;
 }
 
 #notification {
@@ -702,8 +722,8 @@ footer.mySVGs-open {
   border-radius: 10px;
   width: 100%;
   opacity: 0;
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
   transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
 }
 
@@ -727,7 +747,7 @@ footer.mySVGs-open {
   right: 0;
   bottom: 0;
   border-radius: 10px;
-  background-color: rgba(var(--color-bg), 0.9);
+  background-color: rgba(var(--color-bg), 0.6);
   z-index: -1;
 }
 
@@ -758,7 +778,7 @@ footer {
   padding: 1px 0;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 730px) {
   .title h1 {
     display: none;
   }
@@ -792,22 +812,23 @@ footer {
   #market,
   #squaresBox {
     max-width: 100%;
-    margin: 5px;
+    margin: 10px;
   }
 
   #market.mySVGs-open,
   #squaresBox.mySVGs-open,
-  .explanation.mySVGs-open {
+  .explanation.mySVGs-open,
+  footer.mySVGs-open {
     display: none;
   }
 
   #mySVGs {
-    justify-content: center;
+    gap: 20px 10px;
     top: 110px;
     bottom: 5px;
   }
 
-  #mySVGs.show {
+  #mySVGs.open {
     right: 5px;
     width: calc(100% - 10px);
   }
@@ -817,6 +838,6 @@ footer {
   }
 
   #notificationBox {
-    top: 100px;
+    top: 115px;
   }
 }
