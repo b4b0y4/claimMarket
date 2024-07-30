@@ -527,6 +527,7 @@ main {
 #squaresBox {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  grid-auto-rows: 1fr;
   gap: 10px;
   justify-content: center;
   border-radius: 10px;
@@ -580,7 +581,7 @@ footer.mySVGs-open {
 #mySVGs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  grid-auto-rows: minmax(160px, auto);
+  grid-auto-rows: 1fr;
   gap: 10px;
   align-content: start;
   position: fixed;
@@ -809,12 +810,6 @@ footer {
     padding: 0;
   }
 
-  #market,
-  #squaresBox {
-    max-width: 100%;
-    margin: 10px;
-  }
-
   #market.mySVGs-open,
   #squaresBox.mySVGs-open,
   .explanation.mySVGs-open,
@@ -823,7 +818,6 @@ footer {
   }
 
   #mySVGs {
-    gap: 20px 10px;
     top: 110px;
     bottom: 5px;
   }
