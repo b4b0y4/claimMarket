@@ -287,7 +287,7 @@ header {
 }
 
 .chain-list {
-  width: 150px;
+  width: 140px;
   left: 0;
 }
 
@@ -458,7 +458,11 @@ main {
 }
 
 .explanation {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   max-width: 90%;
+  width: 100%;
   padding: 20px;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
 }
@@ -622,7 +626,7 @@ footer.mySVGs-open {
   height: 50%;
   color: var(--color-txt);
   flex: 1 1 auto;
-  box-shadow: 0 0 0 1px var(--color-btn);
+  box-shadow: 0 0 0 0.2px var(--color-btn);
   background-color: var(--color-card);
   transition: background-color 0.3s ease-in-out;
 }
@@ -703,6 +707,15 @@ footer {
   color: var(--color-btn);
   text-align: center;
   padding: 1px 0;
+}
+
+.safari header,
+.safari .wallet-list,
+.safari .chain-list,
+.safari .filter-list,
+.safari .svg-card,
+.safari .button-container button {
+  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 @media (max-width: 680px) {
