@@ -1,25 +1,23 @@
 :root {
   --color-bg: 250, 250, 250;
   --color-txt: #5c5c5c;
-  --color-btn: #b1b1b1;
-  --color-card: #efefef;
-  --color-bg-btn-start: #4babe7;
-  --color-bg-btn-end: #e47fe6;
-  --color-info: 75, 186, 231;
-  --color-success: 46, 204, 113;
-  --color-warning: 234, 51, 35;
+  --color-bdr: #dddddd;
+  --color-ipt: #b1b1b1;
+  --color-hvr: #efefef;
+  --color-blue: 75, 186, 231;
+  --color-green: 46, 204, 113;
+  --color-red: 234, 51, 35;
 }
 
 :root.dark-mode {
   --color-bg: 30, 30, 30;
   --color-txt: #adadae;
-  --color-btn: #656565;
-  --color-card: #252525;
-  --color-bg-btn-start: #4babe7;
-  --color-bg-btn-end: #57d47c;
-  --color-info: 75, 186, 231;
-  --color-success: 46, 204, 113;
-  --color-warning: 234, 51, 35;
+  --color-bdr: #3e3e3e;
+  --color-ipt: #656565;
+  --color-hvr: #252525;
+  --color-blue: 75, 186, 231;
+  --color-green: 46, 204, 113;
+  --color-red: 234, 51, 35;
 }
 
 .no-flash {
@@ -74,7 +72,7 @@ header {
   z-index: 100;
   width: 100%;
   background-color: rgb(var(--color-bg));
-  box-shadow: 0 0 0 0.2px var(--color-btn);
+  box-shadow: 0 0 0 0.5px var(--color-bdr);
   user-select: none;
   -webkit-user-select: none;
 }
@@ -91,11 +89,11 @@ header {
 
 #index-page .link[href="./index.html"],
 #market-page .link[href="./market.html"] {
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
 }
 
 .link:hover {
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
 }
 
 .head {
@@ -149,7 +147,7 @@ header {
 .network button:hover,
 .connectivity button:hover,
 .filter-list button:hover {
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
 }
 
 #connectBtn {
@@ -162,7 +160,7 @@ header {
 
 #connectBtn.connected {
   color: var(--color-txt);
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
 }
 
 #connectBtn:hover {
@@ -200,7 +198,7 @@ header {
   border: none;
   background-color: transparent;
   color: var(--color-txt);
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
   font-size: 1em;
   width: 105px;
   height: 35px;
@@ -212,12 +210,12 @@ header {
 }
 
 .search-input::placeholder {
-  color: var(--color-btn);
+  color: var(--color-ipt);
 }
 
 .search-input:hover,
 .search-input:focus {
-  box-shadow: 0 0 0 1px var(--color-btn);
+  box-shadow: 0 0 0 1px var(--color-ipt);
 }
 
 .search-icon {
@@ -225,7 +223,7 @@ header {
   top: 50%;
   transform: translateY(-50%);
   left: 7.5px;
-  color: var(--color-btn);
+  color: var(--color-ipt);
   padding: 0;
   font-size: 1em;
   background-color: transparent;
@@ -250,7 +248,7 @@ header {
 
 .filters-btn:hover,
 .my-svg-btn:hover {
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
 }
 
 .network img {
@@ -276,7 +274,7 @@ header {
   background-color: rgb(var(--color-bg));
   top: 100%;
   margin-top: 10px;
-  box-shadow: 0 0 0 0.2px var(--color-btn);
+  box-shadow: 0 0 0 0.5px var(--color-bdr);
   padding: 2.5px 5px;
   border-radius: 2px;
   opacity: 0;
@@ -348,7 +346,7 @@ header {
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
   transition: filter 0.3s ease-in-out;
 }
 
@@ -390,7 +388,7 @@ header {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
   border-radius: 32px;
   transition: filter 0.3s ease-in-out;
 }
@@ -443,7 +441,7 @@ header {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  background-color: rgb(var(--color-success));
+  background-color: rgb(var(--color-green));
   margin-left: 5px;
 }
 
@@ -508,7 +506,7 @@ footer.mySVGs-open {
   left: 50%;
   transform: translateX(-50%);
   cursor: pointer;
-  background-color: var(--color-card);
+  background-color: var(--color-hvr);
   color: var(--color-txt);
   border: none;
   opacity: 0;
@@ -548,7 +546,7 @@ footer.mySVGs-open {
   width: 100%;
   overflow: hidden;
   border-radius: 2px;
-  box-shadow: 0 0 0 0.2px var(--color-btn);
+  box-shadow: 0 0 0 0.5px var(--color-bdr);
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
   user-select: none;
@@ -594,7 +592,7 @@ footer.mySVGs-open {
 .bid-info {
   top: 85.5%;
   font-size: 10px;
-  color: var(--color-btn);
+  color: var(--color-ipt);
 }
 
 .button-container {
@@ -626,13 +624,13 @@ footer.mySVGs-open {
   height: 50%;
   color: var(--color-txt);
   flex: 1 1 auto;
-  box-shadow: 0 0 0 0.2px var(--color-btn);
-  background-color: var(--color-card);
+  box-shadow: 0 0 0 0.5px var(--color-bdr);
+  background-color: var(--color-hvr);
   transition: background-color 0.3s ease-in-out;
 }
 
 .button-container button:hover {
-  background-color: var(--color-btn);
+  background-color: var(--color-bdr);
 }
 
 .cancel-list-btn,
@@ -683,39 +681,30 @@ footer.mySVGs-open {
 }
 
 #notification.info .notif-content {
-  color: rgba(var(--color-info), 0.8);
-  border: 1px solid rgba(var(--color-info), 0.8);
-  background-color: rgba(var(--color-info), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-info), 0.5);
+  color: rgba(var(--color-blue), 0.8);
+  border: 1px solid rgba(var(--color-blue), 0.8);
+  background-color: rgba(var(--color-blue), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-blue), 0.5);
 }
 
 #notification.success .notif-content {
-  color: rgba(var(--color-success), 0.8);
-  border: 1px solid rgba(var(--color-success), 0.8);
-  background-color: rgba(var(--color-success), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-success), 0.5);
+  color: rgba(var(--color-green), 0.8);
+  border: 1px solid rgba(var(--color-green), 0.8);
+  background-color: rgba(var(--color-green), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-green), 0.5);
 }
 
 #notification.warning .notif-content {
-  color: rgba(var(--color-warning), 0.8);
-  border: 1px solid rgba(var(--color-warning), 0.8);
-  background-color: rgba(var(--color-warning), 0.1);
-  box-shadow: 0 0 2px rgba(var(--color-warning), 0.5);
+  color: rgba(var(--color-red), 0.8);
+  border: 1px solid rgba(var(--color-red), 0.8);
+  background-color: rgba(var(--color-red), 0.1);
+  box-shadow: 0 0 2px rgba(var(--color-red), 0.5);
 }
 
 footer {
-  color: var(--color-btn);
+  color: var(--color-bdr);
   text-align: center;
   padding: 1px 0;
-}
-
-.safari header,
-.safari .wallet-list,
-.safari .chain-list,
-.safari .filter-list,
-.safari .svg-card,
-.safari .button-container button {
-  box-shadow: 0 0 0 0.5px var(--color-btn);
 }
 
 @media (max-width: 680px) {
