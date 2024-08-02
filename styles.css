@@ -275,7 +275,7 @@ header {
   position: absolute;
   background-color: rgb(var(--color-bg));
   top: 100%;
-  margin-top: 8px;
+  margin-top: 10px;
   box-shadow: 0 0 0 0.2px var(--color-btn);
   padding: 2.5px 5px;
   border-radius: 2px;
@@ -584,11 +584,11 @@ footer.mySVGs-open {
 }
 
 .price-info {
-  top: 73.5%;
+  top: 75.5%;
 }
 
 .bid-info {
-  top: 83.5%;
+  top: 85.5%;
   font-size: 10px;
   color: var(--color-btn);
 }
@@ -596,6 +596,7 @@ footer.mySVGs-open {
 .button-container {
   display: flex;
   flex-wrap: wrap;
+  align-content: flex-end;
   position: absolute;
   bottom: -37.5%;
   left: 0;
@@ -605,6 +606,7 @@ footer.mySVGs-open {
   opacity: 0;
   overflow: hidden;
   background-color: rgb(var(--color-bg));
+  background-color: transparent;
   transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
 }
 
@@ -629,16 +631,16 @@ footer.mySVGs-open {
   background-color: var(--color-btn);
 }
 
-/* .cancel-list-btn,
+.cancel-list-btn,
 .cancel-offer-btn {
   display: none;
-} */
+}
 
 #notificationBox {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  width: 170px;
+  width: 180px;
   overflow: hidden;
   z-index: 99;
 }

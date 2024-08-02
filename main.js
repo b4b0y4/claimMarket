@@ -411,12 +411,15 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
           await listenForTransactionMine(transactionResponse, provider)
 
           button.textContent = `Claimed!`
-          button.style.opacity = "0.9"
+          button.style.opacity = "0.3"
+          svg.style.filter = "brightness(0.6)"
+          button.style.backgroundColor = "transparent"
+          button.style.color = "rgb(250, 250, 250)"
           button.disabled = true
-          svg.style.filter = "brightness(0.5)"
 
           showNotification("")
           showNotification("Successfully claimed!", "success")
+          showMySVGs()
         } catch (error) {
           console.error("Claim failed:", error)
           showNotification("")
@@ -488,7 +491,7 @@ function displayAllSVGs() {
       buttons: [
         { text: "Offer", className: "offer-btn" },
         { text: "Cancel", className: "cancel-offer-btn" },
-        { text: "Buy Now", className: "buy-btn" },
+        { text: "Buy", className: "buy-btn" },
       ],
     })
     market.appendChild(card)
@@ -662,7 +665,7 @@ function displaySVG(tokenId) {
     buttons: [
       { text: "List", className: "list-btn" },
       { text: "Cancel", className: "cancel-list-btn" },
-      { text: "Accept Offer", className: "accept-offer-btn" },
+      { text: "Accept", className: "accept-offer-btn" },
     ],
   })
   mySVGs.appendChild(card)
