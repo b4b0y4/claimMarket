@@ -74,8 +74,28 @@ header {
   z-index: 100;
   width: 100%;
   background-color: rgb(var(--color-bg));
+  box-shadow: 0 0 0 0.2px var(--color-btn);
   user-select: none;
   -webkit-user-select: none;
+}
+
+.link {
+  font-size: 1.1em;
+  text-decoration: none;
+  color: var(--color-txt);
+  height: 35px;
+  padding: 6.5px 7.5px 7.5px;
+  margin-right: 10px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+#index-page .link[href="./index.html"],
+#market-page .link[href="./market.html"] {
+  background-color: var(--color-card);
+}
+
+.link:hover {
+  background-color: var(--color-card);
 }
 
 .head {
@@ -85,19 +105,15 @@ header {
   padding: 0;
 }
 
-.title a {
+.title {
   display: flex;
   align-items: center;
-  margin-right: 0;
+  margin: 0;
+  padding: 0;
 }
 
 .title img {
   width: 50px;
-}
-
-.title h1 {
-  font-size: 1.2em;
-  margin: 0;
 }
 
 .wrapper {
@@ -105,24 +121,6 @@ header {
   justify-content: center;
   align-items: center;
   margin-right: 10px;
-}
-
-header a {
-  font-size: 1.1em;
-  text-decoration: none;
-  color: var(--color-txt);
-  padding: 6.5px;
-  margin-right: 10px;
-  transition: color 0.3s ease-in-out;
-}
-
-#index-page header a[href="./index.html"],
-#market-page header a[href="./market.html"] {
-  color: var(--color-btn);
-}
-
-header a:hover {
-  color: var(--color-btn);
 }
 
 .network,
@@ -143,54 +141,32 @@ header a:hover {
   border: none;
   height: 35px;
   padding: 7.5px;
-  border-radius: 10px;
   cursor: pointer;
-  transition: color 0.3s ease-in-out;
+  border-radius: 2px;
+  transition: background-color 0.3s ease-in-out;
+}
+
+.network button:hover,
+.connectivity button:hover,
+.filter-list button:hover {
+  background-color: var(--color-card);
 }
 
 #connectBtn {
   font-size: 1.1em;
   color: rgb(var(--color-bg));
-  background: linear-gradient(
-    270deg,
-    var(--color-bg-btn-start),
-    var(--color-bg-btn-end)
-  );
-  background-size: 400% 400%;
-  animation: gradientFlow 8s ease infinite;
+  background-color: var(--color-txt);
   transition: filter 0.3s ease-in-out;
-}
-
-#connectBtn:hover {
-  filter: brightness(0.9);
+  margin-left: 5px;
 }
 
 #connectBtn.connected {
   color: var(--color-txt);
-  background: transparent;
-  background-size: initial;
-  animation: none;
-  transition: color 0.3s ease-in-out;
-  filter: none;
+  background-color: var(--color-card);
 }
 
-#networkBtn:hover,
-#connectBtn.connected:hover,
-#networkBtn:focus,
-#connectBtn.connected:focus {
-  color: var(--color-btn);
-}
-
-@keyframes gradientFlow {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
+#connectBtn:hover {
+  filter: brightness(0.9);
 }
 
 #connectBtn img {
@@ -224,14 +200,14 @@ header a:hover {
   border: none;
   background-color: transparent;
   color: var(--color-txt);
+  background-color: var(--color-card);
   font-size: 1em;
   width: 105px;
-  height: 30px;
+  height: 35px;
   text-align: start;
-  border-radius: 10px;
+  border-radius: 2px;
   padding-left: 30px;
   margin-right: 10px;
-  box-shadow: 0 0 0 1px var(--color-btn);
   transition: box-shadow 0.3s ease-in-out;
 }
 
@@ -241,7 +217,7 @@ header a:hover {
 
 .search-input:hover,
 .search-input:focus {
-  box-shadow: 0 0 0 1px var(--color-txt);
+  box-shadow: 0 0 0 1px var(--color-btn);
 }
 
 .search-icon {
@@ -256,25 +232,25 @@ header a:hover {
   border: none;
   outline: none;
   cursor: default;
-  transition: color 0.1s ease-in-out;
 }
 
 .filters-btn,
 .my-svg-btn {
   color: var(--color-txt);
   background: transparent;
+  height: 35px;
+  padding: 7.5px;
   border: none;
   cursor: pointer;
   justify-content: center;
   font-size: 1.1em;
   margin-right: 10px;
-  transition: color 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out;
 }
 
 .filters-btn:hover,
-.my-svg-btn:hover,
-.filters-btn:focus {
-  color: var(--color-btn);
+.my-svg-btn:hover {
+  background-color: var(--color-card);
 }
 
 .network img {
@@ -300,9 +276,9 @@ header a:hover {
   background-color: rgb(var(--color-bg));
   top: 100%;
   margin-top: 8px;
-  box-shadow: 0 0 0 0.5px var(--color-btn), 0 2px 5px rgba(0, 0, 0, 0.4);
-  padding: 5px;
-  border-radius: 10px;
+  box-shadow: 0 0 0 0.2px var(--color-btn);
+  padding: 2.5px 5px;
+  border-radius: 2px;
   opacity: 0;
   transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
   transform: scale(0.9);
@@ -337,45 +313,16 @@ header a:hover {
 .chain-list button,
 .filter-list button,
 #settings {
-  color: var(--color-txt);
-  background-color: var(--color-card);
-  background-image: none;
-  border: none;
   width: 100%;
   height: 40px;
-  padding: 7.5px;
-  border-radius: 0;
   margin: 2.5px 0;
-  transition: background-color 0.3s ease-in-out;
-}
-
-.filter-list button:hover,
-.wallet-list button:hover,
-.chain-list button:hover {
-  background-color: color-mix(in srgb, var(--color-card) 90%, black);
-}
-
-.chain-list button:first-child,
-.filter-list button:first-child,
-#settings {
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
-  margin-top: 0;
-}
-
-#wallets button:last-child,
-.chain-list button:last-child,
-.filter-list button:last-child {
-  border-bottom-left-radius: 10px;
-  border-bottom-right-radius: 10px;
-  margin-bottom: 0;
 }
 
 .wallet-list img {
   height: 32px;
   width: 32px;
   margin-right: 8px;
-  border-radius: 10px;
+  border-radius: 2px;
 }
 
 .wallet-list button,
@@ -387,9 +334,7 @@ header a:hover {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-  margin-top: 0;
+  padding: 0 7.5px;
 }
 
 #settings.nowallet {
@@ -403,26 +348,26 @@ header a:hover {
   height: 32px;
   width: 60px;
   border-radius: 32px;
-  background-color: color-mix(in srgb, var(--color-card) 90%, black);
-  transition: box-shadow 0.3s ease-in-out;
+  background-color: var(--color-card);
+  transition: filter 0.3s ease-in-out;
 }
 
 .slider:hover,
 #disconnect:hover {
-  box-shadow: 0 0 0 1px var(--color-btn);
+  filter: brightness(0.9);
 }
 
 #whats a {
   font-size: 14.5px;
   text-decoration: none;
   color: var(--color-txt);
+  background-color: transparent;
   padding: 0;
   margin-right: 0;
-  transition: color 0.3s ease-in-out;
 }
 
 #whats a:hover {
-  color: var(--color-btn);
+  text-decoration: underline;
 }
 
 .theme {
@@ -445,9 +390,9 @@ header a:hover {
   left: 0;
   right: 0;
   bottom: 0;
-  background: color-mix(in srgb, var(--color-card) 90%, black);
+  background-color: var(--color-card);
   border-radius: 32px;
-  transition: box-shadow 0.3s ease-in-out;
+  transition: filter 0.3s ease-in-out;
 }
 
 .slider:before {
@@ -525,39 +470,37 @@ main {
   grid-auto-rows: 1fr;
   gap: 10px;
   justify-content: center;
-  border-radius: 10px;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
   max-width: 90%;
   width: 100%;
-  margin: 22px auto;
+  margin: 0 auto;
 }
 
 #market.mySVGs-open,
 #squaresBox.mySVGs-open,
 .explanation.mySVGs-open,
 footer.mySVGs-open {
-  width: calc(100% - 370px);
-  margin-right: 370px;
+  width: calc(100% - 360px);
+  margin-right: 360px;
 }
 
 .square-container {
   position: relative;
   aspect-ratio: 1 / 1;
-  border-radius: 10px;
+  border-radius: 2px;
   overflow: hidden;
 }
 
 .square-container svg {
   width: 100%;
   height: 100%;
-  border-radius: 10px;
 }
 
 .claim-button {
   position: absolute;
   bottom: 0;
-  width: 100%;
-  height: 30px;
+  width: 105%;
+  height: 35px;
   left: 50%;
   transform: translateX(-50%);
   cursor: pointer;
@@ -579,20 +522,19 @@ footer.mySVGs-open {
   gap: 10px;
   align-content: start;
   position: fixed;
-  top: 65px;
-  bottom: 10px;
+  top: 55px;
+  bottom: 0;
   right: -360px;
   width: 360px;
-  border-radius: 10px;
+  border-radius: 2px;
   overflow-y: auto;
   padding: 20px;
   background-color: rgb(var(--color-bg));
-  box-shadow: 0 0 0 0.5px var(--color-btn);
   transition: right 0.3s ease-in-out;
 }
 
 #mySVGs.open {
-  right: 10px;
+  right: 0;
   opacity: 1;
 }
 
@@ -601,9 +543,8 @@ footer.mySVGs-open {
   padding-top: 160%;
   width: 100%;
   overflow: hidden;
-  border-radius: 10px;
-  background-color: var(--color-card);
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border-radius: 2px;
+  box-shadow: 0 0 0 0.2px var(--color-btn);
   transition: transform 0.3s ease-in-out;
   cursor: pointer;
   user-select: none;
@@ -677,33 +618,25 @@ footer.mySVGs-open {
   border: none;
   cursor: pointer;
   height: 50%;
-  color: white;
+  color: var(--color-txt);
   flex: 1 1 auto;
-  transition: filter 0.3s ease-in-out;
+  box-shadow: 0 0 0 1px var(--color-btn);
+  background-color: var(--color-card);
+  transition: background-color 0.3s ease-in-out;
 }
 
 .button-container button:hover {
-  filter: brightness(1.2);
+  background-color: var(--color-btn);
 }
 
-.buy-btn,
-.accept-offer-btn {
-  background-color: rgb(var(--color-success));
-}
-
-.list-btn,
-.offer-btn {
-  background-color: rgb(var(--color-info));
-}
-
-.cancel-list-btn,
+/* .cancel-list-btn,
 .cancel-offer-btn {
-  background-color: rgb(var(--color-warning));
-}
+  display: none;
+} */
 
 #notificationBox {
   position: fixed;
-  top: 70px;
+  bottom: 15px;
   right: 15px;
   width: 170px;
   overflow: hidden;
@@ -713,7 +646,6 @@ footer.mySVGs-open {
 #notification {
   position: relative;
   right: -100%;
-  border-radius: 10px;
   width: 100%;
   opacity: 0;
   backdrop-filter: blur(10px);
@@ -730,7 +662,7 @@ footer.mySVGs-open {
   display: flex;
   justify-content: center;
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 2px;
 }
 
 #notification::before {
@@ -740,7 +672,6 @@ footer.mySVGs-open {
   left: 0;
   right: 0;
   bottom: 0;
-  border-radius: 10px;
   background-color: rgba(var(--color-bg), 0.6);
   z-index: -1;
 }
@@ -772,31 +703,24 @@ footer {
   padding: 1px 0;
 }
 
-@media (max-width: 765px) {
-  .title h1 {
-    display: none;
-  }
-
+@media (max-width: 680px) {
   .filter-bar {
     display: none;
   }
 
   .filter-bar-phone {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     align-items: center;
     top: 70px;
     width: 100%;
     padding: 0 20px 10px;
   }
 
-  .filter-items {
-    display: flex;
-  }
-
   .filters-btn,
-  .my-svg-btn {
-    margin-right: 0;
+  .my-svg-btn,
+  .search-input {
+    margin: 0;
   }
 
   main {
@@ -811,20 +735,14 @@ footer {
   }
 
   #mySVGs {
-    top: 110px;
-    bottom: 5px;
+    top: 100px;
   }
 
   #mySVGs.open {
-    right: 5px;
-    width: calc(100% - 10px);
+    width: 100%;
   }
 
   .button-container button {
     font-size: 10px;
-  }
-
-  #notificationBox {
-    top: 115px;
   }
 }

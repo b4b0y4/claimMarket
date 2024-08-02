@@ -226,7 +226,6 @@ async function disconnect() {
   } catch (error) {
     console.error("Error disconnecting:", error)
   }
-
   ;[
     "connected",
     "currentChainId",
@@ -239,6 +238,7 @@ async function disconnect() {
     "-walletlink:https://www.walletlink.org:session:id",
     "-walletlink:https://www.walletlink.org:DefaultChainId",
     "-walletlink:https://www.walletlink.org:EIP6963ProviderUUID",
+    "mySVGsVisible",
   ].forEach((item) => localStorage.removeItem(item))
 
   connectBtn.innerHTML = "Connect Wallet"
@@ -579,11 +579,9 @@ function toggleMySVGs() {
 
   localStorage.setItem("mySVGsVisible", isVisible)
 
-  if (squaresBox) {
-    squaresBox.classList.toggle("mySVGs-open")
-    explanation.classList.toggle("mySVGs-open")
-  }
+  if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
   if (market) market.classList.toggle("mySVGs-open")
+  explanation.classList.toggle("mySVGs-open")
   footer.classList.toggle("mySVGs-open")
 
   mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
@@ -765,6 +763,7 @@ window.addEventListener("load", () => {
     if (isVisible) {
       mySVGs.classList.add("open")
       market.classList.add("mySVGs-open")
+      explanation.classList.add("mySVGs-open")
       footer.classList.add("mySVGs-open")
       showMySVGs()
     }
