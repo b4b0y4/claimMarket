@@ -121,14 +121,13 @@ header {
   margin-right: 10px;
 }
 
-.network,
 .connectivity {
   position: relative;
+  display: inline-block;
   user-select: none;
   -webkit-user-select: none;
 }
 
-.network button,
 .connectivity button,
 .filter-list button {
   display: flex;
@@ -144,7 +143,6 @@ header {
   transition: background-color 0.3s ease-in-out;
 }
 
-.network button:hover,
 .connectivity button:hover,
 .filter-list button:hover {
   background-color: var(--color-hvr);
@@ -171,11 +169,6 @@ header {
   width: 22px;
   height: 22px;
   margin-right: 5px;
-}
-
-.network img {
-  width: 20px;
-  height: 20px;
 }
 
 .filter-bar {
@@ -251,23 +244,6 @@ header {
   background-color: var(--color-hvr);
 }
 
-.network img {
-  width: 20px;
-  height: 20px;
-  margin-right: 5px;
-}
-
-.network button span i {
-  display: inline-block;
-  font-size: 0.8em;
-  transition: transform 0.3s ease-in-out;
-}
-
-.network button span i.rotate {
-  transform: rotate(180deg);
-}
-
-.chain-list,
 .wallet-list,
 .filter-list {
   position: absolute;
@@ -284,11 +260,6 @@ header {
   z-index: 100;
 }
 
-.chain-list {
-  width: 140px;
-  left: 0;
-}
-
 .wallet-list {
   width: 200px;
   right: 0;
@@ -299,7 +270,6 @@ header {
   margin-top: 0;
 }
 
-.chain-list.show,
 .wallet-list.show,
 .filter-list.show {
   pointer-events: auto;
@@ -308,24 +278,22 @@ header {
 }
 
 .wallet-list button,
-.chain-list button,
 .filter-list button,
 #settings {
   width: 100%;
-  height: 40px;
+  height: 45px;
   margin: 2.5px 0;
 }
 
-.wallet-list img {
-  height: 32px;
-  width: 32px;
-  margin-right: 8px;
-  border-radius: 2px;
+.filter-list button {
+  height: 35px;
 }
 
-.wallet-list button,
-#settings {
-  height: 50px;
+.wallet-list img {
+  height: 28px;
+  width: 28px;
+  margin-right: 8px;
+  border-radius: 2px;
 }
 
 #settings {
@@ -335,17 +303,11 @@ header {
   padding: 0 7.5px;
 }
 
-#settings.nowallet {
-  border-radius: 10px;
-  margin-bottom: 0;
-}
-
 #disconnect {
-  justify-content: center;
-  font-size: 16px;
   height: 32px;
   width: 60px;
   border-radius: 32px;
+  padding: 5px;
   background-color: var(--color-hvr);
   transition: filter 0.3s ease-in-out;
 }
@@ -356,7 +318,7 @@ header {
 }
 
 #whats a {
-  font-size: 14.5px;
+  font-size: 0.9em;
   text-decoration: none;
   color: var(--color-txt);
   background-color: transparent;
@@ -427,12 +389,19 @@ header {
   right: 10px;
 }
 
+#chain {
+  border-bottom: 0.5px solid var(--color-bdr);
+}
+
 #overlay {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  background-color: rgba(var(--color-bg), 0.5);
   z-index: 99;
   display: none;
 }
@@ -520,7 +489,7 @@ footer.mySVGs-open {
 #mySVGs {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  grid-auto-rows: 1fr;
+  grid-auto-rows: auto;
   gap: 10px;
   align-content: start;
   position: fixed;
@@ -644,7 +613,7 @@ footer.mySVGs-open {
   right: 15px;
   width: 180px;
   overflow: hidden;
-  z-index: 99;
+  z-index: 100;
 }
 
 #notification {
@@ -707,7 +676,7 @@ footer {
   padding: 1px 0;
 }
 
-@media (max-width: 680px) {
+@media (max-width: 600px) {
   .filter-bar {
     display: none;
   }

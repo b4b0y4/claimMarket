@@ -2,16 +2,13 @@ import { ethers } from "./ethers.min.js"
 import { networkConfigs, contractAddress, abi } from "./constants.js"
 
 // DOM Elements
-const networkBtn = document.getElementById("networkBtn")
-const chevron = networkBtn.querySelector("span i")
-const chainList = document.getElementById("chainList")
+const chain = document.getElementById("chain")
 const connectBtn = document.getElementById("connectBtn")
 const walletList = document.getElementById("walletList")
 const walletBox = document.getElementById("wallets")
 const whatsBtn = document.getElementById("whats")
 const disconnectBtn = document.getElementById("disconnect")
 const overlay = document.getElementById("overlay")
-const networkIcon = document.getElementById("networkIcon")
 const squaresBox = document.getElementById("squaresBox")
 const explanation = document.querySelector(".explanation")
 const market = document.getElementById("market")
@@ -71,9 +68,8 @@ async function selectWallet(name) {
     switchNetwork(networkConfigs.sepolia)
     shortAddress(accounts[0])
     providerEvent(selectedProvider)
-    updateNetworkButton(chainId)
-    updateSettings()
     renderWallets()
+    updateNetwork(chainId)
 
     connectBtn.classList.add("connected")
 
@@ -135,8 +131,6 @@ async function getEns(address) {
 
 function togglewalletList() {
   walletList.classList.toggle("show")
-  chainList.classList.remove("show")
-  chevron.classList.remove("rotate")
   filterLists.forEach((list) => list.classList.remove("show"))
 
   const connected = localStorage.getItem("connected")
@@ -145,33 +139,47 @@ function togglewalletList() {
   toggleDisplay(disconnectBtn, connected ? true : false)
 }
 
-function updateSettings() {
-  const hasProvider = providers.length > 0
-  document.getElementById("settings").classList.toggle("nowallet", !hasProvider)
-}
-
-function renderChainList() {
-  chainList.innerHTML = ""
+function renderChains() {
+  chain.innerHTML = ""
   const currentChainId = localStorage.getItem("currentChainId")
 
   Object.entries(networkConfigs).forEach(([networkName, networkConfig]) => {
     if (networkConfig.showInUI) {
-      const button = createButton(networkConfig, () =>
+      const button = createButton(networkConfig, () => {
+        togglewalletList()
         switchNetwork(networkConfig)
-      )
+      })
       button.id = networkName
       const indicator = button.querySelector(".indicator")
       indicator.style.display =
         networkConfig.chainIdHex === currentChainId ? "inline-block" : "none"
 
-      chainList.appendChild(button)
+      chain.appendChild(button)
     }
   })
 }
 
+let networkWarningShown = false
+
+function updateNetwork(chainId) {
+  const network = Object.values(networkConfigs).find(
+    (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
+  )
+  localStorage.setItem("currentChainId", chainId)
+
+  if (network && network.showInUI) {
+    toggleDisplay(overlay, false)
+    showNotification("")
+    networkWarningShown = false
+  } else if (!networkWarningShown) {
+    toggleDisplay(overlay, true)
+    showNotification("Switch to Sepolia!", "warning", true)
+    networkWarningShown = true
+  }
+  renderChains()
+}
+
 async function switchNetwork(newNetwork) {
-  chainList.classList.remove("show")
-  chevron.classList.remove("rotate")
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
@@ -181,36 +189,11 @@ async function switchNetwork(newNetwork) {
       params: [{ chainId: newNetwork.chainIdHex }],
     })
     localStorage.setItem("currentChainId", newNetwork.chainIdHex)
-
-    renderChainList()
-    updateNetworkButton(newNetwork.chainIdHex)
+    renderChains()
+    updateNetwork(newNetwork.chainIdHex)
   } catch (error) {
     console.error("Error switching network:", error)
   }
-}
-
-let networkWarningShown = false
-
-function updateNetworkButton(chainId) {
-  const network = Object.values(networkConfigs).find(
-    (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
-  )
-  if (network && network.showInUI) {
-    networkIcon.src = network.icon
-    toggleDisplay(overlay, false)
-    localStorage.setItem("currentChainId", chainId)
-    showNotification("")
-    networkWarningShown = false
-  } else {
-    networkIcon.src = "./logo/warning.svg"
-    toggleDisplay(overlay, true)
-    localStorage.removeItem("currentChainId")
-    if (!networkWarningShown) {
-      showNotification("Switch to Sepolia!", "warning", true)
-      networkWarningShown = true
-    }
-  }
-  renderChainList()
 }
 
 async function disconnect() {
@@ -241,16 +224,14 @@ async function disconnect() {
     "mySVGsVisible",
   ].forEach((item) => localStorage.removeItem(item))
 
-  connectBtn.innerHTML = "Connect Wallet"
-  ;[(walletList, chainList, chevron, connectBtn)].forEach((el) => {
-    el.classList.remove("show", "rotate", "connected")
+  connectBtn.innerHTML = "Connect"
+  ;[(walletList, connectBtn)].forEach((el) => {
+    el.classList.remove("show", "connected")
   })
 
   toggleDisplay(overlay, false)
-  toggleDisplay(walletBox, true)
-  updateSettings()
   renderWallets()
-  renderChainList()
+  renderChains()
 
   location.reload()
 }
@@ -305,8 +286,8 @@ function providerEvent(provider) {
   })
   provider.provider.on("chainChanged", (chainId) => {
     console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-    updateNetworkButton(chainId)
-    renderChainList()
+    updateNetwork(chainId)
+    renderChains()
   })
   provider.provider.on("disconnect", () => {
     console.log(`Disconnected from ${provider.info.name}`)
@@ -726,7 +707,6 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
   providers.push(providerDetail)
   renderWallets()
-
   if (localStorage.getItem("connected"))
     selectWallet(localStorage.getItem("lastWallet"))
 
@@ -737,15 +717,13 @@ window.addEventListener("load", () => {
   const currentPage = document.body.id
 
   const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetworkButton(storedChainId)
+  if (storedChainId) updateNetwork(storedChainId)
 
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
   if (selectedProvider) providerEvent(selectedProvider)
-
-  updateSettings()
-  renderChainList()
+  renderChains()
 
   const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
   setDarkMode(savedDarkMode === true)
@@ -773,14 +751,6 @@ window.addEventListener("load", () => {
   }
 })
 
-networkBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  chainList.classList.toggle("show")
-  chevron.classList.toggle("rotate")
-  walletList.classList.remove("show")
-  filterLists.forEach((list) => list.classList.remove("show"))
-})
-
 connectBtn.addEventListener("click", (event) => {
   event.stopPropagation()
   togglewalletList()
@@ -790,8 +760,6 @@ filtersBtns.forEach((btn, index) => {
   btn.addEventListener("click", (event) => {
     event.stopPropagation()
     filterLists[index].classList.toggle("show")
-    chainList.classList.remove("show")
-    chevron.classList.remove("rotate")
     walletList.classList.remove("show")
   })
 })
@@ -799,13 +767,9 @@ filtersBtns.forEach((btn, index) => {
 document.addEventListener("click", () => {
   walletList.classList.remove("show")
   filterLists.forEach((list) => list.classList.remove("show"))
-  chevron.classList.remove("rotate")
-  chainList.classList.remove("show")
 })
 
 walletList.addEventListener("click", (event) => event.stopPropagation())
-
-chainList.addEventListener("click", (event) => event.stopPropagation())
 
 filterLists.forEach((btn) => {
   btn.addEventListener("click", (event) => event.stopPropagation())
