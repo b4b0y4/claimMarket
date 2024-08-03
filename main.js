@@ -709,26 +709,33 @@ window.addEventListener("load", () => {
   }
 })
 
-document.addEventListener("click", (event) => {
-  if (event.target.closest("#connectBtn")) {
-    event.stopPropagation()
-    togglewalletList()
-  } else if (event.target.closest(".filters-btn")) {
-    event.stopPropagation()
-    const index = Array.from(filtersBtns).indexOf(
-      event.target.closest(".filters-btn")
-    )
-    filterLists[index].classList.toggle("show")
-    walletList.classList.remove("show")
-  } else {
-    walletList.classList.remove("show")
-    filterLists.forEach((list) => list.classList.remove("show"))
-  }
+connectBtn.addEventListener("click", (event) => {
+  event.stopPropagation()
+  togglewalletList()
 })
 
-disconnectBtn.addEventListener("click", disconnect)
+filtersBtns.forEach((btn, index) => {
+  btn.addEventListener("click", (event) => {
+    event.stopPropagation()
+    filterLists[index].classList.toggle("show")
+    walletList.classList.remove("show")
+  })
+})
+
+document.addEventListener("click", () => {
+  walletList.classList.remove("show")
+  filterLists.forEach((list) => list.classList.remove("show"))
+})
+
+walletList.addEventListener("click", (event) => event.stopPropagation())
+
+filterLists.forEach((btn) => {
+  btn.addEventListener("click", (event) => event.stopPropagation())
+})
 
 themeToggle.addEventListener("change", toggleDarkMode)
+
+disconnectBtn.addEventListener("click", disconnect)
 
 mySVGBtns.forEach((btn) => {
   btn.addEventListener("click", toggleMySVGs)
