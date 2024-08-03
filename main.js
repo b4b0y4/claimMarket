@@ -1,55 +1,63 @@
 import { ethers } from "./ethers.min.js"
 import { networkConfigs, contractAddress, abi } from "./constants.js"
 
-// DOM Elements
-const chain = document.getElementById("chain")
-const connectBtn = document.getElementById("connectBtn")
-const walletList = document.getElementById("walletList")
-const walletBox = document.getElementById("wallets")
-const whatsBtn = document.getElementById("whats")
-const disconnectBtn = document.getElementById("disconnect")
-const overlay = document.getElementById("overlay")
-const squaresBox = document.getElementById("squaresBox")
-const explanation = document.querySelector(".explanation")
-const market = document.getElementById("market")
-const mySVGs = document.getElementById("mySVGs")
-const filtersBtns = document.querySelectorAll(".filters-btn")
-const filterLists = document.querySelectorAll(".filter-list")
-const mySVGBtns = document.querySelectorAll(".my-svg-btn")
-const searchInputs = document.querySelectorAll(".search-input")
-const footer = document.querySelector("footer")
+const dom = {
+  get: (selector) => document.querySelector(selector),
+  getAll: (selector) => document.querySelectorAll(selector),
+  create: (tag, attributes = {}) => {
+    const element = document.createElement(tag)
+    Object.entries(attributes).forEach(([key, value]) => (element[key] = value))
+    return element
+  },
+  toggle: (element, show) => (element.style.display = show ? "block" : "none"),
+}
+
+const chain = dom.get("#chain")
+const connectBtn = dom.get("#connectBtn")
+const walletList = dom.get("#walletList")
+const walletBox = dom.get("#wallets")
+const whatsBtn = dom.get("#whats")
+const disconnectBtn = dom.get("#disconnect")
+const overlay = dom.get("#overlay")
+const squaresBox = dom.get("#squaresBox")
+const explanation = dom.get(".explanation")
+const market = dom.get("#market")
+const mySVGs = dom.get("#mySVGs")
+const filtersBtns = dom.getAll(".filters-btn")
+const filterLists = dom.getAll(".filter-list")
+const mySVGBtns = dom.getAll(".my-svg-btn")
+const searchInputs = dom.getAll(".search-input")
+const footer = dom.get("footer")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
   networkConfigs.sepolia.rpcUrl
 )
 
+const TARGET_NETWORK = networkConfigs.sepolia
+
+const storage = {
+  get: (key) => localStorage.getItem(key),
+  set: (key, value) => localStorage.setItem(key, value),
+  remove: (key) => localStorage.removeItem(key),
+  clear: () => localStorage.clear(),
+}
+
+function createButton(config, onClick) {
+  return dom.create("button", {
+    innerHTML: `
+      <img src="${config.icon}">
+      ${config.name}
+      <span class="indicator" style="display: none"></span>
+    `,
+    onclick: onClick,
+  })
+}
+
 /***************************************************
  *                CONNECTIVITY
- **************************************************/
-
-// Helper functions
-const toggleDisplay = (element, show) => {
-  element.style.display = show ? "block" : "none"
-}
-
-const createButton = (config, onClick) => {
-  const button = document.createElement("button")
-  const img = document.createElement("img")
-  img.src = config.icon
-  button.appendChild(img)
-  button.appendChild(document.createTextNode(config.name))
-
-  const indicator = document.createElement("span")
-  indicator.className = "indicator"
-  indicator.style.display = "none"
-  button.appendChild(indicator)
-
-  button.onclick = onClick
-  return button
-}
-
-async function selectWallet(name) {
+ ***************************************************/
+async function connectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
   if (!selectedProvider) return
 
@@ -61,21 +69,19 @@ async function selectWallet(name) {
       method: "eth_chainId",
     })
 
-    localStorage.setItem("currentChainId", chainId)
-    localStorage.setItem("lastWallet", selectedProvider.info.name)
-    localStorage.setItem("connected", "true")
+    storage.set("currentChainId", chainId)
+    storage.set("lastWallet", name)
+    storage.set("connected", "true")
 
-    switchNetwork(networkConfigs.sepolia)
+    switchNetwork()
     shortAddress(accounts[0])
     providerEvent(selectedProvider)
     renderWallets()
-    updateNetwork(chainId)
+    updateNetworkStatus(chainId)
 
     connectBtn.classList.add("connected")
 
-    console.log(
-      `Connected to ${selectedProvider.info.name} with account: ${accounts[0]}`
-    )
+    console.log(`Connected to ${name} with account: ${accounts[0]}`)
   } catch (error) {
     console.error("Failed to connect:", error)
   }
@@ -83,12 +89,12 @@ async function selectWallet(name) {
 
 function renderWallets() {
   walletBox.innerHTML = ""
-  const connectedWallet = localStorage.getItem("lastWallet")
+  const connectedWallet = storage.get("lastWallet")
 
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
       togglewalletList()
-      selectWallet(provider.info.name)
+      connectWallet(provider.info.name)
     })
     const indicator = button.querySelector(".indicator")
     indicator.style.display =
@@ -96,6 +102,36 @@ function renderWallets() {
 
     walletBox.appendChild(button)
   })
+}
+
+let networkWarning = false
+
+function updateNetworkStatus(currentChainId) {
+  chain.innerHTML = ""
+
+  const button = createButton(TARGET_NETWORK, () => {
+    togglewalletList()
+    switchNetwork(TARGET_NETWORK)
+  })
+  button.id = TARGET_NETWORK.name
+
+  const indicator = button.querySelector(".indicator")
+  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
+  indicator.style.display = isCorrectNetwork ? "inline-block" : "none"
+
+  chain.appendChild(button)
+
+  if (isCorrectNetwork) {
+    dom.toggle(overlay, false)
+    showNotification("")
+    networkWarning = false
+  } else if (!networkWarning) {
+    dom.toggle(overlay, true)
+    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
+    networkWarning = true
+  }
+
+  storage.set("currentChainId", currentChainId)
 }
 
 function shortAddress(address) {
@@ -111,19 +147,13 @@ async function getEns(address) {
       networkConfigs.ethereum.rpcUrl
     )
     const ensName = await mainnetProvider.lookupAddress(address)
+    if (!ensName) return
+
     const ensAvatar = await mainnetProvider.getAvatar(ensName)
 
-    if (ensName && ensAvatar) {
-      connectBtn.innerHTML = ""
-      const img = document.createElement("img")
-      img.src = ensAvatar
-      img.style.borderRadius = "50%"
-
-      connectBtn.appendChild(img)
-      connectBtn.appendChild(document.createTextNode(ensName))
-    } else if (ensName) {
-      connectBtn.innerHTML = ensName
-    }
+    connectBtn.innerHTML = ensAvatar
+      ? `<img src="${ensAvatar}" style="border-radius: 50%">${ensName}`
+      : ensName
   } catch (error) {
     console.log("Error getting ENS name:", error)
   }
@@ -133,134 +163,69 @@ function togglewalletList() {
   walletList.classList.toggle("show")
   filterLists.forEach((list) => list.classList.remove("show"))
 
-  const connected = localStorage.getItem("connected")
+  const connected = storage.get("connected")
 
-  toggleDisplay(whatsBtn, connected ? false : true)
-  toggleDisplay(disconnectBtn, connected ? true : false)
+  dom.toggle(whatsBtn, connected ? false : true)
+  dom.toggle(disconnectBtn, connected ? true : false)
 }
 
-function renderChains() {
-  chain.innerHTML = ""
-  const currentChainId = localStorage.getItem("currentChainId")
-
-  Object.entries(networkConfigs).forEach(([networkName, networkConfig]) => {
-    if (networkConfig.showInUI) {
-      const button = createButton(networkConfig, () => {
-        togglewalletList()
-        switchNetwork(networkConfig)
-      })
-      button.id = networkName
-      const indicator = button.querySelector(".indicator")
-      indicator.style.display =
-        networkConfig.chainIdHex === currentChainId ? "inline-block" : "none"
-
-      chain.appendChild(button)
-    }
-  })
-}
-
-let networkWarningShown = false
-
-function updateNetwork(chainId) {
-  const network = Object.values(networkConfigs).find(
-    (net) => net.chainId === parseInt(chainId) || net.chainIdHex === chainId
-  )
-  localStorage.setItem("currentChainId", chainId)
-
-  if (network && network.showInUI) {
-    toggleDisplay(overlay, false)
-    showNotification("")
-    networkWarningShown = false
-  } else if (!networkWarningShown) {
-    toggleDisplay(overlay, true)
-    showNotification("Switch to Sepolia!", "warning", true)
-    networkWarningShown = true
-  }
-  renderChains()
-}
-
-async function switchNetwork(newNetwork) {
+async function switchNetwork() {
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    (provider) => provider.info.name === storage.get("lastWallet")
   )
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
-      params: [{ chainId: newNetwork.chainIdHex }],
+      params: [{ chainId: TARGET_NETWORK.chainIdHex }],
     })
-    localStorage.setItem("currentChainId", newNetwork.chainIdHex)
-    renderChains()
-    updateNetwork(newNetwork.chainIdHex)
+    storage.set("currentChainId", TARGET_NETWORK.chainIdHex)
+    updateNetworkStatus(TARGET_NETWORK.chainIdHex)
   } catch (error) {
     console.error("Error switching network:", error)
   }
 }
 
 async function disconnect() {
-  const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
-  )
+  const lastWallet = storage.get("lastWallet")
+  const selectedProvider = providers.find((p) => p.info.name === lastWallet)
 
   try {
-    await selectedProvider.provider.request({
+    await selectedProvider?.provider.request({
       method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
     })
   } catch (error) {
     console.error("Error disconnecting:", error)
   }
-  ;[
-    "connected",
-    "currentChainId",
-    "lastWallet",
-    "-walletlink:https://www.walletlink.org:DefaultJsonRpcUrl",
-    "-walletlink:https://www.walletlink.org:session:secret",
-    "-walletlink:https://www.walletlink.org:Addresses",
-    "-walletlink:https://www.walletlink.org:IsStandaloneSigning",
-    "-walletlink:https://www.walletlink.org:session:linked",
-    "-walletlink:https://www.walletlink.org:session:id",
-    "-walletlink:https://www.walletlink.org:DefaultChainId",
-    "-walletlink:https://www.walletlink.org:EIP6963ProviderUUID",
-    "mySVGsVisible",
-  ].forEach((item) => localStorage.removeItem(item))
 
+  storage.clear()
   connectBtn.innerHTML = "Connect"
-  ;[(walletList, connectBtn)].forEach((el) => {
+  ;[walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
-  })
-
-  toggleDisplay(overlay, false)
+  )
+  dom.toggle(overlay, false)
   renderWallets()
-  renderChains()
 
   location.reload()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
-  const notificationBox = document.getElementById("notificationBox")
-  const notifications = notificationBox.querySelectorAll("#notification")
+  const notificationBox = dom.get("#notificationBox")
 
-  if (!message) {
-    notifications.forEach((notification) => {
-      notification.classList.remove("show")
-      setTimeout(() => {
-        notificationBox.removeChild(notification)
-      }, 500)
-    })
-    return
-  }
+  dom.getAll("#notification").forEach((notification) => {
+    notification.classList.remove("show")
+    setTimeout(() => notificationBox.removeChild(notification), 500)
+  })
 
-  const notification = document.createElement("div")
-  notification.id = "notification"
-  notification.classList.add(type)
+  if (!message) return
 
-  const content = document.createElement("div")
-  content.classList.add("notif-content")
-  content.textContent = message
+  const notification = dom.create("div", {
+    id: "notification",
+    className: type,
+    innerHTML: `<div class="notif-content">${message}</div>`,
+  })
 
-  notification.appendChild(content)
   notificationBox.prepend(notification)
-
   notification.offsetHeight
   notification.classList.add("show")
 
@@ -272,41 +237,36 @@ function showNotification(message, type = "info", isPermanent = false) {
       }, 500)
     }, 5000)
   }
-
   return notification
 }
 
 function providerEvent(provider) {
-  provider.provider.on("accountsChanged", async function (accounts) {
-    if (accounts.length > 0) {
-      shortAddress(accounts[0])
-    } else {
+  provider.provider
+    .on("accountsChanged", (accounts) =>
+      accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
+    )
+    .on("chainChanged", (chainId) => {
+      console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
+      updateNetworkStatus(chainId)
+    })
+    .on("disconnect", () => {
+      console.log(`Disconnected from ${provider.info.name}`)
       disconnect()
-    }
-  })
-  provider.provider.on("chainChanged", (chainId) => {
-    console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-    updateNetwork(chainId)
-    renderChains()
-  })
-  provider.provider.on("disconnect", () => {
-    console.log(`Disconnected from ${provider.info.name}`)
-    disconnect()
-  })
+    })
 }
 
 /***************************************************
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
 const root = document.documentElement
-const themeToggle = document.querySelector(".theme input")
-const themeLabel = document.querySelector(".theme")
+const themeToggle = dom.get(".theme input")
+const themeLabel = dom.get(".theme")
 
 function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
   themeToggle.checked = isDarkMode
   themeLabel.classList.toggle("dark", isDarkMode)
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
+  storage.set("darkMode", JSON.stringify(isDarkMode))
 }
 
 function toggleDarkMode() {
@@ -371,7 +331,7 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
   } else {
     button.addEventListener("click", async function () {
       const selectedProvider = providers.find(
-        (provider) => provider.info.name === localStorage.getItem("lastWallet")
+        (provider) => provider.info.name === storage.get("lastWallet")
       )
       if (selectedProvider) {
         try {
@@ -542,14 +502,14 @@ function createSVGCard(tokenId, color, options = {}) {
 }
 
 function updatePriceInfo(tokenId, info) {
-  const priceInfoElement = document.getElementById(`price-info-${tokenId}`)
+  const priceInfoElement = dom.getId(`price-info-${tokenId}`)
   if (priceInfoElement) {
     priceInfoElement.textContent = info
   }
 }
 
 function updateBidInfo(tokenId, info) {
-  const bidInfoElement = document.getElementById(`bid-info-${tokenId}`)
+  const bidInfoElement = dom.getId(`bid-info-${tokenId}`)
   if (bidInfoElement) {
     bidInfoElement.textContent = info
   }
@@ -561,7 +521,7 @@ function updateBidInfo(tokenId, info) {
 function toggleMySVGs() {
   const isVisible = mySVGs.classList.toggle("open")
 
-  localStorage.setItem("mySVGsVisible", isVisible)
+  storage.set("mySVGsVisible", isVisible)
 
   if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
   if (market) market.classList.toggle("mySVGs-open")
@@ -577,7 +537,7 @@ function toggleMySVGs() {
 
 async function showMySVGs() {
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    (provider) => provider.info.name === storage.get("lastWallet")
   )
 
   if (selectedProvider) {
@@ -707,8 +667,7 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
   providers.push(providerDetail)
   renderWallets()
-  if (localStorage.getItem("connected"))
-    selectWallet(localStorage.getItem("lastWallet"))
+  if (storage.get("connected")) connectWallet(storage.get("lastWallet"))
 
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
@@ -716,20 +675,19 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 window.addEventListener("load", () => {
   const currentPage = document.body.id
 
-  const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetwork(storedChainId)
+  const storedChainId = storage.get("currentChainId")
+  if (storedChainId) updateNetworkStatus(storedChainId)
 
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    (provider) => provider.info.name === storage.get("lastWallet")
   )
   if (selectedProvider) providerEvent(selectedProvider)
-  renderChains()
 
-  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+  const savedDarkMode = JSON.parse(storage.get("darkMode"))
   setDarkMode(savedDarkMode === true)
   root.classList.remove("no-flash")
 
-  const isVisible = localStorage.getItem("mySVGsVisible") === "true"
+  const isVisible = storage.get("mySVGsVisible") === "true"
   if (currentPage === "index-page") {
     renderSVGsClaim(rainbowColors)
     if (isVisible) {
@@ -751,28 +709,21 @@ window.addEventListener("load", () => {
   }
 })
 
-connectBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  togglewalletList()
-})
-
-filtersBtns.forEach((btn, index) => {
-  btn.addEventListener("click", (event) => {
+document.addEventListener("click", (event) => {
+  if (event.target.closest("#connectBtn")) {
     event.stopPropagation()
+    togglewalletList()
+  } else if (event.target.closest(".filters-btn")) {
+    event.stopPropagation()
+    const index = Array.from(filtersBtns).indexOf(
+      event.target.closest(".filters-btn")
+    )
     filterLists[index].classList.toggle("show")
     walletList.classList.remove("show")
-  })
-})
-
-document.addEventListener("click", () => {
-  walletList.classList.remove("show")
-  filterLists.forEach((list) => list.classList.remove("show"))
-})
-
-walletList.addEventListener("click", (event) => event.stopPropagation())
-
-filterLists.forEach((btn) => {
-  btn.addEventListener("click", (event) => event.stopPropagation())
+  } else {
+    walletList.classList.remove("show")
+    filterLists.forEach((list) => list.classList.remove("show"))
+  }
 })
 
 disconnectBtn.addEventListener("click", disconnect)
