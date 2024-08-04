@@ -617,6 +617,7 @@ footer {
   justify-content: center;
   padding: 10px;
   border-radius: 2px;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 #notification::before {
@@ -682,7 +683,7 @@ footer {
   height: 100%;
   backdrop-filter: blur(2px);
   -webkit-backdrop-filter: blur(2px);
-  background-color: rgba(var(--color-bg), 0.5);
+  background-color: rgba(var(--color-bg), 0.3);
   z-index: 99;
   display: none;
 }

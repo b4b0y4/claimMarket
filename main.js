@@ -13,11 +13,11 @@ const squaresBox = document.querySelector("#squaresBox")
 const explanation = document.querySelector(".explanation")
 const market = document.querySelector("#market")
 const mySVGs = document.querySelector("#mySVGs")
+const footer = document.querySelector("footer")
 const filtersBtns = document.querySelectorAll(".filters-btn")
 const filterLists = document.querySelectorAll(".filter-list")
 const mySVGBtns = document.querySelectorAll(".my-svg-btn")
 const searchInputs = document.querySelectorAll(".search-input")
-const footer = document.querySelector("footer")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -43,7 +43,7 @@ function createButton(config, onClick) {
 }
 
 /***************************************************
- *                CONNECTIVITY
+ *                 CONNECTIVITY
  ***************************************************/
 async function connectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name)
@@ -57,7 +57,6 @@ async function connectWallet(name) {
       method: "eth_chainId",
     })
 
-    localStorage.setItem("currentChainId", chainId)
     localStorage.setItem("lastWallet", name)
     localStorage.setItem("connected", "true")
 
@@ -90,36 +89,6 @@ function renderWallets() {
 
     walletBox.appendChild(button)
   })
-}
-
-let networkWarning = false
-
-function updateNetworkStatus(currentChainId) {
-  chain.innerHTML = ""
-
-  const button = createButton(TARGET_NETWORK, () => {
-    togglewalletList()
-    switchNetwork(TARGET_NETWORK)
-  })
-  button.id = TARGET_NETWORK.name
-
-  const indicator = button.querySelector(".indicator")
-  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
-  indicator.style.display = isCorrectNetwork ? "inline-block" : "none"
-
-  chain.appendChild(button)
-
-  if (isCorrectNetwork) {
-    toggleDisplay(overlay, false)
-    showNotification("")
-    networkWarning = false
-  } else if (!networkWarning) {
-    toggleDisplay(overlay, true)
-    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
-    networkWarning = true
-  }
-
-  localStorage.setItem("currentChainId", currentChainId)
 }
 
 function shortAddress(address) {
@@ -157,6 +126,34 @@ function togglewalletList() {
   toggleDisplay(disconnectBtn, connected ? true : false)
 }
 
+let networkWarning = false
+
+function updateNetworkStatus(currentChainId) {
+  chain.innerHTML = ""
+
+  const button = createButton(TARGET_NETWORK, () => {
+    togglewalletList()
+    switchNetwork()
+  })
+  button.id = TARGET_NETWORK.name
+
+  const indicator = button.querySelector(".indicator")
+  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
+  indicator.style.display = isCorrectNetwork ? "inline-block" : "none"
+
+  chain.appendChild(button)
+
+  if (isCorrectNetwork) {
+    toggleDisplay(overlay, false)
+    showNotification("")
+    networkWarning = false
+  } else if (!networkWarning) {
+    toggleDisplay(overlay, true)
+    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
+    networkWarning = true
+  }
+}
+
 async function switchNetwork() {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
@@ -166,7 +163,6 @@ async function switchNetwork() {
       method: "wallet_switchEthereumChain",
       params: [{ chainId: TARGET_NETWORK.chainIdHex }],
     })
-    localStorage.setItem("currentChainId", TARGET_NETWORK.chainIdHex)
     updateNetworkStatus(TARGET_NETWORK.chainIdHex)
   } catch (error) {
     console.error("Error switching network:", error)
@@ -662,14 +658,13 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 
 window.addEventListener("load", () => {
   const currentPage = document.body.id
-
-  const storedChainId = localStorage.getItem("currentChainId")
-  if (storedChainId) updateNetworkStatus(storedChainId)
-
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
-  if (selectedProvider) providerEvent(selectedProvider)
+  if (selectedProvider) {
+    providerEvent(selectedProvider)
+    updateNetworkStatus(TARGET_NETWORK.chainIdHex)
+  }
 
   const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
   setDarkMode(savedDarkMode === true)
