@@ -249,12 +249,20 @@ function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
   themeToggle.checked = isDarkMode
   themeLabel.classList.toggle("dark", isDarkMode)
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
 function toggleDarkMode() {
   const isDarkMode = themeToggle.checked
   setDarkMode(isDarkMode)
+  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
+}
+
+function getTheme() {
+  const savedDarkMode =
+    JSON.parse(localStorage.getItem("darkMode")) ||
+    window.matchMedia("(prefers-color-scheme: dark)").matches
+
+  setDarkMode(savedDarkMode)
 }
 
 /***************************************************
@@ -666,8 +674,7 @@ window.addEventListener("load", () => {
     updateNetworkStatus(TARGET_NETWORK.chainIdHex)
   }
 
-  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
-  setDarkMode(savedDarkMode === true)
+  getTheme()
   root.classList.remove("no-flash")
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
@@ -691,6 +698,15 @@ window.addEventListener("load", () => {
     }
   }
 })
+
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (event) => {
+    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+    if (savedDarkMode === null) {
+      setDarkMode(event.matches)
+    }
+  })
 
 connectBtn.addEventListener("click", (event) => {
   event.stopPropagation()
