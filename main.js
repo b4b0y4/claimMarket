@@ -130,6 +130,7 @@ let networkWarning = false
 
 function updateNetworkStatus(currentChainId) {
   chain.innerHTML = ""
+  if (currentChainId === undefined) return
 
   const button = createButton(TARGET_NETWORK, () => {
     togglewalletList()
@@ -147,10 +148,12 @@ function updateNetworkStatus(currentChainId) {
     toggleDisplay(overlay, false)
     showNotification("")
     networkWarning = false
+    console.log("Correct network, notification cleared.")
   } else if (!networkWarning) {
     toggleDisplay(overlay, true)
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
     networkWarning = true
+    console.log("Incorrect network, showing notification.")
   }
 }
 
@@ -189,8 +192,7 @@ async function disconnect() {
   )
   toggleDisplay(overlay, false)
   renderWallets()
-
-  location.reload()
+  updateNetworkStatus()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {

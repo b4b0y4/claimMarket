@@ -316,7 +316,7 @@ header {
   border-radius: 32px;
   padding: 5px;
   background-color: var(--color-hvr);
-  transition: box-shadow 0.3s ease-in-out;
+  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
 }
 
 .slider:hover,
