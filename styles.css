@@ -30,13 +30,6 @@
   box-sizing: border-box;
 }
 
-input,
-textarea,
-select {
-  border: none;
-  outline: none;
-}
-
 body,
 html {
   margin: 0;
@@ -188,6 +181,7 @@ header {
 
 .search-input {
   border: none;
+  outline: none;
   background-color: transparent;
   color: var(--color-txt);
   background-color: var(--color-hvr);
@@ -302,6 +296,19 @@ header {
   padding: 0 7.5px;
 }
 
+#whats a {
+  font-size: 0.9em;
+  text-decoration: none;
+  color: var(--color-txt);
+  background-color: transparent;
+  padding: 0;
+  margin-right: 0;
+}
+
+#whats a:hover {
+  text-decoration: underline;
+}
+
 #disconnect {
   height: 32px;
   width: 60px;
@@ -314,19 +321,6 @@ header {
 .slider:hover,
 #disconnect:hover {
   box-shadow: 0 0 0 1px var(--color-hvr);
-}
-
-#whats a {
-  font-size: 0.9em;
-  text-decoration: none;
-  color: var(--color-txt);
-  background-color: transparent;
-  padding: 0;
-  margin-right: 0;
-}
-
-#whats a:hover {
-  text-decoration: underline;
 }
 
 .theme {
@@ -351,7 +345,7 @@ header {
   bottom: 0;
   background-color: var(--color-hvr);
   border-radius: 32px;
-  transition: box-shadow 0.3s ease-in-out;
+  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 }
 
 .slider:before {
