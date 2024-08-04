@@ -183,7 +183,7 @@ async function disconnect() {
   }
 
   localStorage.clear()
-  connectBtn.innerHTML = "Connect"
+  connectBtn.innerHTML = "Connect Wallet"
   ;[walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
   )
