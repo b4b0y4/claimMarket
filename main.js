@@ -1,33 +1,23 @@
 import { ethers } from "./ethers.min.js"
 import { networkConfigs, contractAddress, abi } from "./constants.js"
 
-const dom = {
-  get: (selector) => document.querySelector(selector),
-  getAll: (selector) => document.querySelectorAll(selector),
-  create: (tag, attributes = {}) => {
-    const element = document.createElement(tag)
-    Object.entries(attributes).forEach(([key, value]) => (element[key] = value))
-    return element
-  },
-  toggle: (element, show) => (element.style.display = show ? "block" : "none"),
-}
-
-const chain = dom.get("#chain")
-const connectBtn = dom.get("#connectBtn")
-const walletList = dom.get("#walletList")
-const walletBox = dom.get("#wallets")
-const whatsBtn = dom.get("#whats")
-const disconnectBtn = dom.get("#disconnect")
-const overlay = dom.get("#overlay")
-const squaresBox = dom.get("#squaresBox")
-const explanation = dom.get(".explanation")
-const market = dom.get("#market")
-const mySVGs = dom.get("#mySVGs")
-const filtersBtns = dom.getAll(".filters-btn")
-const filterLists = dom.getAll(".filter-list")
-const mySVGBtns = dom.getAll(".my-svg-btn")
-const searchInputs = dom.getAll(".search-input")
-const footer = dom.get("footer")
+// DOM Elements
+const chain = document.querySelector("#chain")
+const connectBtn = document.querySelector("#connectBtn")
+const walletList = document.querySelector("#walletList")
+const walletBox = document.querySelector("#wallets")
+const whatsBtn = document.querySelector("#whats")
+const disconnectBtn = document.querySelector("#disconnect")
+const overlay = document.querySelector("#overlay")
+const squaresBox = document.querySelector("#squaresBox")
+const explanation = document.querySelector(".explanation")
+const market = document.querySelector("#market")
+const mySVGs = document.querySelector("#mySVGs")
+const filtersBtns = document.querySelectorAll(".filters-btn")
+const filterLists = document.querySelectorAll(".filter-list")
+const mySVGBtns = document.querySelectorAll(".my-svg-btn")
+const searchInputs = document.querySelectorAll(".search-input")
+const footer = document.querySelector("footer")
 
 const providers = []
 const sepoliaProvider = new ethers.JsonRpcProvider(
@@ -36,22 +26,20 @@ const sepoliaProvider = new ethers.JsonRpcProvider(
 
 const TARGET_NETWORK = networkConfigs.sepolia
 
-const storage = {
-  get: (key) => localStorage.getItem(key),
-  set: (key, value) => localStorage.setItem(key, value),
-  remove: (key) => localStorage.removeItem(key),
-  clear: () => localStorage.clear(),
+// Helper functions
+const toggleDisplay = (element, show) => {
+  element.style.display = show ? "block" : "none"
 }
 
 function createButton(config, onClick) {
-  return dom.create("button", {
-    innerHTML: `
+  const button = document.createElement("button")
+  button.innerHTML = `
       <img src="${config.icon}">
       ${config.name}
       <span class="indicator" style="display: none"></span>
-    `,
-    onclick: onClick,
-  })
+    `
+  button.onclick = onClick
+  return button
 }
 
 /***************************************************
@@ -69,9 +57,9 @@ async function connectWallet(name) {
       method: "eth_chainId",
     })
 
-    storage.set("currentChainId", chainId)
-    storage.set("lastWallet", name)
-    storage.set("connected", "true")
+    localStorage.setItem("currentChainId", chainId)
+    localStorage.setItem("lastWallet", name)
+    localStorage.setItem("connected", "true")
 
     switchNetwork()
     shortAddress(accounts[0])
@@ -89,7 +77,7 @@ async function connectWallet(name) {
 
 function renderWallets() {
   walletBox.innerHTML = ""
-  const connectedWallet = storage.get("lastWallet")
+  const connectedWallet = localStorage.getItem("lastWallet")
 
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
@@ -122,16 +110,16 @@ function updateNetworkStatus(currentChainId) {
   chain.appendChild(button)
 
   if (isCorrectNetwork) {
-    dom.toggle(overlay, false)
+    toggleDisplay(overlay, false)
     showNotification("")
     networkWarning = false
   } else if (!networkWarning) {
-    dom.toggle(overlay, true)
+    toggleDisplay(overlay, true)
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
     networkWarning = true
   }
 
-  storage.set("currentChainId", currentChainId)
+  localStorage.setItem("currentChainId", currentChainId)
 }
 
 function shortAddress(address) {
@@ -163,22 +151,22 @@ function togglewalletList() {
   walletList.classList.toggle("show")
   filterLists.forEach((list) => list.classList.remove("show"))
 
-  const connected = storage.get("connected")
+  const connected = localStorage.getItem("connected")
 
-  dom.toggle(whatsBtn, connected ? false : true)
-  dom.toggle(disconnectBtn, connected ? true : false)
+  toggleDisplay(whatsBtn, connected ? false : true)
+  toggleDisplay(disconnectBtn, connected ? true : false)
 }
 
 async function switchNetwork() {
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === storage.get("lastWallet")
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: TARGET_NETWORK.chainIdHex }],
     })
-    storage.set("currentChainId", TARGET_NETWORK.chainIdHex)
+    localStorage.setItem("currentChainId", TARGET_NETWORK.chainIdHex)
     updateNetworkStatus(TARGET_NETWORK.chainIdHex)
   } catch (error) {
     console.error("Error switching network:", error)
@@ -186,7 +174,7 @@ async function switchNetwork() {
 }
 
 async function disconnect() {
-  const lastWallet = storage.get("lastWallet")
+  const lastWallet = localStorage.getItem("lastWallet")
   const selectedProvider = providers.find((p) => p.info.name === lastWallet)
 
   try {
@@ -198,32 +186,31 @@ async function disconnect() {
     console.error("Error disconnecting:", error)
   }
 
-  storage.clear()
+  localStorage.clear()
   connectBtn.innerHTML = "Connect"
   ;[walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
   )
-  dom.toggle(overlay, false)
+  toggleDisplay(overlay, false)
   renderWallets()
 
   location.reload()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
-  const notificationBox = dom.get("#notificationBox")
+  const notificationBox = document.querySelector("#notificationBox")
 
-  dom.getAll("#notification").forEach((notification) => {
+  document.querySelectorAll("#notification").forEach((notification) => {
     notification.classList.remove("show")
     setTimeout(() => notificationBox.removeChild(notification), 500)
   })
 
   if (!message) return
 
-  const notification = dom.create("div", {
-    id: "notification",
-    className: type,
-    innerHTML: `<div class="notif-content">${message}</div>`,
-  })
+  const notification = document.createElement("div")
+  notification.id = "notification"
+  notification.classList.add(type)
+  notification.innerHTML = `<div class="notif-content">${message}</div>`
 
   notificationBox.prepend(notification)
   notification.offsetHeight
@@ -259,14 +246,14 @@ function providerEvent(provider) {
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
 const root = document.documentElement
-const themeToggle = dom.get(".theme input")
-const themeLabel = dom.get(".theme")
+const themeToggle = document.querySelector(".theme input")
+const themeLabel = document.querySelector(".theme")
 
 function setDarkMode(isDarkMode) {
   root.classList.toggle("dark-mode", isDarkMode)
   themeToggle.checked = isDarkMode
   themeLabel.classList.toggle("dark", isDarkMode)
-  storage.set("darkMode", JSON.stringify(isDarkMode))
+  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
 }
 
 function toggleDarkMode() {
@@ -331,7 +318,7 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
   } else {
     button.addEventListener("click", async function () {
       const selectedProvider = providers.find(
-        (provider) => provider.info.name === storage.get("lastWallet")
+        (provider) => provider.info.name === localStorage.getItem("lastWallet")
       )
       if (selectedProvider) {
         try {
@@ -502,14 +489,14 @@ function createSVGCard(tokenId, color, options = {}) {
 }
 
 function updatePriceInfo(tokenId, info) {
-  const priceInfoElement = dom.getId(`price-info-${tokenId}`)
+  const priceInfoElement = document.querySelectorId(`price-info-${tokenId}`)
   if (priceInfoElement) {
     priceInfoElement.textContent = info
   }
 }
 
 function updateBidInfo(tokenId, info) {
-  const bidInfoElement = dom.getId(`bid-info-${tokenId}`)
+  const bidInfoElement = document.querySelectorId(`bid-info-${tokenId}`)
   if (bidInfoElement) {
     bidInfoElement.textContent = info
   }
@@ -521,7 +508,7 @@ function updateBidInfo(tokenId, info) {
 function toggleMySVGs() {
   const isVisible = mySVGs.classList.toggle("open")
 
-  storage.set("mySVGsVisible", isVisible)
+  localStorage.setItem("mySVGsVisible", isVisible)
 
   if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
   if (market) market.classList.toggle("mySVGs-open")
@@ -537,7 +524,7 @@ function toggleMySVGs() {
 
 async function showMySVGs() {
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === storage.get("lastWallet")
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
 
   if (selectedProvider) {
@@ -667,7 +654,8 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail
   providers.push(providerDetail)
   renderWallets()
-  if (storage.get("connected")) connectWallet(storage.get("lastWallet"))
+  if (localStorage.getItem("connected"))
+    connectWallet(localStorage.getItem("lastWallet"))
 
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
@@ -675,19 +663,19 @@ window.addEventListener("eip6963:announceProvider", (event) => {
 window.addEventListener("load", () => {
   const currentPage = document.body.id
 
-  const storedChainId = storage.get("currentChainId")
+  const storedChainId = localStorage.getItem("currentChainId")
   if (storedChainId) updateNetworkStatus(storedChainId)
 
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === storage.get("lastWallet")
+    (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
   if (selectedProvider) providerEvent(selectedProvider)
 
-  const savedDarkMode = JSON.parse(storage.get("darkMode"))
+  const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
   setDarkMode(savedDarkMode === true)
   root.classList.remove("no-flash")
 
-  const isVisible = storage.get("mySVGsVisible") === "true"
+  const isVisible = localStorage.getItem("mySVGsVisible") === "true"
   if (currentPage === "index-page") {
     renderSVGsClaim(rainbowColors)
     if (isVisible) {
