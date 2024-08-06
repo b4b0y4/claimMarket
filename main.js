@@ -682,10 +682,8 @@ window.addEventListener("load", () => {
   root.classList.remove("no-flash")
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
-  if (isVisible) {
-    toggleMySVGs()
-  }
 
+  if (isVisible) toggleMySVGs()
   if (currentPage === "index-page") renderSVGsClaim(rainbowColors)
   if (currentPage === "market-page") displayAllSVGs()
 })
