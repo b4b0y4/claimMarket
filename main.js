@@ -127,34 +127,26 @@ function togglewalletList() {
 }
 
 let networkWarning = false
-
 function updateNetworkStatus(currentChainId) {
+  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
   chain.innerHTML = ""
-  if (currentChainId === undefined) return
-
   const button = createButton(TARGET_NETWORK, () => {
     togglewalletList()
     switchNetwork()
   })
   button.id = TARGET_NETWORK.name
-
-  const greenDot = button.querySelector(".green-dot")
-  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
-  greenDot.style.display = isCorrectNetwork ? "inline-block" : "none"
-
+  button.querySelector(".green-dot").style.display = isCorrectNetwork
+    ? "inline-block"
+    : "none"
   chain.appendChild(button)
-
-  if (isCorrectNetwork) {
-    toggleDisplay(overlay, false)
-    showNotification("")
-    networkWarning = false
-    console.log("Correct network, notification cleared.")
-  } else if (!networkWarning) {
-    toggleDisplay(overlay, true)
-    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
-    networkWarning = true
-    console.log("Incorrect network, showing notification.")
-  }
+  if (currentChainId === undefined) return
+  toggleDisplay(overlay, !isCorrectNetwork)
+  showNotification(
+    isCorrectNetwork ? "" : `Switch to ${TARGET_NETWORK.name}!`,
+    "warning",
+    true
+  )
+  networkWarning = !isCorrectNetwork
 }
 
 async function switchNetwork() {
@@ -673,6 +665,8 @@ window.addEventListener("load", () => {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
+  updateNetworkStatus()
+
   if (selectedProvider) {
     providerEvent(selectedProvider)
     updateNetworkStatus(TARGET_NETWORK.chainIdHex)
