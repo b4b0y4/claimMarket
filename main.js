@@ -694,7 +694,6 @@ window.addEventListener("load", () => {
     if (isVisible) {
       mySVGs.classList.add("open")
       market.classList.add("mySVGs-open")
-      explanation.classList.add("mySVGs-open")
       footer.classList.add("mySVGs-open")
       showMySVGs()
     }

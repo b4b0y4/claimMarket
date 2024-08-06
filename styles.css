@@ -399,7 +399,8 @@ main {
   justify-content: flex-start;
   max-width: 90%;
   width: 100%;
-  padding: 20px;
+  padding: 10px;
+  margin-top: 22px;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
 }
 
@@ -413,7 +414,7 @@ main {
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
   max-width: 90%;
   width: 100%;
-  margin: 0 auto;
+  margin: 22px auto;
 }
 
 #market.mySVGs-open,
