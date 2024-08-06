@@ -648,7 +648,7 @@ footer {
   box-shadow: 0 0 2px rgba(var(--color-red), 0.5);
 }
 
-.indicator {
+.green-dot {
   width: 10px;
   height: 10px;
   border-radius: 50%;

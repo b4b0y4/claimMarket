@@ -36,7 +36,7 @@ function createButton(config, onClick) {
   button.innerHTML = `
       <img src="${config.icon}">
       ${config.name}
-      <span class="indicator" style="display: none"></span>
+      <span class="green-dot" style="display: none"></span>
     `
   button.onclick = onClick
   return button
@@ -83,8 +83,8 @@ function renderWallets() {
       togglewalletList()
       connectWallet(provider.info.name)
     })
-    const indicator = button.querySelector(".indicator")
-    indicator.style.display =
+    const greenDot = button.querySelector(".green-dot")
+    greenDot.style.display =
       provider.info.name === connectedWallet ? "inline-block" : "none"
 
     walletBox.appendChild(button)
@@ -138,9 +138,9 @@ function updateNetworkStatus(currentChainId) {
   })
   button.id = TARGET_NETWORK.name
 
-  const indicator = button.querySelector(".indicator")
+  const greenDot = button.querySelector(".green-dot")
   const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
-  indicator.style.display = isCorrectNetwork ? "inline-block" : "none"
+  greenDot.style.display = isCorrectNetwork ? "inline-block" : "none"
 
   chain.appendChild(button)
 
