@@ -139,14 +139,18 @@ function updateNetworkStatus(currentChainId) {
     ? "inline-block"
     : "none"
   chain.appendChild(button)
+
   if (currentChainId === undefined) return
+
   toggleDisplay(overlay, !isCorrectNetwork)
-  showNotification(
-    isCorrectNetwork ? "" : `Switch to ${TARGET_NETWORK.name}!`,
-    "warning",
-    true
-  )
-  networkWarning = !isCorrectNetwork
+
+  if (isCorrectNetwork) {
+    showNotification("")
+    networkWarning = false
+  } else if (!networkWarning) {
+    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
+    networkWarning = true
+  }
 }
 
 async function switchNetwork() {
