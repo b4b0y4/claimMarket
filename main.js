@@ -516,9 +516,11 @@ function toggleMySVGs() {
 
   localStorage.setItem("mySVGsVisible", isVisible)
 
-  if (squaresBox) squaresBox.classList.toggle("mySVGs-open")
+  if (squaresBox) {
+    squaresBox.classList.toggle("mySVGs-open")
+    explanation.classList.toggle("mySVGs-open")
+  }
   if (market) market.classList.toggle("mySVGs-open")
-  explanation.classList.toggle("mySVGs-open")
   footer.classList.toggle("mySVGs-open")
 
   mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
@@ -680,24 +682,12 @@ window.addEventListener("load", () => {
   root.classList.remove("no-flash")
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
-  if (currentPage === "index-page") {
-    renderSVGsClaim(rainbowColors)
-    if (isVisible) {
-      mySVGs.classList.add("open")
-      squaresBox.classList.add("mySVGs-open")
-      explanation.classList.add("mySVGs-open")
-      footer.classList.add("mySVGs-open")
-      showMySVGs()
-    }
-  } else if (currentPage === "market-page") {
-    displayAllSVGs()
-    if (isVisible) {
-      mySVGs.classList.add("open")
-      market.classList.add("mySVGs-open")
-      footer.classList.add("mySVGs-open")
-      showMySVGs()
-    }
+  if (isVisible) {
+    toggleMySVGs()
   }
+
+  if (currentPage === "index-page") renderSVGsClaim(rainbowColors)
+  if (currentPage === "market-page") displayAllSVGs()
 })
 
 window
