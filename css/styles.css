@@ -412,7 +412,6 @@ main {
   gap: 10px;
   justify-content: center;
   transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
-  max-width: 90%;
   width: 100%;
   margin: 22px auto;
 }
@@ -458,7 +457,7 @@ footer.mySVGs-open {
 
 #mySVGs {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   grid-auto-rows: auto;
   gap: 10px;
   align-content: start;
@@ -572,6 +571,7 @@ footer.mySVGs-open {
   background-color: var(--color-bdr);
 }
 
+.button-container button.disabled,
 .cancel-list-btn,
 .cancel-offer-btn {
   display: none;
@@ -587,7 +587,6 @@ footer {
   position: fixed;
   bottom: 15px;
   right: 15px;
-  width: 180px;
   overflow: visible;
   z-index: 100;
 }
@@ -706,6 +705,11 @@ footer {
 
   main {
     padding: 0;
+  }
+
+  #market,
+  #squaresBox {
+    max-width: 90%;
   }
 
   #market.mySVGs-open,
