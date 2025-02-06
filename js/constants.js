@@ -57,7 +57,7 @@ export const networkConfigs = {
   },
   sepolia: {
     name: "Sepolia",
-    rpcUrl: "https://rpc.sepolia.org",
+    rpcUrl: "https://ethereum-sepolia-rpc.publicnode.com",
     chainId: 11155111,
     chainIdHex: "0xaa36a7",
     icon: "./logo/sepolia.png",

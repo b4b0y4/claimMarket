@@ -26,9 +26,11 @@ const mySVGBtns = document.querySelectorAll(".my-svg-btn")
 const searchInputs = document.querySelectorAll(".search-input")
 
 const providers = []
-const sepoliaProvider = new ethers.JsonRpcProvider(
-  networkConfigs.sepolia.rpcUrl
-)
+// const sepoliaProvider = new ethers.JsonRpcProvider(
+//   networkConfigs.sepolia.rpcUrl
+// )
+const rpcUrl = localStorage.getItem("rpcUrl")
+const sepoliaProvider = new ethers.JsonRpcProvider(rpcUrl)
 
 const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider)
 const marketContract = new ethers.Contract(
@@ -249,6 +251,17 @@ function providerEvent(provider) {
     })
 }
 
+let rpcWarning = false
+function getRpc() {
+  if (!rpcUrl && !rpcWarning) {
+    showNotification(`Add a rpc Url!`, "warning", true)
+    rpcWarning = true
+  } else if (rpcUrl) {
+    showNotification("")
+    rpcWarning = false
+  }
+}
+
 /***************************************************
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
@@ -453,62 +466,12 @@ async function getHighestOffer(tokenId) {
   }
 }
 
-async function buyItem(tokenId, priceInWei) {
-  try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
-
-    showNotification(`Buying SVG #${tokenId}`, "info")
-
-    const tx = await mContract.buyItem(tokenId, { value: priceInWei })
-    await tx.wait()
-    showNotification(`You bought SVG #${tokenId}`, "success")
-
-    console.log(
-      `Bought item ${tokenId} for ${ethers.formatEther(priceInWei)} ETH`
-    )
-    await refreshDisplay()
-  } catch (error) {
-    console.error("Error buying item:", error)
-  }
-}
-
-async function placeOffer(tokenId, offerAmount) {
-  try {
-    const offerInWei = ethers.parseEther(offerAmount)
-    await marketContract.placeOffer(tokenId, { value: offerInWei })
-    console.log(`Placed offer of ${offerAmount} ETH for item ${tokenId}`)
-    await refreshDisplay()
-  } catch (error) {
-    console.error("Error placing offer:", error)
-  }
-}
-
-async function cancelOffer(tokenId) {
-  try {
-    await marketContract.cancelOffer(tokenId)
-    console.log(`Cancelled offer for item ${tokenId}`)
-    await refreshDisplay()
-  } catch (error) {
-    console.error("Error cancelling offer:", error)
-  }
-}
-
 async function displayAllSVGs() {
   try {
     const listedItems = await getAllListedItems()
 
-    // Get all token IDs
     const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
 
-    // Create a map of all items (listed and unlisted)
     const itemMap = new Map(
       allTokenIds.map((id) => [
         id,
@@ -516,14 +479,12 @@ async function displayAllSVGs() {
       ])
     )
 
-    // Update the map with listed items
     listedItems.forEach((item) => {
       if (itemMap.has(item.tokenId)) {
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
       }
     })
 
-    // Sort items: listed (by price) first, then unlisted
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
       if (a.isActive && !b.isActive) return -1
       if (!a.isActive && b.isActive) return 1
@@ -535,10 +496,8 @@ async function displayAllSVGs() {
       return parseInt(a.tokenId) - parseInt(b.tokenId)
     })
 
-    // Clear existing content
     market.innerHTML = ""
 
-    // Display SVGs in the new order
     sortedItems.forEach((item) => {
       const { tokenId, isActive, price } = item
       const color = rainbowColors[parseInt(tokenId) - 1]
@@ -547,16 +506,18 @@ async function displayAllSVGs() {
       let bidText = ""
       let buttons = [
         { text: "Offer", className: "offer-btn" },
-        { text: "Cancel Offer", className: "cancel-offer-btn" },
+        { text: "Cancel", className: "cancel-offer-btn" },
         { text: "Buy", className: "buy-btn" },
       ]
 
       if (isActive) {
         priceText = `${ethers.formatEther(price)} ETH`
         buttons.find((btn) => btn.text === "Buy").disabled = false
+        buttons.find((btn) => btn.text === "Cancel").disabled = false
       } else {
         priceText = ""
         buttons.find((btn) => btn.text === "Buy").disabled = true
+        buttons.find((btn) => btn.text === "Cancel").disabled = true
       }
 
       const card = createSVGCard(tokenId, color, {
@@ -574,7 +535,7 @@ async function displayAllSVGs() {
           if (offer && offer.amount > 0) {
             updateBidInfo(
               tokenId,
-              `Highest offer: ${ethers.formatEther(offer.amount)} ETH`
+              `Offer: ${ethers.formatEther(offer.amount)} ETH`
             )
           }
         })
@@ -678,49 +639,6 @@ function updateBidInfo(tokenId, bidText) {
 /***************************************************
  *                  DISPLAY MY SVG
  **************************************************/
-async function listItem(tokenId, priceInEther) {
-  try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-
-    // Create instances of both contracts
-    const sContract = new ethers.Contract(svgAddress, svgAbi, signer)
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
-
-    // Check if the marketplace is approved
-    const isApproved = await sContract.isApprovedForAll(
-      await signer.getAddress(),
-      marketAddress
-    )
-
-    if (!isApproved) {
-      showNotification("Approving marketplace to handle your SVG...", "info")
-      const approveTx = await sContract.setApprovalForAll(marketAddress, true)
-      await approveTx.wait()
-      showNotification("Marketplace approved successfully", "success")
-    }
-
-    const priceInWei = ethers.parseEther(priceInEther)
-
-    showNotification(`Listing SVG #${tokenId} for ${priceInEther} ETH`, "info")
-
-    const tx = await mContract.listItem(tokenId, priceInWei)
-    await tx.wait()
-
-    showNotification(`Successfully listed SVG #${tokenId}`, "success")
-    console.log(`Listed item ${tokenId} for ${priceInEther} ETH`)
-
-    await refreshDisplay()
-  } catch (error) {
-    console.error("Error listing item:", error)
-  }
-}
-
 function toggleMySVGs() {
   const isVisible = mySVGs.classList.toggle("open")
 
@@ -801,10 +719,8 @@ async function getSVGOwned(svgContract, address) {
 
 async function displaySVG(tokenIds) {
   try {
-    // Get all listed items
     const listedItems = await getAllListedItems()
 
-    // Create a map of all owned items (listed and unlisted)
     const itemMap = new Map(
       tokenIds.map((id) => [
         id.toString(),
@@ -812,35 +728,28 @@ async function displaySVG(tokenIds) {
       ])
     )
 
-    // Update the map with listed items
     listedItems.forEach((item) => {
       if (itemMap.has(item.tokenId)) {
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
       }
     })
 
-    // Sort items: active items first, then by price
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      // Compare active status
       if (a.isActive !== b.isActive) {
         return a.isActive ? -1 : 1
       }
 
-      // Compare price using BigInt for accurate sorting
       const priceA = BigInt(a.price)
       const priceB = BigInt(b.price)
       if (priceA !== priceB) {
         return priceA < priceB ? -1 : 1
       }
 
-      // If prices are the same, sort by tokenId
       return parseInt(a.tokenId) - parseInt(b.tokenId)
     })
 
-    // Clear existing content
     mySVGs.innerHTML = ""
 
-    // Display SVGs in the sorted order
     for (const item of sortedItems) {
       const { tokenId, isActive, price } = item
       const color = rainbowColors[parseInt(tokenId) - 1]
@@ -860,7 +769,7 @@ async function displaySVG(tokenIds) {
       try {
         const offer = await getHighestOffer(tokenId)
         if (offer && offer.amount > 0) {
-          bidText = `Highest offer: ${ethers.formatEther(offer.amount)} ETH`
+          bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
         }
       } catch (error) {
         console.error(
@@ -880,6 +789,197 @@ async function displaySVG(tokenIds) {
     }
   } catch (error) {
     console.error("Error displaying SVGs:", error)
+  }
+}
+
+/***************************************************
+ *               MARKET INTERACTIONS
+ **************************************************/
+async function listItem(tokenId, priceInEther) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+
+    const sContract = new ethers.Contract(svgAddress, svgAbi, signer)
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+
+    const isApproved = await sContract.isApprovedForAll(
+      await signer.getAddress(),
+      marketAddress
+    )
+
+    if (!isApproved) {
+      showNotification("Approving marketplace...", "info", true)
+      const approveTx = await sContract.setApprovalForAll(marketAddress, true)
+      await approveTx.wait()
+      showNotification("Marketplace approved successfully", "success")
+    }
+
+    const priceInWei = ethers.parseEther(priceInEther)
+
+    showNotification(
+      `Listing SVG #${tokenId} for ${priceInEther} ETH`,
+      "info",
+      true
+    )
+
+    const tx = await mContract.listItem(tokenId, priceInWei)
+    await tx.wait()
+
+    showNotification(`Listed SVG #${tokenId}`, "success")
+
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
+  }
+}
+
+async function cancelListing(tokenId) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+
+    showNotification(`Cancelling listing of svg #${tokenId}`, "info", true)
+
+    const tx = await mContract.cancelListing(tokenId)
+    await tx.wait()
+
+    showNotification(`Listing of svg #${tokenId} cancelled`, "success")
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
+  }
+}
+
+async function acceptOffer(tokenId) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+
+    showNotification(
+      `Accepting ${offerAmount} ETH for SVG #${tokenId}`,
+      "info",
+      true
+    )
+
+    await mContract.acceptOffer(tokenId)
+
+    showNotification(
+      `Accepted ${offerAmount} ETH for SVG #${tokenId}`,
+      "success"
+    )
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
+  }
+}
+
+async function buyItem(tokenId, priceInWei) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+
+    showNotification(`Buying SVG #${tokenId}`, "info", true)
+
+    const tx = await mContract.buyItem(tokenId, { value: priceInWei })
+    await tx.wait()
+
+    showNotification(`You bought SVG #${tokenId}`, "success")
+
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
+  }
+}
+
+async function placeOffer(tokenId, offerAmount) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+    const offerInWei = ethers.parseEther(offerAmount)
+
+    showNotification(
+      `Offering ${offerAmount} ETH for SVG #${tokenId}`,
+      "info",
+      true
+    )
+
+    const tx = await mContract.placeOffer(tokenId, { value: offerInWei })
+    await tx.wait()
+
+    showNotification(`Offered ${offerAmount} ETH for SVG #${tokenId}`)
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
+  }
+}
+
+async function cancelOffer(tokenId) {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+
+    showNotification(`Cancelling offer for SVG #${tokenId}`, "true", true)
+
+    const tx = await mContract.cancelOffer(tokenId)
+    await tx.wait()
+
+    showNotification(`Cancelled offer for SVG #${tokenId}`, "success")
+    await refreshDisplay()
+  } catch (error) {
+    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    showNotification(errorMessage, "warning")
+    console.error(error)
   }
 }
 
@@ -947,11 +1047,12 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
 
-window.addEventListener("load", () => {
+window.addEventListener("DOMContentLoaded", () => {
   const currentPage = document.body.id
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
+  getRpc()
   updateNetworkStatus()
 
   if (selectedProvider) {
@@ -1006,6 +1107,14 @@ themeToggle.addEventListener("change", toggleDarkMode)
 
 disconnectBtn.addEventListener("click", disconnect)
 
+document.getElementById("rpcBtn").addEventListener("click", () => {
+  const rpc = prompt("Enter a RPC URL:")
+  if (rpc) {
+    localStorage.setItem("rpcUrl", rpc)
+    window.location.reload()
+  }
+})
+
 mySVGBtns.forEach((btn) => {
   btn.addEventListener("click", toggleMySVGs)
 })
@@ -1033,6 +1142,8 @@ document.addEventListener("click", async function (e) {
     } else {
       console.log("This item is not listed for sale.")
     }
+  } else if (e.target.classList.contains("accept-offer-btn")) {
+    await acceptOffer(tokenId)
   } else if (e.target.classList.contains("offer-btn")) {
     const offerAmount = prompt("Enter your offer amount in ETH:")
     if (offerAmount) await placeOffer(tokenId, offerAmount)
@@ -1052,6 +1163,8 @@ document.addEventListener("click", async function (e) {
         alert("Invalid price. Please enter a valid number greater than 0.")
       }
     }
+  } else if (e.target.classList.contains("cancel-list-btn")) {
+    await cancelListing(tokenId)
   }
 })
 

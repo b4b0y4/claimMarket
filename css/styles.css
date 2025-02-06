@@ -571,9 +571,7 @@ footer.mySVGs-open {
   background-color: var(--color-bdr);
 }
 
-.button-container button.disabled,
-.cancel-list-btn,
-.cancel-offer-btn {
+.button-container button.disabled {
   display: none;
 }
 
