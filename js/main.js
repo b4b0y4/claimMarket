@@ -240,7 +240,7 @@ function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-      showMySVGs()
+      location.reload()
     })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
@@ -470,7 +470,7 @@ async function showMySVGs() {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
         return
       }
-
+      console.log(ownedTokenIds)
       displaySVG(ownedTokenIds)
     } catch (error) {
       console.error(error)
