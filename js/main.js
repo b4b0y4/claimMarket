@@ -238,9 +238,10 @@ function showNotification(message, type = "info", isPermanent = false) {
 
 function providerEvent(provider) {
   provider.provider
-    .on("accountsChanged", (accounts) =>
+    .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-    )
+      showMySVGs()
+    })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
       updateNetworkStatus(chainId)
