@@ -29,8 +29,8 @@ const providers = []
 // const sepoliaProvider = new ethers.JsonRpcProvider(
 //   networkConfigs.sepolia.rpcUrl
 // )
-const rpcUrl = localStorage.getItem("rpcUrl")
-const sepoliaProvider = new ethers.JsonRpcProvider(rpcUrl)
+const rainbowRpc = localStorage.getItem("rainbowRpc")
+const sepoliaProvider = new ethers.JsonRpcProvider(rainbowRpc)
 
 const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider)
 const marketContract = new ethers.Contract(
@@ -253,10 +253,12 @@ function providerEvent(provider) {
 
 let rpcWarning = false
 function getRpc() {
-  if (!rpcUrl && !rpcWarning) {
+  toggleDisplay(overlay, !rainbowRpc ? true : false)
+
+  if (!rainbowRpc && !rpcWarning) {
     showNotification(`Add a rpc Url!`, "warning", true)
     rpcWarning = true
-  } else if (rpcUrl) {
+  } else if (rainbowRpc) {
     showNotification("")
     rpcWarning = false
   }
@@ -358,11 +360,10 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
 
           const sContract = new ethers.Contract(svgAddress, svgAbi, signer)
 
-          showNotification("Claim in progress...", "info", true)
+          showNotification(`Claiming SVG #${id}`, "info", true)
 
-          const transactionResponse = await sContract.mint(id)
-
-          await listenForTransactionMine(transactionResponse, provider)
+          const tx = await sContract.mint(id)
+          await tx.wait()
 
           button.textContent = `Claimed!`
           button.style.opacity = "0.3"
@@ -371,13 +372,12 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
           button.style.color = "rgb(250, 250, 250)"
           button.disabled = true
 
-          showNotification("")
-          showNotification("Successfully claimed!", "success")
+          showNotification(`Claimed SVG #${id}!`, "success")
           showMySVGs()
         } catch (error) {
-          console.error("Claim failed:", error)
-          showNotification("")
-          showNotification("Claim failed :(", "warning")
+          const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+          showNotification(errorMessage, "warning")
+          console.error(error)
         }
       } else {
         console.error("No provider selected or available.")
@@ -389,18 +389,6 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
   container.appendChild(button)
 
   return container
-}
-
-function listenForTransactionMine(transactionResponse, provider) {
-  console.log(`Mining ${transactionResponse.hash}`)
-  return new Promise((resolve, reject) => {
-    provider.once(transactionResponse.hash, (transactionReceipt) => {
-      console.log(
-        `Completed with ${transactionReceipt.confirmations} confirmations.`
-      )
-      resolve()
-    })
-  })
 }
 
 async function renderSVGsClaim(colors) {
@@ -436,207 +424,6 @@ function generateRainbowColors(numColors) {
 const rainbowColors = generateRainbowColors(250)
 
 /***************************************************
- *                   MARKET UI
- **************************************************/
-async function getAllListedItems() {
-  try {
-    const [tokenIds, listings] = await marketContract.getAllListedItems()
-    return tokenIds.map((id, index) => ({
-      tokenId: id.toString(),
-      seller: listings[index].seller,
-      price: listings[index].price.toString(),
-      isActive: listings[index].isActive,
-    }))
-  } catch (error) {
-    console.error("Error getting all listed items:", error)
-    return []
-  }
-}
-
-async function getHighestOffer(tokenId) {
-  try {
-    const [bidder, amount] = await marketContract.getHighestOffer(tokenId)
-    return {
-      bidder,
-      amount: amount.toString(),
-    }
-  } catch (error) {
-    console.error("Error getting highest offer:", error)
-    return null
-  }
-}
-
-async function displayAllSVGs() {
-  try {
-    const listedItems = await getAllListedItems()
-
-    const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
-
-    const itemMap = new Map(
-      allTokenIds.map((id) => [
-        id,
-        { tokenId: id, isActive: false, price: "0" },
-      ])
-    )
-
-    listedItems.forEach((item) => {
-      if (itemMap.has(item.tokenId)) {
-        itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-      }
-    })
-
-    const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive && !b.isActive) return -1
-      if (!a.isActive && b.isActive) return 1
-      if (a.isActive && b.isActive) {
-        const priceA = BigInt(a.price)
-        const priceB = BigInt(b.price)
-        return priceA < priceB ? -1 : priceA > priceB ? 1 : 0
-      }
-      return parseInt(a.tokenId) - parseInt(b.tokenId)
-    })
-
-    market.innerHTML = ""
-
-    sortedItems.forEach((item) => {
-      const { tokenId, isActive, price } = item
-      const color = rainbowColors[parseInt(tokenId) - 1]
-
-      let priceText = ""
-      let bidText = ""
-      let buttons = [
-        { text: "Offer", className: "offer-btn" },
-        { text: "Cancel", className: "cancel-offer-btn" },
-        { text: "Buy", className: "buy-btn" },
-      ]
-
-      if (isActive) {
-        priceText = `${ethers.formatEther(price)} ETH`
-        buttons.find((btn) => btn.text === "Buy").disabled = false
-        buttons.find((btn) => btn.text === "Cancel").disabled = false
-      } else {
-        priceText = ""
-        buttons.find((btn) => btn.text === "Buy").disabled = true
-        buttons.find((btn) => btn.text === "Cancel").disabled = true
-      }
-
-      const card = createSVGCard(tokenId, color, {
-        priceText,
-        bidText,
-        buttons,
-        dynamicInfoLabel: true,
-      })
-
-      market.appendChild(card)
-      updatePriceInfo(tokenId, priceText)
-
-      getHighestOffer(tokenId)
-        .then((offer) => {
-          if (offer && offer.amount > 0) {
-            updateBidInfo(
-              tokenId,
-              `Offer: ${ethers.formatEther(offer.amount)} ETH`
-            )
-          }
-        })
-        .catch((error) => {
-          console.error(
-            `Error getting highest offer for token ${tokenId}:`,
-            error
-          )
-        })
-    })
-  } catch (error) {
-    console.error("Error displaying SVGs:", error)
-  }
-}
-
-function createSVGCard(tokenId, color, options = {}) {
-  const {
-    container = document.createElement("div"),
-    priceText = "",
-    bidText = "",
-    buttons = [],
-    dynamicInfoLabel = null,
-  } = options
-
-  container.classList.add("svg-card")
-
-  const svgNamespace = "http://www.w3.org/2000/svg"
-  const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100%")
-  svg.setAttribute("height", "100%")
-  svg.setAttribute("viewBox", "0 0 100 100")
-  svg.setAttribute("preserveAspectRatio", "none")
-  svg.setAttribute("xmlns", svgNamespace)
-  svg.setAttribute("id", `svg-${tokenId}`)
-
-  const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100%")
-  rect.setAttribute("height", "100%")
-  rect.setAttribute("fill", color)
-  svg.appendChild(rect)
-
-  const label = document.createElement("p")
-  label.textContent = `SVG #${tokenId}`
-  label.classList.add("svg-label")
-
-  const priceInfo = document.createElement("p")
-  priceInfo.classList.add("price-info")
-  priceInfo.id = `price-info-${tokenId}`
-  priceInfo.textContent = priceText
-
-  const bidInfo = document.createElement("p")
-  bidInfo.classList.add("bid-info")
-  bidInfo.id = `bid-info-${tokenId}`
-  bidInfo.textContent = bidText
-
-  const buttonContainer = document.createElement("div")
-  buttonContainer.classList.add("button-container")
-  buttons.forEach(({ text, className, disabled }) => {
-    const button = document.createElement("button")
-    button.textContent = text
-    button.classList.add(className)
-    if (disabled) {
-      button.disabled = true
-      button.classList.add("disabled")
-    }
-    buttonContainer.appendChild(button)
-  })
-
-  container.append(svg, label, priceInfo, bidInfo, buttonContainer)
-
-  if (dynamicInfoLabel) {
-    const dynamicInfo = document.createElement("p")
-    dynamicInfo.classList.add("dynamic-info")
-    dynamicInfo.id = `dynamic-info-${tokenId}`
-    container.appendChild(dynamicInfo)
-  }
-
-  return container
-}
-
-async function refreshDisplay() {
-  market.innerHTML = ""
-  await displayAllSVGs()
-  showMySVGs()
-}
-
-function updatePriceInfo(tokenId, priceText) {
-  const priceInfo = document.getElementById(`price-info-${tokenId}`)
-  if (priceInfo) {
-    priceInfo.textContent = priceText
-  }
-}
-
-function updateBidInfo(tokenId, bidText) {
-  const bidInfo = document.getElementById(`bid-info-${tokenId}`)
-  if (bidInfo) {
-    bidInfo.textContent = bidText
-  }
-}
-
-/***************************************************
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
@@ -669,25 +456,25 @@ async function showMySVGs() {
         method: "eth_requestAccounts",
       })
 
-      const balance = await svgContract.balanceOf(accounts[0])
+      const ownedTokenIds = await svgContract.tokensOfOwner(accounts[0])
 
       mySVGs.innerHTML = ""
       mySVGBtns.forEach((btn) => {
-        btn.innerHTML = `${balance} SVG${balance > 1 ? "s" : ""}`
+        btn.innerHTML = `${ownedTokenIds.length} SVG${
+          ownedTokenIds.length > 1 ? "s" : ""
+        }`
       })
 
-      if (balance.toString() === "0") {
+      if (ownedTokenIds.length === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
         return
       }
 
-      // Get all owned token IDs and sort them
-      const ownedTokenIds = await getSVGOwned(svgContract, accounts[0])
-
-      // Pass the sorted array of tokenIds to displaySVG
       displaySVG(ownedTokenIds)
     } catch (error) {
-      console.error("Error fetching SVGs:", error)
+      console.error(error)
+      const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+      showNotification(errorMessage, "warning")
       mySVGs.textContent = "Error fetching your SVGs"
     }
   } else {
@@ -695,32 +482,9 @@ async function showMySVGs() {
   }
 }
 
-async function getSVGOwned(svgContract, address) {
-  const MAX_SUPPLY = 250
-  const ownedTokenIds = []
-  const promises = []
-
-  for (let i = 1; i <= MAX_SUPPLY; i++) {
-    promises.push(
-      svgContract
-        .ownerOf(i)
-        .then((owner) => {
-          if (owner.toLowerCase() === address.toLowerCase()) {
-            ownedTokenIds.push(i)
-          }
-        })
-        .catch(() => {})
-    )
-  }
-  await Promise.all(promises)
-  ownedTokenIds.sort((a, b) => a - b)
-  return ownedTokenIds
-}
-
 async function displaySVG(tokenIds) {
   try {
     const listedItems = await getAllListedItems()
-
     const itemMap = new Map(
       tokenIds.map((id) => [
         id.toString(),
@@ -738,13 +502,11 @@ async function displaySVG(tokenIds) {
       if (a.isActive !== b.isActive) {
         return a.isActive ? -1 : 1
       }
-
       const priceA = BigInt(a.price)
       const priceB = BigInt(b.price)
       if (priceA !== priceB) {
         return priceA < priceB ? -1 : 1
       }
-
       return parseInt(a.tokenId) - parseInt(b.tokenId)
     })
 
@@ -753,23 +515,28 @@ async function displaySVG(tokenIds) {
     for (const item of sortedItems) {
       const { tokenId, isActive, price } = item
       const color = rainbowColors[parseInt(tokenId) - 1]
-
       let priceText = ""
       let bidText = ""
-      const buttons = [
-        { text: "List", className: "list-btn" },
-        { text: "Cancel", className: "cancel-list-btn" },
-        { text: "Accept", className: "accept-offer-btn" },
-      ]
+      let hasOffer = false
+
+      let buttons = []
+
+      buttons.push({
+        text: isActive ? "Edit" : "List",
+        className: "list-btn",
+      })
 
       if (isActive) {
+        buttons.push({ text: "Cancel", className: "cancel-list-btn" })
         priceText = `${ethers.formatEther(price)} ETH`
       }
 
       try {
         const offer = await getHighestOffer(tokenId)
         if (offer && offer.amount > 0) {
+          hasOffer = true
           bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
+          buttons.push({ text: "Accept", className: "accept-offer-btn" })
         }
       } catch (error) {
         console.error(
@@ -793,8 +560,36 @@ async function displaySVG(tokenIds) {
 }
 
 /***************************************************
- *               MARKET INTERACTIONS
+ *                   MARKET UI
  **************************************************/
+async function getAllListedItems() {
+  try {
+    const [tokenIds, listings] = await marketContract.getAllListedItems()
+    return tokenIds.map((id, index) => ({
+      tokenId: id.toString(),
+      seller: listings[index].seller,
+      price: listings[index].price.toString(),
+      isActive: listings[index].isActive,
+    }))
+  } catch (error) {
+    console.error("Error getting all listed items:", error)
+    return []
+  }
+}
+
+async function getHighestOffer(tokenId) {
+  try {
+    const [bidder, amount] = await marketContract.getHighestOffer(tokenId)
+    return {
+      bidder,
+      amount: amount.toString(),
+    }
+  } catch (error) {
+    console.error("Error getting highest offer:", error)
+    return null
+  }
+}
+
 async function listItem(tokenId, priceInEther) {
   try {
     const selectedProvider = providers.find(
@@ -817,7 +612,7 @@ async function listItem(tokenId, priceInEther) {
       showNotification("Approving marketplace...", "info", true)
       const approveTx = await sContract.setApprovalForAll(marketAddress, true)
       await approveTx.wait()
-      showNotification("Marketplace approved successfully", "success")
+      showNotification("Marketplace approved!", "success")
     }
 
     const priceInWei = ethers.parseEther(priceInEther)
@@ -879,18 +674,12 @@ async function acceptOffer(tokenId) {
     const signer = await provider.getSigner()
     const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
-    showNotification(
-      `Accepting ${offerAmount} ETH for SVG #${tokenId}`,
-      "info",
-      true
-    )
+    showNotification(`Accepting offer for SVG #${tokenId}`, "info", true)
 
-    await mContract.acceptOffer(tokenId)
+    const tx = await mContract.acceptOffer(tokenId)
+    await tx.wait()
 
-    showNotification(
-      `Accepted ${offerAmount} ETH for SVG #${tokenId}`,
-      "success"
-    )
+    showNotification(`Accepted offer for SVG #${tokenId}`, "success")
     await refreshDisplay()
   } catch (error) {
     const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
@@ -969,7 +758,7 @@ async function cancelOffer(tokenId) {
     const signer = await provider.getSigner()
     const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
-    showNotification(`Cancelling offer for SVG #${tokenId}`, "true", true)
+    showNotification(`Cancelling offer for SVG #${tokenId}`, "info", true)
 
     const tx = await mContract.cancelOffer(tokenId)
     await tx.wait()
@@ -980,6 +769,195 @@ async function cancelOffer(tokenId) {
     const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
+  }
+}
+
+async function displayAllSVGs() {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_requestAccounts",
+    })
+    const currentAccount = accounts[0]
+    const ownedTokenIds = await svgContract.tokensOfOwner(currentAccount)
+    const ownedTokenIdsArray = Array.from(ownedTokenIds).map((id) =>
+      id.toString()
+    )
+    const listedItems = await getAllListedItems()
+    const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
+    const itemMap = new Map(
+      allTokenIds.map((id) => [
+        id,
+        { tokenId: id, isActive: false, price: "0" },
+      ])
+    )
+
+    listedItems.forEach((item) => {
+      if (itemMap.has(item.tokenId)) {
+        itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
+      }
+    })
+
+    const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
+      if (a.isActive && !b.isActive) return -1
+      if (!a.isActive && b.isActive) return 1
+      if (a.isActive && b.isActive) {
+        const priceA = BigInt(a.price)
+        const priceB = BigInt(b.price)
+        return priceA < priceB ? -1 : priceA > priceB ? 1 : 0
+      }
+      return parseInt(a.tokenId) - parseInt(b.tokenId)
+    })
+
+    market.innerHTML = ""
+
+    for (const item of sortedItems) {
+      const { tokenId, isActive, price } = item
+      const color = rainbowColors[parseInt(tokenId) - 1]
+      let priceText = ""
+      let bidText = ""
+
+      let currentBidder = null
+      try {
+        const offer = await getHighestOffer(tokenId)
+        if (offer && offer.amount > 0) {
+          currentBidder = offer.bidder
+          bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
+        }
+      } catch (error) {
+        console.error(
+          `Error getting highest offer for token ${tokenId}:`,
+          error
+        )
+      }
+
+      let buttons = [
+        {
+          text: "Offer",
+          className: "offer-btn",
+          disabled:
+            currentBidder &&
+            currentBidder.toLowerCase() === currentAccount.toLowerCase(),
+        },
+        {
+          text: "Cancel",
+          className: "cancel-offer-btn",
+          disabled: !currentBidder,
+        },
+        { text: "Buy", className: "buy-btn" },
+      ]
+
+      if (isActive) {
+        priceText = `${ethers.formatEther(price)} ETH`
+      } else {
+        priceText = ""
+        buttons.find((btn) => btn.text === "Buy").disabled = true
+      }
+
+      if (ownedTokenIdsArray.includes(tokenId.toString())) {
+        buttons.forEach((btn) => (btn.disabled = true))
+      }
+
+      const card = createSVGCard(tokenId, color, {
+        priceText,
+        bidText,
+        buttons,
+        dynamicInfoLabel: true,
+      })
+
+      market.appendChild(card)
+      updatePriceInfo(tokenId, priceText)
+    }
+  } catch (error) {
+    console.error("Error displaying SVGs:", error)
+  }
+}
+
+function createSVGCard(tokenId, color, options = {}) {
+  const {
+    container = document.createElement("div"),
+    priceText = "",
+    bidText = "",
+    buttons = [],
+    dynamicInfoLabel = null,
+  } = options
+
+  container.classList.add("svg-card")
+
+  const svgNamespace = "http://www.w3.org/2000/svg"
+  const svg = document.createElementNS(svgNamespace, "svg")
+  svg.setAttribute("width", "100%")
+  svg.setAttribute("height", "100%")
+  svg.setAttribute("viewBox", "0 0 100 100")
+  svg.setAttribute("preserveAspectRatio", "none")
+  svg.setAttribute("xmlns", svgNamespace)
+  svg.setAttribute("id", `svg-${tokenId}`)
+
+  const rect = document.createElementNS(svgNamespace, "rect")
+  rect.setAttribute("width", "100%")
+  rect.setAttribute("height", "100%")
+  rect.setAttribute("fill", color)
+  svg.appendChild(rect)
+
+  const label = document.createElement("p")
+  label.textContent = `SVG #${tokenId}`
+  label.classList.add("svg-label")
+
+  const priceInfo = document.createElement("p")
+  priceInfo.classList.add("price-info")
+  priceInfo.id = `price-info-${tokenId}`
+  priceInfo.textContent = priceText
+
+  const bidInfo = document.createElement("p")
+  bidInfo.classList.add("bid-info")
+  bidInfo.id = `bid-info-${tokenId}`
+  bidInfo.textContent = bidText
+
+  const buttonContainer = document.createElement("div")
+  buttonContainer.classList.add("button-container")
+
+  buttons.forEach(({ text, className, disabled }) => {
+    const button = document.createElement("button")
+    button.textContent = text
+    button.classList.add(className)
+    if (disabled) {
+      button.disabled = true
+      button.classList.add("disabled")
+    }
+    buttonContainer.appendChild(button)
+  })
+
+  container.append(svg, label, priceInfo, bidInfo, buttonContainer)
+
+  if (dynamicInfoLabel) {
+    const dynamicInfo = document.createElement("p")
+    dynamicInfo.classList.add("dynamic-info")
+    dynamicInfo.id = `dynamic-info-${tokenId}`
+    container.appendChild(dynamicInfo)
+  }
+
+  return container
+}
+
+async function refreshDisplay() {
+  market.innerHTML = ""
+  await displayAllSVGs()
+  showMySVGs()
+}
+
+function updatePriceInfo(tokenId, priceText) {
+  const priceInfo = document.getElementById(`price-info-${tokenId}`)
+  if (priceInfo) {
+    priceInfo.textContent = priceText
+  }
+}
+
+function updateBidInfo(tokenId, bidText) {
+  const bidInfo = document.getElementById(`bid-info-${tokenId}`)
+  if (bidInfo) {
+    bidInfo.textContent = bidText
   }
 }
 
@@ -1110,7 +1088,7 @@ disconnectBtn.addEventListener("click", disconnect)
 document.getElementById("rpcBtn").addEventListener("click", () => {
   const rpc = prompt("Enter a RPC URL:")
   if (rpc) {
-    localStorage.setItem("rpcUrl", rpc)
+    localStorage.setItem("rainbowRpc", rpc)
     window.location.reload()
   }
 })
