@@ -196,7 +196,18 @@ async function disconnect() {
     console.error("Error disconnecting:", error)
   }
 
-  localStorage.clear()
+  Object.keys(localStorage).forEach((key) => {
+    if (
+      key === "connected" ||
+      key === "lastWallet" ||
+      key === "mySVGsVisible" ||
+      key === "wagmi.store" ||
+      key.startsWith("-walletlink")
+    ) {
+      localStorage.removeItem(key)
+    }
+  })
+
   connectBtn.innerHTML = "Connect"
   ;[walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
@@ -447,16 +458,11 @@ function toggleMySVGs() {
 }
 
 async function showMySVGs() {
-  const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
-  )
-  if (selectedProvider) {
-    try {
-      const accounts = await selectedProvider.provider.request({
-        method: "eth_requestAccounts",
-      })
+  const user = await getAccount()
 
-      const ownedTokenIds = await svgContract.tokensOfOwner(accounts[0])
+  if (user) {
+    try {
+      const ownedTokenIds = await svgContract.tokensOfOwner(user)
 
       mySVGs.innerHTML = ""
       mySVGBtns.forEach((btn) => {
