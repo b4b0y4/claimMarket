@@ -240,6 +240,7 @@ function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
+      showMySVGs()
     })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
@@ -482,13 +483,19 @@ async function showMySVGs() {
 
 async function displaySVG(tokenIds) {
   try {
-    const listedItems = await getAllListedItems()
+    const [listedItems, allOffers] = await Promise.all([
+      getAllListedItems(),
+      getAllOffers(),
+    ])
+
     const itemMap = new Map(
       tokenIds.map((id) => [
         id.toString(),
         { tokenId: id.toString(), isActive: false, price: "0" },
       ])
     )
+
+    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
 
     listedItems.forEach((item) => {
       if (itemMap.has(item.tokenId)) {
@@ -515,7 +522,6 @@ async function displaySVG(tokenIds) {
       const color = rainbowColors[parseInt(tokenId) - 1]
       let priceText = ""
       let bidText = ""
-
       let buttons = []
 
       buttons.push({
@@ -528,17 +534,10 @@ async function displaySVG(tokenIds) {
         priceText = `${ethers.formatEther(price)} ETH`
       }
 
-      try {
-        const offer = await getHighestOffer(tokenId)
-        if (offer && offer.amount > 0) {
-          bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
-          buttons.push({ text: "Accept", className: "accept-offer-btn" })
-        }
-      } catch (error) {
-        console.error(
-          `Error getting highest offer for token ${tokenId}:`,
-          error
-        )
+      const offer = offerMap.get(tokenId)
+      if (offer && offer.amount > 0) {
+        bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
+        buttons.push({ text: "Accept", className: "accept-offer-btn" })
       }
 
       const card = createSVGCard(tokenId, color, {
@@ -546,7 +545,6 @@ async function displaySVG(tokenIds) {
         bidText,
         buttons,
       })
-
       mySVGs.appendChild(card)
     }
   } catch (error) {
@@ -572,16 +570,17 @@ async function getAllListedItems() {
   }
 }
 
-async function getHighestOffer(tokenId) {
+async function getAllOffers() {
   try {
-    const [bidder, amount] = await marketContract.getHighestOffer(tokenId)
-    return {
-      bidder,
-      amount: amount.toString(),
-    }
+    const [tokenIds, offers] = await marketContract.getAllOffers()
+    return tokenIds.map((id, index) => ({
+      tokenId: id.toString(),
+      bidder: offers[index].bidder,
+      amount: offers[index].amount.toString(),
+    }))
   } catch (error) {
-    console.error("Error getting highest offer:", error)
-    return null
+    console.error("Error getting all offers:", error)
+    return []
   }
 }
 
@@ -765,12 +764,19 @@ async function getSignerContract(contractAddress, contractAbi) {
 
 async function displayAllSVGs(tokenIds = []) {
   try {
-    const user = await getAccount()
-    const ownedTokenIds = await svgContract.tokensOfOwner(user)
+    const [user, ownedTokenIds, listedItems, allOffers] = await Promise.all([
+      getAccount(),
+      svgContract.tokensOfOwner(await getAccount()),
+      getAllListedItems(),
+      getAllOffers(),
+    ])
+
     const ownedTokenIdsArray = Array.from(ownedTokenIds).map((id) =>
       id.toString()
     )
-    const listedItems = await getAllListedItems()
+
+    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
+
     let itemMap
     if (tokenIds.length > 0) {
       itemMap = new Map(
@@ -817,18 +823,10 @@ async function displayAllSVGs(tokenIds = []) {
       let priceText = ""
       let bidText = ""
 
-      let currentBidder = null
-      try {
-        const offer = await getHighestOffer(tokenId)
-        if (offer && offer.amount > 0) {
-          currentBidder = offer.bidder
-          bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
-        }
-      } catch (error) {
-        console.error(
-          `Error getting highest offer for token ${tokenId}:`,
-          error
-        )
+      const offer = offerMap.get(tokenId)
+      const currentBidder = offer?.bidder || null
+      if (offer && offer.amount > 0) {
+        bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
       }
 
       let buttons = [
@@ -862,7 +860,6 @@ async function displayAllSVGs(tokenIds = []) {
         bidText,
         buttons,
       })
-
       market.appendChild(card)
     }
   } catch (error) {
@@ -995,28 +992,19 @@ function showTokenById(tokenIdInput) {
 
 async function getBiddedSvg() {
   try {
-    const currentAccount = await getAccount()
+    const [currentAccount, allOffers] = await Promise.all([
+      getAccount(),
+      getAllOffers(),
+    ])
 
-    const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
-    const biddedTokens = []
-
-    for (const tokenId of allTokenIds) {
-      try {
-        const offer = await getHighestOffer(tokenId)
-        if (
-          offer &&
+    return allOffers
+      .filter(
+        (offer) =>
           offer.bidder &&
           offer.amount > 0 &&
           offer.bidder.toLowerCase() === currentAccount.toLowerCase()
-        ) {
-          biddedTokens.push(tokenId)
-        }
-      } catch (error) {
-        console.error(`Error checking offers for token ${tokenId}:`, error)
-      }
-    }
-
-    return biddedTokens
+      )
+      .map((offer) => offer.tokenId)
   } catch (error) {
     console.error("Error getting user bidded tokens:", error)
     return []

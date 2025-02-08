@@ -365,7 +365,7 @@ export const svgAbi = [
   },
 ]
 
-export const marketAddress = "0x28C2C56212575F8A47a03d5904c65A6D705055Ea"
+export const marketAddress = "0xC5b477C9Ac5095062693E03852ce88B44A7FAd18"
 
 export const marketAbi = [
   {
@@ -577,6 +577,24 @@ export const marketAbi = [
         ],
         internalType: "struct miniMarket.Listing[]",
         name: "",
+        type: "tuple[]",
+      },
+    ],
+    stateMutability: "view",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "getAllOffers",
+    outputs: [
+      { internalType: "uint256[]", name: "tokenIds", type: "uint256[]" },
+      {
+        components: [
+          { internalType: "address", name: "bidder", type: "address" },
+          { internalType: "uint256", name: "amount", type: "uint256" },
+        ],
+        internalType: "struct miniMarket.Offer[]",
+        name: "offers",
         type: "tuple[]",
       },
     ],
