@@ -375,7 +375,7 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
           showNotification(`Claimed SVG #${id}!`, "success")
           showMySVGs()
         } catch (error) {
-          const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+          const errorMessage = `${error.message.split("(")[0].trim()}`
           showNotification(errorMessage, "warning")
           console.error(error)
         }
@@ -471,7 +471,7 @@ async function showMySVGs() {
       displaySVG(ownedTokenIds)
     } catch (error) {
       console.error(error)
-      const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+      const errorMessage = `${error.message.split("(")[0].trim()}`
       showNotification(errorMessage, "warning")
       mySVGs.textContent = "Error fetching your SVGs"
     }
@@ -545,7 +545,6 @@ async function displaySVG(tokenIds) {
         priceText,
         bidText,
         buttons,
-        dynamicInfoLabel: true,
       })
 
       mySVGs.appendChild(card)
@@ -626,7 +625,7 @@ async function listItem(tokenId, priceInEther) {
 
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -652,7 +651,7 @@ async function cancelListing(tokenId) {
     showNotification(`Listing of svg #${tokenId} cancelled`, "success")
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -678,7 +677,7 @@ async function acceptOffer(tokenId) {
     showNotification(`Accepted offer for SVG #${tokenId}`, "success")
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -705,7 +704,7 @@ async function buyItem(tokenId, priceInWei) {
 
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -736,7 +735,7 @@ async function placeOffer(tokenId, offerAmount) {
     showNotification(`Offered ${offerAmount} ETH for SVG #${tokenId}`)
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -762,7 +761,7 @@ async function cancelOffer(tokenId) {
     showNotification(`Cancelled offer for SVG #${tokenId}`, "success")
     await refreshDisplay()
   } catch (error) {
-    const errorMessage = `Error: ${error.message.split("(")[0].trim()}`
+    const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
     console.error(error)
   }
@@ -860,7 +859,6 @@ async function displayAllSVGs() {
         priceText,
         bidText,
         buttons,
-        dynamicInfoLabel: true,
       })
 
       market.appendChild(card)
@@ -876,7 +874,6 @@ function createSVGCard(tokenId, color, options = {}) {
     priceText = "",
     bidText = "",
     buttons = [],
-    dynamicInfoLabel = null,
   } = options
 
   container.classList.add("svg-card")
@@ -925,13 +922,6 @@ function createSVGCard(tokenId, color, options = {}) {
   })
 
   container.append(svg, label, priceInfo, bidInfo, buttonContainer)
-
-  if (dynamicInfoLabel) {
-    const dynamicInfo = document.createElement("p")
-    dynamicInfo.classList.add("dynamic-info")
-    dynamicInfo.id = `dynamic-info-${tokenId}`
-    container.appendChild(dynamicInfo)
-  }
 
   return container
 }
