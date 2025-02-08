@@ -23,6 +23,7 @@ const footer = document.querySelector("footer")
 const filtersBtns = document.querySelectorAll(".filters-btn")
 const filterLists = document.querySelectorAll(".filter-list")
 const showBids = document.querySelectorAll("#showBids")
+const clearFil = document.querySelectorAll("#clearFil")
 const mySVGBtns = document.querySelectorAll(".my-svg-btn")
 const searchBox = document.querySelectorAll(".search-box")
 const searchInputs = document.querySelectorAll(".search-input")
@@ -762,7 +763,7 @@ async function getSignerContract(contractAddress, contractAbi) {
   }
 }
 
-async function displayAllSVGs(tokenIds) {
+async function displayAllSVGs(tokenIds = []) {
   try {
     const user = await getAccount()
     const ownedTokenIds = await svgContract.tokensOfOwner(user)
@@ -1125,10 +1126,11 @@ searchInputs.forEach((input) => {
 })
 
 showBids.forEach((btn) => {
-  btn.addEventListener("click", () => {
-    console.log("Show Bids")
-    showUserBids()
-  })
+  btn.addEventListener("click", showUserBids)
+})
+
+clearFil.forEach((btn) => {
+  btn.addEventListener("click", displayAllSVGs)
 })
 
 document.addEventListener("click", async function (e) {
