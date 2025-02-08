@@ -586,16 +586,14 @@ async function getHighestOffer(tokenId) {
 
 async function listItem(tokenId, priceInEther) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: sContract, signer } = await getSignerContract(
+      svgAddress,
+      svgAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-
-    const sContract = new ethers.Contract(svgAddress, svgAbi, signer)
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
+    )
 
     const isApproved = await sContract.isApprovedForAll(
       await signer.getAddress(),
@@ -632,15 +630,10 @@ async function listItem(tokenId, priceInEther) {
 
 async function cancelListing(tokenId) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
     showNotification(`Cancelling listing of svg #${tokenId}`, "info", true)
 
@@ -658,15 +651,10 @@ async function cancelListing(tokenId) {
 
 async function acceptOffer(tokenId) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
     showNotification(`Accepting offer for SVG #${tokenId}`, "info", true)
 
@@ -684,15 +672,10 @@ async function acceptOffer(tokenId) {
 
 async function buyItem(tokenId, priceInWei) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
     showNotification(`Buying SVG #${tokenId}`, "info", true)
 
@@ -711,15 +694,10 @@ async function buyItem(tokenId, priceInWei) {
 
 async function placeOffer(tokenId, offerAmount) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
     const offerInWei = ethers.parseEther(offerAmount)
 
     showNotification(
@@ -742,15 +720,10 @@ async function placeOffer(tokenId, offerAmount) {
 
 async function cancelOffer(tokenId) {
   try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    const { contract: mContract } = await getSignerContract(
+      marketAddress,
+      marketAbi
     )
-
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
-    const mContract = new ethers.Contract(marketAddress, marketAbi, signer)
 
     showNotification(`Cancelling offer for SVG #${tokenId}`, "info", true)
 
@@ -766,16 +739,32 @@ async function cancelOffer(tokenId) {
   }
 }
 
-async function displayAllSVGs(tokenIds) {
+async function getSignerContract(contractAddress, contractAbi) {
   try {
-    console.log(tokenIds)
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
-    const accounts = await selectedProvider.provider.request({
-      method: "eth_requestAccounts",
-    })
-    const user = accounts[0]
+
+    if (!selectedProvider) {
+      throw new Error("No provider found for the selected wallet.")
+    }
+
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
+    const provider = new ethers.BrowserProvider(selectedProvider.provider)
+    const signer = await provider.getSigner()
+
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer)
+
+    return { contract, signer }
+  } catch (error) {
+    console.error(`Error getting contract at ${contractAddress}:`, error)
+    throw error
+  }
+}
+
+async function displayAllSVGs(tokenIds) {
+  try {
+    const user = await getAccount()
     const ownedTokenIds = await svgContract.tokensOfOwner(user)
     const ownedTokenIdsArray = Array.from(ownedTokenIds).map((id) =>
       id.toString()
@@ -982,15 +971,36 @@ function showTokenById(tokenIdInput) {
   displayAllSVGs(validTokenIds)
 }
 
-async function getBiddedSvg() {
+async function getAccount() {
   try {
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
+
+    if (!selectedProvider) {
+      throw new Error("No provider found for the selected wallet.")
+    }
+
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
-    const currentAccount = accounts[0]
+
+    return accounts[0] // Return the first account
+  } catch (error) {
+    console.error("Error getting account:", error)
+    return null // Return null if an error occurs
+  }
+}
+
+async function getBiddedSvg() {
+  try {
+    // const selectedProvider = providers.find(
+    //   (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    // )
+    // const accounts = await selectedProvider.provider.request({
+    //   method: "eth_requestAccounts",
+    // })
+    const currentAccount = await getAccount()
 
     const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
     const biddedTokens = []
