@@ -23,12 +23,10 @@ const footer = document.querySelector("footer")
 const filtersBtns = document.querySelectorAll(".filters-btn")
 const filterLists = document.querySelectorAll(".filter-list")
 const mySVGBtns = document.querySelectorAll(".my-svg-btn")
+const searchBox = document.querySelectorAll(".search-box")
 const searchInputs = document.querySelectorAll(".search-input")
 
 const providers = []
-// const sepoliaProvider = new ethers.JsonRpcProvider(
-//   networkConfigs.sepolia.rpcUrl
-// )
 const rainbowRpc = localStorage.getItem("rainbowRpc")
 const sepoliaProvider = new ethers.JsonRpcProvider(rainbowRpc)
 
@@ -767,8 +765,9 @@ async function cancelOffer(tokenId) {
   }
 }
 
-async function displayAllSVGs() {
+async function displayAllSVGs(tokenIds) {
   try {
+    console.log(tokenIds)
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
@@ -781,13 +780,25 @@ async function displayAllSVGs() {
       id.toString()
     )
     const listedItems = await getAllListedItems()
-    const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
-    const itemMap = new Map(
-      allTokenIds.map((id) => [
-        id,
-        { tokenId: id, isActive: false, price: "0" },
-      ])
-    )
+    let itemMap
+    if (tokenIds.length > 0) {
+      itemMap = new Map(
+        tokenIds.map((id) => [
+          id.toString(),
+          { tokenId: id, isActive: false, price: "0" },
+        ])
+      )
+    } else {
+      const allTokenIds = rainbowColors.map((_, index) =>
+        (index + 1).toString()
+      )
+      itemMap = new Map(
+        allTokenIds.map((id) => [
+          id,
+          { tokenId: id, isActive: false, price: "0" },
+        ])
+      )
+    }
 
     listedItems.forEach((item) => {
       if (itemMap.has(item.tokenId)) {
@@ -928,7 +939,7 @@ function createSVGCard(tokenId, color, options = {}) {
 
 async function refreshDisplay() {
   market.innerHTML = ""
-  await displayAllSVGs()
+  await displayAllSVGs([])
   showMySVGs()
 }
 
@@ -943,7 +954,7 @@ function showTokenById(tokenIdInput) {
     }
     if (market) {
       market.innerHTML = ""
-      displayAllSVGs()
+      displayAllSVGs([])
     }
     return
   }
@@ -965,22 +976,9 @@ function showTokenById(tokenIdInput) {
     return
   }
 
-  if (squaresBox) squaresBox.innerHTML = ""
-  if (market) market.innerHTML = ""
+  market.innerHTML = ""
 
-  validTokenIds.forEach((tokenId) => {
-    const color = rainbowColors[tokenId - 1]
-    const card = createSVGCard(tokenId, color, {
-      buttons: [
-        { text: "Offer", className: "offer-btn" },
-        { text: "Cancel", className: "cancel-offer-btn" },
-        { text: "Buy", className: "buy-btn" },
-      ],
-    })
-
-    if (squaresBox) squaresBox.appendChild(card)
-    if (market) market.appendChild(card)
-  })
+  displayAllSVGs(validTokenIds)
 }
 
 /***************************************************
@@ -1015,8 +1013,12 @@ window.addEventListener("load", () => {
   const isVisible = localStorage.getItem("mySVGsVisible") === "true"
 
   if (isVisible) toggleMySVGs()
-  if (currentPage === "index-page") renderSVGsClaim(rainbowColors)
-  if (currentPage === "market-page") displayAllSVGs()
+  if (currentPage === "index-page") {
+    renderSVGsClaim(rainbowColors)
+    searchBox.forEach((div) => (div.style.display = "none"))
+    filtersBtns.forEach((btn) => (btn.style.display = "none"))
+  }
+  if (currentPage === "market-page") displayAllSVGs([])
 })
 
 window

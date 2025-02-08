@@ -688,7 +688,7 @@ footer {
 
   .filter-bar-phone {
     display: flex;
-    justify-content: space-evenly;
+    justify-content: space-between;
     align-items: center;
     top: 70px;
     width: 100%;
