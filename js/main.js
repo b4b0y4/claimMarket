@@ -930,7 +930,7 @@ function createSVGCard(tokenId, color, options = {}) {
 
 async function refreshDisplay() {
   market.innerHTML = ""
-  await displayAllSVGs([])
+  await displayAllSVGs()
   showMySVGs()
 }
 
@@ -966,7 +966,7 @@ function showTokenById(tokenIdInput) {
     }
     if (market) {
       market.innerHTML = ""
-      displayAllSVGs([])
+      displayAllSVGs()
     }
     return
   }
@@ -1070,7 +1070,7 @@ window.addEventListener("load", () => {
     searchBox.forEach((div) => (div.style.display = "none"))
     filtersBtns.forEach((btn) => (btn.style.display = "none"))
   }
-  if (currentPage === "market-page") displayAllSVGs([])
+  if (currentPage === "market-page") displayAllSVGs()
 })
 
 window
