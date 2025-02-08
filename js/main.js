@@ -933,6 +933,27 @@ async function refreshDisplay() {
   showMySVGs()
 }
 
+async function getAccount() {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+
+    if (!selectedProvider) {
+      throw new Error("No provider found for the selected wallet.")
+    }
+
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_requestAccounts",
+    })
+
+    return accounts[0]
+  } catch (error) {
+    console.error("Error getting account:", error)
+    return null
+  }
+}
+
 /***************************************************
  *                  FILTER FUNCTION
  **************************************************/
@@ -971,35 +992,8 @@ function showTokenById(tokenIdInput) {
   displayAllSVGs(validTokenIds)
 }
 
-async function getAccount() {
-  try {
-    const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    )
-
-    if (!selectedProvider) {
-      throw new Error("No provider found for the selected wallet.")
-    }
-
-    const accounts = await selectedProvider.provider.request({
-      method: "eth_requestAccounts",
-    })
-
-    return accounts[0] // Return the first account
-  } catch (error) {
-    console.error("Error getting account:", error)
-    return null // Return null if an error occurs
-  }
-}
-
 async function getBiddedSvg() {
   try {
-    // const selectedProvider = providers.find(
-    //   (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    // )
-    // const accounts = await selectedProvider.provider.request({
-    //   method: "eth_requestAccounts",
-    // })
     const currentAccount = await getAccount()
 
     const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
