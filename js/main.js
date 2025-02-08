@@ -775,8 +775,8 @@ async function displayAllSVGs() {
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
-    const currentAccount = accounts[0]
-    const ownedTokenIds = await svgContract.tokensOfOwner(currentAccount)
+    const user = accounts[0]
+    const ownedTokenIds = await svgContract.tokensOfOwner(user)
     const ownedTokenIdsArray = Array.from(ownedTokenIds).map((id) =>
       id.toString()
     )
@@ -796,12 +796,13 @@ async function displayAllSVGs() {
     })
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive && !b.isActive) return -1
-      if (!a.isActive && b.isActive) return 1
-      if (a.isActive && b.isActive) {
-        const priceA = BigInt(a.price)
-        const priceB = BigInt(b.price)
-        return priceA < priceB ? -1 : priceA > priceB ? 1 : 0
+      if (a.isActive !== b.isActive) {
+        return a.isActive ? -1 : 1
+      }
+      const priceA = BigInt(a.price)
+      const priceB = BigInt(b.price)
+      if (priceA !== priceB) {
+        return priceA < priceB ? -1 : 1
       }
       return parseInt(a.tokenId) - parseInt(b.tokenId)
     })
@@ -833,8 +834,7 @@ async function displayAllSVGs() {
           text: "Offer",
           className: "offer-btn",
           disabled:
-            currentBidder &&
-            currentBidder.toLowerCase() === currentAccount.toLowerCase(),
+            currentBidder && currentBidder.toLowerCase() === user.toLowerCase(),
         },
         {
           text: "Cancel",
