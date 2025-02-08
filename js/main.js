@@ -240,7 +240,7 @@ function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-      showMySVGs()
+      refreshDisplay()
     })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
