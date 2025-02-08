@@ -22,6 +22,7 @@ const mySVGs = document.querySelector("#mySVGs")
 const footer = document.querySelector("footer")
 const filtersBtns = document.querySelectorAll(".filters-btn")
 const filterLists = document.querySelectorAll(".filter-list")
+const showBids = document.querySelectorAll("#showBids")
 const mySVGBtns = document.querySelectorAll(".my-svg-btn")
 const searchBox = document.querySelectorAll(".search-box")
 const searchInputs = document.querySelectorAll(".search-input")
@@ -981,6 +982,52 @@ function showTokenById(tokenIdInput) {
   displayAllSVGs(validTokenIds)
 }
 
+async function getBiddedSvg() {
+  try {
+    const selectedProvider = providers.find(
+      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    )
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_requestAccounts",
+    })
+    const currentAccount = accounts[0]
+
+    const allTokenIds = rainbowColors.map((_, index) => (index + 1).toString())
+    const biddedTokens = []
+
+    for (const tokenId of allTokenIds) {
+      try {
+        const offer = await getHighestOffer(tokenId)
+        if (
+          offer &&
+          offer.bidder &&
+          offer.amount > 0 &&
+          offer.bidder.toLowerCase() === currentAccount.toLowerCase()
+        ) {
+          biddedTokens.push(tokenId)
+        }
+      } catch (error) {
+        console.error(`Error checking offers for token ${tokenId}:`, error)
+      }
+    }
+
+    return biddedTokens
+  } catch (error) {
+    console.error("Error getting user bidded tokens:", error)
+    return []
+  }
+}
+
+async function showUserBids() {
+  const biddedTokens = await getBiddedSvg()
+  if (biddedTokens.length === 0) {
+    market.innerHTML =
+      "<p class='no-bids-message'>You haven't placed any bids yet</p>"
+    return
+  }
+  await displayAllSVGs(biddedTokens)
+}
+
 /***************************************************
  *         EVENTS AND INITIALIZATION FUNCTIONS
  **************************************************/
@@ -1050,10 +1097,6 @@ document.addEventListener("click", () => {
 
 walletList.addEventListener("click", (event) => event.stopPropagation())
 
-filterLists.forEach((btn) => {
-  btn.addEventListener("click", (event) => event.stopPropagation())
-})
-
 themeToggle.addEventListener("change", toggleDarkMode)
 
 disconnectBtn.addEventListener("click", disconnect)
@@ -1074,6 +1117,13 @@ searchInputs.forEach((input) => {
   input.addEventListener("input", (event) => {
     const tokenIdInput = event.target.value.trim()
     showTokenById(tokenIdInput)
+  })
+})
+
+showBids.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    console.log("Show Bids")
+    showUserBids()
   })
 })
 
