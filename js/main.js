@@ -357,20 +357,14 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
     button.style.color = "rgb(250, 250, 250)"
   } else {
     button.addEventListener("click", async function () {
-      const selectedProvider = providers.find(
-        (provider) => provider.info.name === localStorage.getItem("lastWallet")
-      )
-      if (selectedProvider) {
+      const user = await getAccount()
+
+      if (user) {
         try {
-          await selectedProvider.provider.request({
-            method: "eth_requestAccounts",
-          })
-
-          const provider = new ethers.BrowserProvider(selectedProvider.provider)
-
-          const signer = await provider.getSigner()
-
-          const sContract = new ethers.Contract(svgAddress, svgAbi, signer)
+          const { contract: sContract } = await getSignerContract(
+            svgAddress,
+            svgAbi
+          )
 
           showNotification(`Claiming SVG #${id}`, "info", true)
 
@@ -462,20 +456,20 @@ async function showMySVGs() {
 
   if (user) {
     try {
-      const ownedTokenIds = await svgContract.tokensOfOwner(user)
+      const ownedToken = await svgContract.tokensOfOwner(user)
 
       mySVGs.innerHTML = ""
       mySVGBtns.forEach((btn) => {
-        btn.innerHTML = `${ownedTokenIds.length} SVG${
-          ownedTokenIds.length > 1 ? "s" : ""
+        btn.innerHTML = `${ownedToken.length} SVG${
+          ownedToken.length > 1 ? "s" : ""
         }`
       })
 
-      if (ownedTokenIds.length === "0") {
+      if (ownedToken.length === "0") {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
         return
       }
-      displaySVG(ownedTokenIds)
+      displaySVG(ownedToken)
     } catch (error) {
       console.error(error)
       const errorMessage = `${error.message.split("(")[0].trim()}`
@@ -608,8 +602,8 @@ async function listItem(tokenId, priceInEther) {
 
     if (!isApproved) {
       showNotification("Approving marketplace...", "info", true)
-      const approveTx = await sContract.setApprovalForAll(marketAddress, true)
-      await approveTx.wait()
+      const tx = await sContract.setApprovalForAll(marketAddress, true)
+      await tx.wait()
       showNotification("Marketplace approved!", "success")
     }
 
@@ -750,10 +744,6 @@ async function getSignerContract(contractAddress, contractAbi) {
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
-
-    if (!selectedProvider) {
-      throw new Error("No provider found for the selected wallet.")
-    }
 
     await selectedProvider.provider.request({ method: "eth_requestAccounts" })
     const provider = new ethers.BrowserProvider(selectedProvider.provider)
