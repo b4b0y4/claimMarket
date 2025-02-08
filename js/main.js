@@ -943,10 +943,6 @@ async function getAccount() {
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
 
-    if (!selectedProvider) {
-      throw new Error("No provider found for the selected wallet.")
-    }
-
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
@@ -996,7 +992,7 @@ function showTokenById(tokenIdInput) {
   displayAllSVGs(validTokenIds)
 }
 
-async function getBiddedSvg() {
+async function getBids() {
   try {
     const [currentAccount, allOffers] = await Promise.all([
       getAccount(),
@@ -1018,7 +1014,7 @@ async function getBiddedSvg() {
 }
 
 async function showUserBids() {
-  const biddedTokens = await getBiddedSvg()
+  const biddedTokens = await getBids()
   if (biddedTokens.length === 0) {
     market.innerHTML =
       "<p class='no-bids-message'>You haven't placed any bids yet</p>"
