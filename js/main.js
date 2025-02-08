@@ -864,7 +864,6 @@ async function displayAllSVGs() {
       })
 
       market.appendChild(card)
-      updatePriceInfo(tokenId, priceText)
     }
   } catch (error) {
     console.error("Error displaying SVGs:", error)
@@ -941,20 +940,6 @@ async function refreshDisplay() {
   market.innerHTML = ""
   await displayAllSVGs()
   showMySVGs()
-}
-
-function updatePriceInfo(tokenId, priceText) {
-  const priceInfo = document.getElementById(`price-info-${tokenId}`)
-  if (priceInfo) {
-    priceInfo.textContent = priceText
-  }
-}
-
-function updateBidInfo(tokenId, bidText) {
-  const bidInfo = document.getElementById(`bid-info-${tokenId}`)
-  if (bidInfo) {
-    bidInfo.textContent = bidText
-  }
 }
 
 /***************************************************
