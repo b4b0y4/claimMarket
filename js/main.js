@@ -240,7 +240,6 @@ function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-      location.reload()
     })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
@@ -450,7 +449,6 @@ async function showMySVGs() {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
-
   if (selectedProvider) {
     try {
       const accounts = await selectedProvider.provider.request({
@@ -470,7 +468,6 @@ async function showMySVGs() {
         mySVGs.textContent = "You don't own any Rainbow SVGs yet."
         return
       }
-      console.log(ownedTokenIds)
       displaySVG(ownedTokenIds)
     } catch (error) {
       console.error(error)
@@ -479,7 +476,7 @@ async function showMySVGs() {
       mySVGs.textContent = "Error fetching your SVGs"
     }
   } else {
-    mySVGs.textContent = "Please connect your wallet first"
+    mySVGs.textContent = "Please connect your wallet"
   }
 }
 
@@ -518,7 +515,6 @@ async function displaySVG(tokenIds) {
       const color = rainbowColors[parseInt(tokenId) - 1]
       let priceText = ""
       let bidText = ""
-      let hasOffer = false
 
       let buttons = []
 
@@ -535,7 +531,6 @@ async function displaySVG(tokenIds) {
       try {
         const offer = await getHighestOffer(tokenId)
         if (offer && offer.amount > 0) {
-          hasOffer = true
           bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
           buttons.push({ text: "Accept", className: "accept-offer-btn" })
         }
@@ -1026,7 +1021,7 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   console.log(`Discovered provider: ${providerDetail.info.name}`)
 })
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   const currentPage = document.body.id
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
@@ -1129,7 +1124,7 @@ document.addEventListener("click", async function (e) {
   } else if (e.target.classList.contains("cancel-offer-btn")) {
     await cancelOffer(tokenId)
   } else if (e.target.classList.contains("list-btn")) {
-    const listingPrice = prompt("Enter the listing price in ETH:")
+    const listingPrice = prompt("Enter listing price in ETH:")
     if (listingPrice) {
       try {
         const priceInEther = parseFloat(listingPrice)
