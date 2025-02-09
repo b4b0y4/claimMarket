@@ -973,7 +973,7 @@ async function showUserBids() {
       "<p class='no-bids-message'>You haven't placed any bids yet</p>"
     return
   }
-  await displayAllSVGs(biddedTokens)
+  await displayAllSVGs(bids)
 }
 
 /***************************************************
