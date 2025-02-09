@@ -216,7 +216,6 @@ async function disconnect() {
   )
   toggleDisplay(overlay, false)
   renderWallets()
-  updateNetworkStatus()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
@@ -910,7 +909,7 @@ async function getAccount() {
     return accounts[0]
   } catch (error) {
     console.error("Error getting account:", error)
-    return null
+    return "0x0000000000000000000000000000000000000000"
   }
 }
 
@@ -1002,7 +1001,6 @@ window.addEventListener("load", () => {
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
   getRpc()
-  updateNetworkStatus()
 
   if (selectedProvider) {
     providerEvent(selectedProvider)
