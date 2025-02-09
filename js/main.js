@@ -158,6 +158,7 @@ function updateNetworkStatus(currentChainId) {
   if (currentChainId === undefined) return
 
   toggleDisplay(overlay, !isCorrectNetwork)
+  refreshDisplay()
 
   if (!isCorrectNetwork && !networkWarning) {
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
