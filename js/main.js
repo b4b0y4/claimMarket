@@ -83,6 +83,8 @@ async function connectWallet(name) {
 
     connectBtn.classList.add("connected")
 
+    rpcCheck()
+
     console.log(`Connected to ${name} with account: ${accounts[0]}`)
   } catch (error) {
     console.error("Failed to connect:", error)
@@ -217,6 +219,7 @@ async function disconnect() {
   toggleDisplay(overlay, false)
   renderWallets()
   refreshDisplay()
+  rpcCheck()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
@@ -265,20 +268,18 @@ function providerEvent(provider) {
     })
 }
 
-let rpcWarning = false
-function getRpc() {
-  toggleDisplay(overlay, !rainbowRpc ? true : false)
-
-  if (!rainbowRpc && !rpcWarning) {
+// let rpcWarning = false
+function rpcCheck() {
+  if (!rainbowRpc) {
     showNotification(
       `Add a rpc Url! Click on the Connect button`,
       "warning",
       true
     )
-    rpcWarning = true
-  } else if (rainbowRpc) {
+    // rpcWarning = true
+  } else {
     showNotification("")
-    rpcWarning = false
+    // rpcWarning = false
   }
 }
 
@@ -458,6 +459,10 @@ function toggleMySVGs() {
 }
 
 async function showMySVGs() {
+  if (!rainbowRpc) {
+    rpcCheck()
+    return
+  }
   const user = await getAccount()
 
   if (user) {
@@ -617,7 +622,7 @@ async function listItem(tokenId, priceInEther) {
 
     showNotification(`Listed SVG #${tokenId}`, "success")
 
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -638,7 +643,7 @@ async function cancelListing(tokenId) {
     await tx.wait()
 
     showNotification(`Listing of svg #${tokenId} cancelled`, "success")
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -659,7 +664,7 @@ async function acceptOffer(tokenId) {
     await tx.wait()
 
     showNotification(`Accepted offer for SVG #${tokenId}`, "success")
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -681,7 +686,7 @@ async function buyItem(tokenId, priceInWei) {
 
     showNotification(`You bought SVG #${tokenId}`, "success")
 
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -707,7 +712,7 @@ async function placeOffer(tokenId, offerAmount) {
     await tx.wait()
 
     showNotification(`Offered ${offerAmount} ETH for SVG #${tokenId}`)
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -728,7 +733,7 @@ async function cancelOffer(tokenId) {
     await tx.wait()
 
     showNotification(`Cancelled offer for SVG #${tokenId}`, "success")
-    await refreshDisplay()
+    refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
     showNotification(errorMessage, "warning")
@@ -755,52 +760,138 @@ async function getSignerContract(contractAddress, contractAbi) {
   }
 }
 
+// async function displayAllSVGs(tokenIds = []) {
+//   try {
+//     const [user, ownedTokenIds, listedItems, allOffers] = await Promise.all([
+//       getAccount(),
+//       svgContract.tokensOfOwner(await getAccount()),
+//       getAllListedItems(),
+//       getAllOffers(),
+//     ])
+
+//     const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
+//     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
+
+//     const allTokenIds = tokenIds.length
+//       ? tokenIds.map((id) => id.toString())
+//       : rainbowColors.map((_, index) => (index + 1).toString())
+
+//     const itemMap = new Map(
+//       allTokenIds.map((id) => [
+//         id,
+//         { tokenId: id, isActive: false, price: "0" },
+//       ])
+//     )
+
+//     listedItems.forEach(
+//       (item) =>
+//         itemMap.has(item.tokenId) &&
+//         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
+//     )
+
+//     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
+//       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+
+//       if (BigInt(a.price) !== BigInt(b.price))
+//         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
+
+//       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
+//     })
+
+//     market.innerHTML = ""
+
+//     sortedItems.forEach(({ tokenId, isActive, price }) => {
+//       const color = rainbowColors[parseInt(tokenId) - 1]
+//       const offer = offerMap.get(tokenId) || {}
+//       const currentBidder = offer.bidder || null
+//       const isOwned = ownedTokenIdsSet.has(tokenId)
+
+//       const buttons = [
+//         {
+//           text: "Offer",
+//           className: "offer-btn",
+//           disabled:
+//             currentBidder?.toLowerCase() === user.toLowerCase() || isOwned,
+//         },
+//         {
+//           text: "Cancel",
+//           className: "cancel-offer-btn",
+//           disabled: !currentBidder || isOwned,
+//         },
+//         { text: "Buy", className: "buy-btn", disabled: isOwned || !isActive },
+//       ]
+
+//       const card = createSVGCard(tokenId, color, {
+//         priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
+//         bidText:
+//           offer.amount > 0
+//             ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
+//             : "",
+//         buttons,
+//       })
+
+//       market.appendChild(card)
+//     })
+//   } catch (error) {
+//     console.error("Error displaying SVGs:", error)
+//   }
+// }
+
 async function displayAllSVGs(tokenIds = []) {
   try {
+    if (!rainbowRpc) {
+      const allTokenIds = tokenIds.length
+        ? tokenIds.map((id) => id.toString())
+        : rainbowColors.map((_, index) => (index + 1).toString())
+
+      market.innerHTML = ""
+      allTokenIds.forEach((tokenId) => {
+        const color = rainbowColors[parseInt(tokenId) - 1]
+        const card = createSVGCard(tokenId, color, {
+          priceText: "",
+          bidText: "",
+          buttons: [],
+        })
+        market.appendChild(card)
+      })
+      rpcCheck()
+      return
+    }
+
     const [user, ownedTokenIds, listedItems, allOffers] = await Promise.all([
       getAccount(),
       svgContract.tokensOfOwner(await getAccount()),
       getAllListedItems(),
       getAllOffers(),
     ])
-
     const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
-
     const allTokenIds = tokenIds.length
       ? tokenIds.map((id) => id.toString())
       : rainbowColors.map((_, index) => (index + 1).toString())
-
     const itemMap = new Map(
       allTokenIds.map((id) => [
         id,
         { tokenId: id, isActive: false, price: "0" },
       ])
     )
-
     listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
     )
-
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
-
       if (BigInt(a.price) !== BigInt(b.price))
         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
-
       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
     })
-
     market.innerHTML = ""
-
     sortedItems.forEach(({ tokenId, isActive, price }) => {
       const color = rainbowColors[parseInt(tokenId) - 1]
       const offer = offerMap.get(tokenId) || {}
       const currentBidder = offer.bidder || null
       const isOwned = ownedTokenIdsSet.has(tokenId)
-
       const buttons = [
         {
           text: "Offer",
@@ -815,7 +906,6 @@ async function displayAllSVGs(tokenIds = []) {
         },
         { text: "Buy", className: "buy-btn", disabled: isOwned || !isActive },
       ]
-
       const card = createSVGCard(tokenId, color, {
         priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
         bidText:
@@ -824,7 +914,6 @@ async function displayAllSVGs(tokenIds = []) {
             : "",
         buttons,
       })
-
       market.appendChild(card)
     })
   } catch (error) {
@@ -890,9 +979,9 @@ function createSVGCard(tokenId, color, options = {}) {
   return container
 }
 
-async function refreshDisplay() {
+function refreshDisplay() {
   market.innerHTML = ""
-  await displayAllSVGs()
+  displayAllSVGs()
   showMySVGs()
 }
 
@@ -1000,7 +1089,7 @@ window.addEventListener("load", () => {
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
   )
-  getRpc()
+  rpcCheck()
 
   if (selectedProvider) {
     providerEvent(selectedProvider)
