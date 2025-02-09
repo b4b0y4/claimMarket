@@ -170,8 +170,9 @@ function updateNetworkStatus(currentChainId) {
 
 async function switchNetwork() {
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    (p) => p.info.name === localStorage.getItem("lastWallet")
   )
+
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
@@ -184,8 +185,9 @@ async function switchNetwork() {
 }
 
 async function disconnect() {
-  const lastWallet = localStorage.getItem("lastWallet")
-  const selectedProvider = providers.find((p) => p.info.name === lastWallet)
+  const selectedProvider = providers.find(
+    (p) => p.info.name === localStorage.getItem("lastWallet")
+  )
 
   try {
     await selectedProvider?.provider.request({
@@ -260,6 +262,7 @@ function providerEvent(provider) {
     .on("disconnect", () => {
       console.log(`Disconnected from ${provider.info.name}`)
       disconnect()
+      refreshDisplay()
     })
 }
 
