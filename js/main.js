@@ -158,13 +158,13 @@ function updateNetworkStatus(currentChainId) {
   if (currentChainId === undefined) return
 
   toggleDisplay(overlay, !isCorrectNetwork)
-  refreshDisplay()
 
   if (!isCorrectNetwork && !networkWarning) {
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
     networkWarning = true
   } else if (!rainbowRpc) {
     rpcCheck()
+    if (document.body.id === "market-page") refreshDisplay()
   } else if (isCorrectNetwork) {
     showNotification("")
     networkWarning = false
@@ -756,6 +756,22 @@ async function getSignerContract(contractAddress, contractAbi) {
   }
 }
 
+function displayOfflineMarket(tokenIds) {
+  const allTokenIds = tokenIds.length
+    ? tokenIds.map((id) => id.toString())
+    : rainbowColors.map((_, index) => (index + 1).toString())
+  market.innerHTML = ""
+  allTokenIds.forEach((tokenId) => {
+    const color = rainbowColors[parseInt(tokenId) - 1]
+    const card = createSVGCard(tokenId, color, {
+      priceText: "",
+      bidText: "",
+      buttons: [],
+    })
+    market.appendChild(card)
+  })
+}
+
 async function displayAllSVGs(tokenIds = []) {
   if (!rainbowRpc) {
     displayOfflineMarket(tokenIds)
@@ -768,9 +784,7 @@ async function displayAllSVGs(tokenIds = []) {
       getAllListedItems(),
       getAllOffers(),
     ])
-
     const isAccountConnected = user !== null
-
     const ownedTokenIds = isAccountConnected
       ? await svgContract.tokensOfOwner(user)
       : []
@@ -815,8 +829,9 @@ async function displayAllSVGs(tokenIds = []) {
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
-      if (BigInt(a.price) !== BigInt(b.price))
+      if (a.isActive) {
         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
+      }
       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
     })
 
@@ -833,7 +848,7 @@ async function displayAllSVGs(tokenIds = []) {
           className: "offer-btn",
           disabled:
             !isAccountConnected ||
-            currentBidder?.toLowerCase() === user.toLowerCase() ||
+            currentBidder?.toLowerCase() === user?.toLowerCase() ||
             isOwned,
         },
         {
@@ -861,23 +876,6 @@ async function displayAllSVGs(tokenIds = []) {
   } catch (error) {
     console.error("Error displaying SVGs:", error)
   }
-}
-
-function displayOfflineMarket(tokenIds) {
-  const allTokenIds = tokenIds.length
-    ? tokenIds.map((id) => id.toString())
-    : rainbowColors.map((_, index) => (index + 1).toString())
-
-  market.innerHTML = ""
-  allTokenIds.forEach((tokenId) => {
-    const color = rainbowColors[parseInt(tokenId) - 1]
-    const card = createSVGCard(tokenId, color, {
-      priceText: "",
-      bidText: "",
-      buttons: [],
-    })
-    market.appendChild(card)
-  })
 }
 
 function createSVGCard(tokenId, color, options = {}) {
