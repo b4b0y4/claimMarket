@@ -271,7 +271,11 @@ function getRpc() {
   toggleDisplay(overlay, !rainbowRpc ? true : false)
 
   if (!rainbowRpc && !rpcWarning) {
-    showNotification(`Add a rpc Url!`, "warning", true)
+    showNotification(
+      `Add a rpc Url! Click on the Connect button`,
+      "warning",
+      true
+    )
     rpcWarning = true
   } else if (rainbowRpc) {
     showNotification("")
