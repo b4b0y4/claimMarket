@@ -337,63 +337,63 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
   svg.appendChild(rect)
 
   const button = document.createElement("button")
-  button.textContent = isClaimed ? `Claimed!` : `Claim #${id}`
   button.classList.add("claim-button")
-  button.disabled = isClaimed
 
   if (allClaimed) {
     button.textContent = `SVG #${id}`
     button.disabled = true
-    button.style.opacity = "0.6"
-    button.style.backgroundColor = "transparent"
-    button.style.color = "rgb(30, 30, 30)"
-    button.style.display = "flex"
-    button.style.justifyContent = "flex-end"
-    button.style.height = "20px"
-  } else if (isClaimed) {
-    button.style.opacity = "0.3"
-    svg.style.filter = "brightness(0.6)"
-    button.style.backgroundColor = "transparent"
-    button.style.color = "rgb(250, 250, 250)"
+    Object.assign(button.style, {
+      opacity: "0.6",
+      backgroundColor: "transparent",
+      color: "rgb(30, 30, 30)",
+      display: "flex",
+      justifyContent: "flex-end",
+      height: "20px",
+    })
   } else {
-    button.addEventListener("click", async function () {
-      const user = await getAccount()
+    button.textContent = isClaimed ? "Claimed!" : `Claim #${id}`
+    button.disabled = isClaimed
 
-      if (user) {
+    if (isClaimed) {
+      Object.assign(button.style, {
+        opacity: "0.3",
+        backgroundColor: "transparent",
+        color: "rgb(250, 250, 250)",
+      })
+      svg.style.filter = "brightness(0.6)"
+    } else {
+      button.addEventListener("click", async function () {
+        const user = await getAccount()
+        if (!user) return console.error("No provider selected or available.")
+
         try {
           const { contract: sContract } = await getSignerContract(
             svgAddress,
             svgAbi
           )
-
           showNotification(`Claiming SVG #${id}`, "info", true)
 
           const tx = await sContract.mint(id)
           await tx.wait()
 
-          button.textContent = `Claimed!`
-          button.style.opacity = "0.3"
-          svg.style.filter = "brightness(0.6)"
-          button.style.backgroundColor = "transparent"
-          button.style.color = "rgb(250, 250, 250)"
+          button.textContent = "Claimed!"
           button.disabled = true
-
+          Object.assign(button.style, {
+            opacity: "0.3",
+            backgroundColor: "transparent",
+            color: "rgb(250, 250, 250)",
+          })
+          svg.style.filter = "brightness(0.6)"
           showNotification(`Claimed SVG #${id}!`, "success")
           showMySVGs()
         } catch (error) {
-          const errorMessage = `${error.message.split("(")[0].trim()}`
-          showNotification(errorMessage, "warning")
+          showNotification(error.message.split("(")[0].trim(), "warning")
           console.error(error)
         }
-      } else {
-        console.error("No provider selected or available.")
-      }
-    })
+      })
+    }
   }
-
-  container.appendChild(svg)
-  container.appendChild(button)
-
+  container.append(svg, button)
   return container
 }
 
@@ -494,59 +494,50 @@ async function displaySVG(tokenIds) {
         { tokenId: id.toString(), isActive: false, price: "0" },
       ])
     )
-
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
 
-    listedItems.forEach((item) => {
-      if (itemMap.has(item.tokenId)) {
+    listedItems.forEach(
+      (item) =>
+        itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-      }
-    })
+    )
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) {
-        return a.isActive ? -1 : 1
-      }
-      const priceA = BigInt(a.price)
-      const priceB = BigInt(b.price)
-      if (priceA !== priceB) {
-        return priceA < priceB ? -1 : 1
-      }
-      return parseInt(a.tokenId) - parseInt(b.tokenId)
+      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+
+      return BigInt(a.price) !== BigInt(b.price)
+        ? BigInt(a.price) < BigInt(b.price)
+          ? -1
+          : 1
+        : BigInt(a.tokenId) < BigInt(b.tokenId)
+        ? -1
+        : 1
     })
 
     mySVGs.innerHTML = ""
 
-    for (const item of sortedItems) {
-      const { tokenId, isActive, price } = item
+    sortedItems.forEach(({ tokenId, isActive, price }) => {
       const color = rainbowColors[parseInt(tokenId) - 1]
-      let priceText = ""
-      let bidText = ""
-      let buttons = []
+      const offer = offerMap.get(tokenId) || {}
 
-      buttons.push({
-        text: isActive ? "Edit" : "List",
-        className: "list-btn",
-      })
-
-      if (isActive) {
-        buttons.push({ text: "Cancel", className: "cancel-list-btn" })
-        priceText = `${ethers.formatEther(price)} ETH`
-      }
-
-      const offer = offerMap.get(tokenId)
-      if (offer && offer.amount > 0) {
-        bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
-        buttons.push({ text: "Accept", className: "accept-offer-btn" })
-      }
+      const buttons = [
+        { text: isActive ? "Edit" : "List", className: "list-btn" },
+        ...(isActive ? [{ text: "Cancel", className: "cancel-list-btn" }] : []),
+        ...(offer.amount > 0
+          ? [{ text: "Accept", className: "accept-offer-btn" }]
+          : []),
+      ]
 
       const card = createSVGCard(tokenId, color, {
-        priceText,
-        bidText,
+        priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
+        bidText:
+          offer.amount > 0
+            ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
+            : "",
         buttons,
       })
       mySVGs.appendChild(card)
-    }
+    })
   } catch (error) {
     console.error("Error displaying SVGs:", error)
   }
@@ -767,97 +758,69 @@ async function displayAllSVGs(tokenIds = []) {
       getAllOffers(),
     ])
 
-    const ownedTokenIdsArray = Array.from(ownedTokenIds).map((id) =>
-      id.toString()
-    )
-
+    const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
 
-    let itemMap
-    if (tokenIds.length > 0) {
-      itemMap = new Map(
-        tokenIds.map((id) => [
-          id.toString(),
-          { tokenId: id, isActive: false, price: "0" },
-        ])
-      )
-    } else {
-      const allTokenIds = rainbowColors.map((_, index) =>
-        (index + 1).toString()
-      )
-      itemMap = new Map(
-        allTokenIds.map((id) => [
-          id,
-          { tokenId: id, isActive: false, price: "0" },
-        ])
-      )
-    }
+    const allTokenIds = tokenIds.length
+      ? tokenIds.map((id) => id.toString())
+      : rainbowColors.map((_, index) => (index + 1).toString())
 
-    listedItems.forEach((item) => {
-      if (itemMap.has(item.tokenId)) {
+    const itemMap = new Map(
+      allTokenIds.map((id) => [
+        id,
+        { tokenId: id, isActive: false, price: "0" },
+      ])
+    )
+
+    listedItems.forEach(
+      (item) =>
+        itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-      }
-    })
+    )
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) {
-        return a.isActive ? -1 : 1
-      }
-      const priceA = BigInt(a.price)
-      const priceB = BigInt(b.price)
-      if (priceA !== priceB) {
-        return priceA < priceB ? -1 : 1
-      }
-      return parseInt(a.tokenId) - parseInt(b.tokenId)
+      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+
+      if (BigInt(a.price) !== BigInt(b.price))
+        return BigInt(a.price) < BigInt(b.price) ? -1 : 1
+
+      return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
     })
 
     market.innerHTML = ""
 
-    for (const item of sortedItems) {
-      const { tokenId, isActive, price } = item
+    sortedItems.forEach(({ tokenId, isActive, price }) => {
       const color = rainbowColors[parseInt(tokenId) - 1]
-      let priceText = ""
-      let bidText = ""
+      const offer = offerMap.get(tokenId) || {}
+      const currentBidder = offer.bidder || null
+      const isOwned = ownedTokenIdsSet.has(tokenId)
 
-      const offer = offerMap.get(tokenId)
-      const currentBidder = offer?.bidder || null
-      if (offer && offer.amount > 0) {
-        bidText = `Offer: ${ethers.formatEther(offer.amount)} ETH`
-      }
-
-      let buttons = [
+      const buttons = [
         {
           text: "Offer",
           className: "offer-btn",
           disabled:
-            currentBidder && currentBidder.toLowerCase() === user.toLowerCase(),
+            currentBidder?.toLowerCase() === user.toLowerCase() || isOwned,
         },
         {
           text: "Cancel",
           className: "cancel-offer-btn",
-          disabled: !currentBidder,
+          disabled: !currentBidder || isOwned,
         },
-        { text: "Buy", className: "buy-btn" },
+        { text: "Buy", className: "buy-btn", disabled: isOwned || !isActive },
       ]
 
-      if (isActive) {
-        priceText = `${ethers.formatEther(price)} ETH`
-      } else {
-        priceText = ""
-        buttons.find((btn) => btn.text === "Buy").disabled = true
-      }
-
-      if (ownedTokenIdsArray.includes(tokenId.toString())) {
-        buttons.forEach((btn) => (btn.disabled = true))
-      }
-
       const card = createSVGCard(tokenId, color, {
-        priceText,
-        bidText,
+        priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
+        bidText:
+          offer.amount > 0
+            ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
+            : "",
         buttons,
       })
+
       market.appendChild(card)
-    }
+    })
   } catch (error) {
     console.error("Error displaying SVGs:", error)
   }
