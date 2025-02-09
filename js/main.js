@@ -756,129 +756,6 @@ async function getSignerContract(contractAddress, contractAbi) {
   }
 }
 
-// async function displayAllSVGs(tokenIds = []) {
-//   if (!rainbowRpc) {
-//     const allTokenIds = tokenIds.length
-//       ? tokenIds.map((id) => id.toString())
-//       : rainbowColors.map((_, index) => (index + 1).toString())
-//     market.innerHTML = ""
-//     allTokenIds.forEach((tokenId) => {
-//       const color = rainbowColors[parseInt(tokenId) - 1]
-//       const card = createSVGCard(tokenId, color, {
-//         priceText: "",
-//         bidText: "",
-//         buttons: [],
-//       })
-//       market.appendChild(card)
-//     })
-//     return
-//   }
-
-//   try {
-//     const [user, ownedTokenIds, listedItems, allOffers] = await Promise.all([
-//       getAccount(),
-//       svgContract.tokensOfOwner(await getAccount()),
-//       getAllListedItems(),
-//       getAllOffers(),
-//     ])
-
-//     const validListedItems = await Promise.all(
-//       listedItems.map(async (item) => {
-//         try {
-//           const currentOwner = await svgContract.ownerOf(item.tokenId)
-//           const seller = item.seller?.toLowerCase()
-//           return {
-//             ...item,
-//             isActive: item.isActive && seller === currentOwner.toLowerCase(),
-//           }
-//         } catch (error) {
-//           console.error(
-//             `Error checking owner for token ${item.tokenId}:`,
-//             error
-//           )
-//           return { ...item, isActive: false }
-//         }
-//       })
-//     )
-
-//     const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
-//     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
-//     const allTokenIds = tokenIds.length
-//       ? tokenIds.map((id) => id.toString())
-//       : rainbowColors.map((_, index) => (index + 1).toString())
-
-//     const itemMap = new Map(
-//       allTokenIds.map((id) => [
-//         id,
-//         { tokenId: id, isActive: false, price: "0" },
-//       ])
-//     )
-
-//     validListedItems.forEach(
-//       (item) =>
-//         itemMap.has(item.tokenId) &&
-//         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-//     )
-
-//     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-//       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
-//       if (BigInt(a.price) !== BigInt(b.price))
-//         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
-//       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
-//     })
-
-//     market.innerHTML = ""
-//     sortedItems.forEach(({ tokenId, isActive, price }) => {
-//       const color = rainbowColors[parseInt(tokenId) - 1]
-//       const offer = offerMap.get(tokenId) || {}
-//       const currentBidder = offer.bidder || null
-//       const isOwned = ownedTokenIdsSet.has(tokenId)
-//       const buttons = [
-//         {
-//           text: "Offer",
-//           className: "offer-btn",
-//           disabled:
-//             currentBidder?.toLowerCase() === user.toLowerCase() || isOwned,
-//         },
-//         {
-//           text: "Cancel",
-//           className: "cancel-offer-btn",
-//           disabled: !currentBidder || isOwned,
-//         },
-//         { text: "Buy", className: "buy-btn", disabled: isOwned || !isActive },
-//       ]
-//       const card = createSVGCard(tokenId, color, {
-//         priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
-//         bidText:
-//           offer.amount > 0
-//             ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
-//             : "",
-//         buttons,
-//       })
-//       market.appendChild(card)
-//     })
-//   } catch (error) {
-//     console.error("Error displaying SVGs:", error)
-//   }
-// }
-
-function displayOfflineMarket(tokenIds) {
-  const allTokenIds = tokenIds.length
-    ? tokenIds.map((id) => id.toString())
-    : rainbowColors.map((_, index) => (index + 1).toString())
-
-  market.innerHTML = ""
-  allTokenIds.forEach((tokenId) => {
-    const color = rainbowColors[parseInt(tokenId) - 1]
-    const card = createSVGCard(tokenId, color, {
-      priceText: "",
-      bidText: "",
-      buttons: [],
-    })
-    market.appendChild(card)
-  })
-}
-
 async function displayAllSVGs(tokenIds = []) {
   if (!rainbowRpc) {
     displayOfflineMarket(tokenIds)
@@ -984,6 +861,23 @@ async function displayAllSVGs(tokenIds = []) {
   } catch (error) {
     console.error("Error displaying SVGs:", error)
   }
+}
+
+function displayOfflineMarket(tokenIds) {
+  const allTokenIds = tokenIds.length
+    ? tokenIds.map((id) => id.toString())
+    : rainbowColors.map((_, index) => (index + 1).toString())
+
+  market.innerHTML = ""
+  allTokenIds.forEach((tokenId) => {
+    const color = rainbowColors[parseInt(tokenId) - 1]
+    const card = createSVGCard(tokenId, color, {
+      priceText: "",
+      bidText: "",
+      buttons: [],
+    })
+    market.appendChild(card)
+  })
 }
 
 function createSVGCard(tokenId, color, options = {}) {
