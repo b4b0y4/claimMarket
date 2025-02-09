@@ -216,6 +216,7 @@ async function disconnect() {
   )
   toggleDisplay(overlay, false)
   renderWallets()
+  refreshDisplay()
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
@@ -261,7 +262,6 @@ function providerEvent(provider) {
     .on("disconnect", () => {
       console.log(`Disconnected from ${provider.info.name}`)
       disconnect()
-      refreshDisplay()
     })
 }
 
