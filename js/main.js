@@ -902,6 +902,8 @@ async function getAccount() {
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
     )
 
+    if (!selectedProvider) return "0x0000000000000000000000000000000000000000"
+
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
     })
