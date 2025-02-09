@@ -967,8 +967,8 @@ async function getBids() {
 }
 
 async function showUserBids() {
-  const biddedTokens = await getBids()
-  if (biddedTokens.length === 0) {
+  const bids = await getBids()
+  if (bids.length === 0) {
     market.innerHTML =
       "<p class='no-bids-message'>You haven't placed any bids yet</p>"
     return
