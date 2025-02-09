@@ -760,7 +760,6 @@ async function displayAllSVGs(tokenIds = []) {
     const allTokenIds = tokenIds.length
       ? tokenIds.map((id) => id.toString())
       : rainbowColors.map((_, index) => (index + 1).toString())
-
     market.innerHTML = ""
     allTokenIds.forEach((tokenId) => {
       const color = rainbowColors[parseInt(tokenId) - 1]
@@ -781,28 +780,52 @@ async function displayAllSVGs(tokenIds = []) {
       getAllListedItems(),
       getAllOffers(),
     ])
+
+    const validListedItems = await Promise.all(
+      listedItems.map(async (item) => {
+        try {
+          const currentOwner = await svgContract.ownerOf(item.tokenId)
+          const seller = item.seller?.toLowerCase()
+          return {
+            ...item,
+            isActive: item.isActive && seller === currentOwner.toLowerCase(),
+          }
+        } catch (error) {
+          console.error(
+            `Error checking owner for token ${item.tokenId}:`,
+            error
+          )
+          return { ...item, isActive: false }
+        }
+      })
+    )
+
     const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
     const allTokenIds = tokenIds.length
       ? tokenIds.map((id) => id.toString())
       : rainbowColors.map((_, index) => (index + 1).toString())
+
     const itemMap = new Map(
       allTokenIds.map((id) => [
         id,
         { tokenId: id, isActive: false, price: "0" },
       ])
     )
-    listedItems.forEach(
+
+    validListedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
     )
+
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
       if (BigInt(a.price) !== BigInt(b.price))
         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
     })
+
     market.innerHTML = ""
     sortedItems.forEach(({ tokenId, isActive, price }) => {
       const color = rainbowColors[parseInt(tokenId) - 1]
