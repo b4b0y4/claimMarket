@@ -42,7 +42,6 @@ const marketContract = new ethers.Contract(
 
 const TARGET_NETWORK = networkConfigs.sepolia
 
-// Helper functions
 const toggleDisplay = (element, show) => {
   element.style.display = show ? "block" : "none"
 }
