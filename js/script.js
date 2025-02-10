@@ -29,7 +29,8 @@ const searchBox = document.querySelectorAll(".search-box")
 const searchInputs = document.querySelectorAll(".search-input")
 
 const providers = []
-const rainbowRpc = localStorage.getItem("rainbowRpc")
+const rainbowRpc =
+  localStorage.getItem("rainbowRpc") || networkConfigs.sepolia.rpcUrl
 const sepoliaProvider = new ethers.JsonRpcProvider(rainbowRpc)
 
 const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider)
