@@ -365,7 +365,7 @@ export const svgAbi = [
   },
 ]
 
-export const marketAddress = "0xC5b477C9Ac5095062693E03852ce88B44A7FAd18"
+export const marketAddress = "0xCf6b44911378DADCD890e9C7A08b0b265159bda4"
 
 export const marketAbi = [
   {
@@ -552,14 +552,14 @@ export const marketAbi = [
   },
   {
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "cancelListing",
+    name: "cancelOffer",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",
   },
   {
     inputs: [{ internalType: "uint256", name: "tokenId", type: "uint256" }],
-    name: "cancelOffer",
+    name: "cancelOrCleanListing",
     outputs: [],
     stateMutability: "nonpayable",
     type: "function",

@@ -158,13 +158,13 @@ function updateNetworkStatus(currentChainId) {
   if (currentChainId === undefined) return
 
   toggleDisplay(overlay, !isCorrectNetwork)
+  if (document.body.id === "market-page") refreshDisplay()
 
   if (!isCorrectNetwork && !networkWarning) {
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
     networkWarning = true
   } else if (!rainbowRpc) {
     rpcCheck()
-    if (document.body.id === "market-page") refreshDisplay()
   } else if (isCorrectNetwork) {
     showNotification("")
     networkWarning = false
@@ -789,25 +789,6 @@ async function displayAllSVGs(tokenIds = []) {
       ? await svgContract.tokensOfOwner(user)
       : []
 
-    const validListedItems = await Promise.all(
-      listedItems.map(async (item) => {
-        try {
-          const currentOwner = await svgContract.ownerOf(item.tokenId)
-          const seller = item.seller?.toLowerCase()
-          return {
-            ...item,
-            isActive: item.isActive && seller === currentOwner.toLowerCase(),
-          }
-        } catch (error) {
-          console.error(
-            `Error checking owner for token ${item.tokenId}:`,
-            error
-          )
-          return { ...item, isActive: false }
-        }
-      })
-    )
-
     const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
     const allTokenIds = tokenIds.length
@@ -821,7 +802,7 @@ async function displayAllSVGs(tokenIds = []) {
       ])
     )
 
-    validListedItems.forEach(
+    listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
@@ -829,9 +810,9 @@ async function displayAllSVGs(tokenIds = []) {
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
       if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
-      if (a.isActive) {
+      if (BigInt(a.price) !== BigInt(b.price))
         return BigInt(a.price) < BigInt(b.price) ? -1 : 1
-      }
+
       return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
     })
 
