@@ -158,7 +158,8 @@ function updateNetworkStatus(currentChainId) {
   if (currentChainId === undefined) return
 
   toggleDisplay(overlay, !isCorrectNetwork)
-  if (document.body.id === "market-page") refreshDisplay()
+
+  document.body.id === "index-page" ? showMySVGs() : refreshDisplay()
 
   if (!isCorrectNetwork && !networkWarning) {
     showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
@@ -213,6 +214,9 @@ async function disconnect() {
     }
   })
 
+  mySVGBtns.forEach((btn) => {
+    btn.innerHTML = "My SVGs"
+  })
   connectBtn.innerHTML = "Connect"
   ;[walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
@@ -257,7 +261,7 @@ function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
       accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-      refreshDisplay()
+      document.body.id === "index-page" ? showMySVGs() : refreshDisplay()
     })
     .on("chainChanged", (chainId) => {
       console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
@@ -446,8 +450,6 @@ function toggleMySVGs() {
   }
   if (market) market.classList.toggle("mySVGs-open")
   footer.classList.toggle("mySVGs-open")
-
-  mySVGBtns.forEach((btn) => (btn.innerHTML = "My SVGs"))
 
   if (isVisible) {
     showMySVGs()
