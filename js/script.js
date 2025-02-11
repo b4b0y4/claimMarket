@@ -835,7 +835,11 @@ async function displayAllSVGs(tokenIds = []) {
         {
           text: "Cancel",
           className: "cancel-offer-btn",
-          disabled: !isAccountConnected || !currentBidder || isOwned,
+          disabled:
+            !isAccountConnected ||
+            !currentBidder ||
+            isOwned ||
+            ownedTokenIds.length === 0,
         },
         {
           text: "Buy",
