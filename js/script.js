@@ -533,7 +533,7 @@ async function displaySVG(tokenIds) {
         { text: isActive ? "Edit" : "List", className: "list-btn" },
         ...(isActive ? [{ text: "Cancel", className: "cancel-list-btn" }] : []),
         ...(offer.amount > 0
-          ? [{ text: "Accept", className: "accept-offer-btn" }]
+          ? [{ text: "Sell", className: "accept-offer-btn" }]
           : []),
       ]
 
@@ -656,12 +656,12 @@ async function acceptOffer(tokenId) {
       marketAbi
     )
 
-    showNotification(`Accepting offer for SVG #${tokenId}`, "info", true)
+    showNotification(`Selling SVG #${tokenId}`, "info", true)
 
     const tx = await mContract.acceptOffer(tokenId)
     await tx.wait()
 
-    showNotification(`Accepted offer for SVG #${tokenId}`, "success")
+    showNotification(`Sold SVG #${tokenId}`, "success")
     refreshDisplay()
   } catch (error) {
     const errorMessage = `${error.message.split("(")[0].trim()}`
