@@ -1,205 +1,204 @@
-import { ethers } from "./ethers.min.js"
+import { ethers } from "./ethers.min.js";
 import {
   networkConfigs,
   svgAddress,
   svgAbi,
   marketAddress,
   marketAbi,
-} from "./constants.js"
+} from "./constants.js";
 
-// DOM Elements
-const chain = document.querySelector("#chain")
-const connectBtn = document.querySelector("#connectBtn")
-const walletList = document.querySelector("#walletList")
-const walletBox = document.querySelector("#wallets")
-const whatsBtn = document.querySelector("#whats")
-const disconnectBtn = document.querySelector("#disconnect")
-const overlay = document.querySelector("#overlay")
-const squaresBox = document.querySelector("#squaresBox")
-const explanation = document.querySelector(".explanation")
-const market = document.querySelector("#market")
-const mySVGs = document.querySelector("#mySVGs")
-const footer = document.querySelector("footer")
-const filtersBtns = document.querySelectorAll(".filters-btn")
-const filterLists = document.querySelectorAll(".filter-list")
-const showBids = document.querySelectorAll("#showBids")
-const clearFil = document.querySelectorAll("#clearFil")
-const mySVGBtns = document.querySelectorAll(".my-svg-btn")
-const searchBox = document.querySelectorAll(".search-box")
-const searchInputs = document.querySelectorAll(".search-input")
+const chain = document.querySelector("#chain");
+const connectBtn = document.querySelector("#connectBtn");
+const walletList = document.querySelector("#walletList");
+const walletBox = document.querySelector("#wallets");
+const whatsBtn = document.querySelector("#whats");
+const disconnectBtn = document.querySelector("#disconnect");
+const overlay = document.querySelector("#overlay");
+const squaresBox = document.querySelector("#squaresBox");
+const explanation = document.querySelector(".explanation");
+const market = document.querySelector("#market");
+const mySVGs = document.querySelector("#mySVGs");
+const footer = document.querySelector("footer");
+const filtersBtns = document.querySelectorAll(".filters-btn");
+const filterLists = document.querySelectorAll(".filter-list");
+const showBids = document.querySelectorAll("#showBids");
+const clearFil = document.querySelectorAll("#clearFil");
+const mySVGBtns = document.querySelectorAll(".my-svg-btn");
+const searchBox = document.querySelectorAll(".search-box");
+const searchInputs = document.querySelectorAll(".search-input");
 
-const providers = []
+const providers = [];
 const rainbowRpc =
-  localStorage.getItem("rainbowRpc") || networkConfigs.sepolia.rpcUrl
-const sepoliaProvider = new ethers.JsonRpcProvider(rainbowRpc)
+  localStorage.getItem("rainbowRpc") || networkConfigs.sepolia.rpcUrl;
+const sepoliaProvider = new ethers.JsonRpcProvider(rainbowRpc);
 
-const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider)
+const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider);
 const marketContract = new ethers.Contract(
   marketAddress,
   marketAbi,
   sepoliaProvider
-)
+);
 
-const TARGET_NETWORK = networkConfigs.sepolia
+const TARGET_NETWORK = networkConfigs.sepolia;
 
 const toggleDisplay = (element, show) => {
-  element.style.display = show ? "block" : "none"
-}
+  element.style.display = show ? "block" : "none";
+};
 
 function createButton(config, onClick) {
-  const button = document.createElement("button")
+  const button = document.createElement("button");
   button.innerHTML = `
       <img src="${config.icon}">
       ${config.name}
       <span class="green-dot" style="display: none"></span>
-    `
-  button.onclick = onClick
-  return button
+    `;
+  button.onclick = onClick;
+  return button;
 }
 
 /***************************************************
  *                 CONNECTIVITY
  ***************************************************/
 async function connectWallet(name) {
-  const selectedProvider = providers.find((p) => p.info.name === name)
-  if (!selectedProvider) return
+  const selectedProvider = providers.find((p) => p.info.name === name);
+  if (!selectedProvider) return;
 
   try {
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
-    })
+    });
     const chainId = await selectedProvider.provider.request({
       method: "eth_chainId",
-    })
+    });
 
-    localStorage.setItem("lastWallet", name)
-    localStorage.setItem("connected", "true")
+    localStorage.setItem("lastWallet", name);
+    localStorage.setItem("connected", "true");
 
-    switchNetwork()
-    shortAddress(accounts[0])
-    providerEvent(selectedProvider)
-    renderWallets()
-    updateNetworkStatus(chainId)
+    switchNetwork();
+    shortAddress(accounts[0]);
+    providerEvent(selectedProvider);
+    renderWallets();
+    updateNetworkStatus(chainId);
 
-    connectBtn.classList.add("connected")
+    connectBtn.classList.add("connected");
 
-    console.log(`Connected to ${name} with account: ${accounts[0]}`)
+    console.log(`Connected to ${name} with account: ${accounts[0]}`);
   } catch (error) {
-    console.error("Failed to connect:", error)
+    console.error("Failed to connect:", error);
   }
 }
 
 function renderWallets() {
-  walletBox.innerHTML = ""
-  const connectedWallet = localStorage.getItem("lastWallet")
+  walletBox.innerHTML = "";
+  const connectedWallet = localStorage.getItem("lastWallet");
 
   providers.forEach((provider) => {
     const button = createButton(provider.info, () => {
-      togglewalletList()
-      connectWallet(provider.info.name)
-    })
-    const greenDot = button.querySelector(".green-dot")
+      togglewalletList();
+      connectWallet(provider.info.name);
+    });
+    const greenDot = button.querySelector(".green-dot");
     greenDot.style.display =
-      provider.info.name === connectedWallet ? "inline-block" : "none"
+      provider.info.name === connectedWallet ? "inline-block" : "none";
 
-    walletBox.appendChild(button)
-  })
+    walletBox.appendChild(button);
+  });
 }
 
 function shortAddress(address) {
   connectBtn.innerHTML = `${address.substring(0, 5)}...${address.substring(
     address.length - 4
-  )}`
-  getEns(address)
+  )}`;
+  getEns(address);
 }
 
 async function getEns(address) {
   try {
     const mainnetProvider = new ethers.JsonRpcProvider(
       networkConfigs.ethereum.rpcUrl
-    )
-    const ensName = await mainnetProvider.lookupAddress(address)
-    if (!ensName) return
+    );
+    const ensName = await mainnetProvider.lookupAddress(address);
+    if (!ensName) return;
 
-    const ensAvatar = await mainnetProvider.getAvatar(ensName)
+    const ensAvatar = await mainnetProvider.getAvatar(ensName);
 
     connectBtn.innerHTML = ensAvatar
       ? `<img src="${ensAvatar}" style="border-radius: 50%">${ensName}`
-      : ensName
+      : ensName;
   } catch (error) {
-    console.log("Error getting ENS name:", error)
+    console.log("Error getting ENS name:", error);
   }
 }
 
 function togglewalletList() {
-  walletList.classList.toggle("show")
-  filterLists.forEach((list) => list.classList.remove("show"))
+  walletList.classList.toggle("show");
+  filterLists.forEach((list) => list.classList.remove("show"));
 
-  const connected = localStorage.getItem("connected")
+  const connected = localStorage.getItem("connected");
 
-  toggleDisplay(whatsBtn, connected ? false : true)
-  toggleDisplay(disconnectBtn, connected ? true : false)
+  toggleDisplay(whatsBtn, connected ? false : true);
+  toggleDisplay(disconnectBtn, connected ? true : false);
 }
 
-let networkWarning = false
+let networkWarning = false;
 function updateNetworkStatus(currentChainId) {
-  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex
-  chain.innerHTML = ""
+  const isCorrectNetwork = currentChainId === TARGET_NETWORK.chainIdHex;
+  chain.innerHTML = "";
   const button = createButton(TARGET_NETWORK, () => {
-    togglewalletList()
-    switchNetwork()
-  })
-  button.id = TARGET_NETWORK.name
+    togglewalletList();
+    switchNetwork();
+  });
+  button.id = TARGET_NETWORK.name;
   button.querySelector(".green-dot").style.display = isCorrectNetwork
     ? "inline-block"
-    : "none"
-  chain.appendChild(button)
+    : "none";
+  chain.appendChild(button);
 
-  if (currentChainId === undefined) return
+  if (currentChainId === undefined) return;
 
-  toggleDisplay(overlay, !isCorrectNetwork)
+  toggleDisplay(overlay, !isCorrectNetwork);
 
-  document.body.id === "index-page" ? showMySVGs() : refreshDisplay()
+  document.body.id === "index-page" ? showMySVGs() : refreshDisplay();
 
   if (!isCorrectNetwork && !networkWarning) {
-    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true)
-    networkWarning = true
+    showNotification(`Switch to ${TARGET_NETWORK.name}!`, "warning", true);
+    networkWarning = true;
   } else if (!rainbowRpc) {
-    rpcCheck()
+    rpcCheck();
   } else if (isCorrectNetwork) {
-    showNotification("")
-    networkWarning = false
+    showNotification("");
+    networkWarning = false;
   }
 }
 
 async function switchNetwork() {
   const selectedProvider = providers.find(
     (p) => p.info.name === localStorage.getItem("lastWallet")
-  )
+  );
 
   try {
     await selectedProvider.provider.request({
       method: "wallet_switchEthereumChain",
       params: [{ chainId: TARGET_NETWORK.chainIdHex }],
-    })
-    updateNetworkStatus(TARGET_NETWORK.chainIdHex)
+    });
+    updateNetworkStatus(TARGET_NETWORK.chainIdHex);
   } catch (error) {
-    console.error("Error switching network:", error)
+    console.error("Error switching network:", error);
   }
 }
 
 async function disconnect() {
   const selectedProvider = providers.find(
     (p) => p.info.name === localStorage.getItem("lastWallet")
-  )
+  );
 
   try {
     await selectedProvider?.provider.request({
       method: "wallet_revokePermissions",
       params: [{ eth_accounts: {} }],
-    })
+    });
   } catch (error) {
-    console.error("Error disconnecting:", error)
+    console.error("Error disconnecting:", error);
   }
 
   Object.keys(localStorage).forEach((key) => {
@@ -210,67 +209,67 @@ async function disconnect() {
       key === "wagmi.store" ||
       key.startsWith("-walletlink")
     ) {
-      localStorage.removeItem(key)
+      localStorage.removeItem(key);
     }
-  })
+  });
 
   mySVGBtns.forEach((btn) => {
-    btn.innerHTML = "My SVGs"
-  })
-  connectBtn.innerHTML = "Connect"
-  ;[walletList, connectBtn].forEach((el) =>
+    btn.innerHTML = "My SVGs";
+  });
+  connectBtn.innerHTML = "Connect";
+  [walletList, connectBtn].forEach((el) =>
     el.classList.remove("show", "connected")
-  )
-  toggleDisplay(overlay, false)
-  renderWallets()
-  refreshDisplay()
-  rpcCheck()
+  );
+  toggleDisplay(overlay, false);
+  renderWallets();
+  refreshDisplay();
+  rpcCheck();
 }
 
 function showNotification(message, type = "info", isPermanent = false) {
-  const notificationBox = document.querySelector("#notificationBox")
+  const notificationBox = document.querySelector("#notificationBox");
 
   document.querySelectorAll("#notification").forEach((notification) => {
-    notification.classList.remove("show")
-    setTimeout(() => notificationBox.removeChild(notification), 500)
-  })
+    notification.classList.remove("show");
+    setTimeout(() => notificationBox.removeChild(notification), 500);
+  });
 
-  if (!message) return
+  if (!message) return;
 
-  const notification = document.createElement("div")
-  notification.id = "notification"
-  notification.classList.add(type)
-  notification.innerHTML = `<div class="notif-content">${message}</div>`
+  const notification = document.createElement("div");
+  notification.id = "notification";
+  notification.classList.add(type);
+  notification.innerHTML = `<div class="notif-content">${message}</div>`;
 
-  notificationBox.prepend(notification)
-  notification.offsetHeight
-  notification.classList.add("show")
+  notificationBox.prepend(notification);
+  notification.offsetHeight;
+  notification.classList.add("show");
 
   if (!isPermanent) {
     setTimeout(() => {
-      notification.classList.remove("show")
+      notification.classList.remove("show");
       setTimeout(() => {
-        notificationBox.removeChild(notification)
-      }, 500)
-    }, 5000)
+        notificationBox.removeChild(notification);
+      }, 500);
+    }, 5000);
   }
-  return notification
+  return notification;
 }
 
 function providerEvent(provider) {
   provider.provider
     .on("accountsChanged", (accounts) => {
-      accounts.length > 0 ? shortAddress(accounts[0]) : disconnect()
-      document.body.id === "index-page" ? showMySVGs() : refreshDisplay()
+      accounts.length > 0 ? shortAddress(accounts[0]) : disconnect();
+      document.body.id === "index-page" ? showMySVGs() : refreshDisplay();
     })
     .on("chainChanged", (chainId) => {
-      console.log(`Chain changed to ${chainId} for ${provider.info.name}`)
-      updateNetworkStatus(chainId)
+      console.log(`Chain changed to ${chainId} for ${provider.info.name}`);
+      updateNetworkStatus(chainId);
     })
     .on("disconnect", () => {
-      console.log(`Disconnected from ${provider.info.name}`)
-      disconnect()
-    })
+      console.log(`Disconnected from ${provider.info.name}`);
+      disconnect();
+    });
 }
 
 function rpcCheck() {
@@ -280,34 +279,34 @@ function rpcCheck() {
         "warning",
         true
       )
-    : showNotification("")
+    : showNotification("");
 }
 
 /***************************************************
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
-const root = document.documentElement
-const themeToggle = document.querySelector(".theme input")
-const themeLabel = document.querySelector(".theme")
+const root = document.documentElement;
+const themeToggle = document.querySelector(".theme input");
+const themeLabel = document.querySelector(".theme");
 
 function setDarkMode(isDarkMode) {
-  root.classList.toggle("dark-mode", isDarkMode)
-  themeToggle.checked = isDarkMode
-  themeLabel.classList.toggle("dark", isDarkMode)
+  root.classList.toggle("dark-mode", isDarkMode);
+  themeToggle.checked = isDarkMode;
+  themeLabel.classList.toggle("dark", isDarkMode);
 }
 
 function toggleDarkMode() {
-  const isDarkMode = themeToggle.checked
-  setDarkMode(isDarkMode)
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode))
+  const isDarkMode = themeToggle.checked;
+  setDarkMode(isDarkMode);
+  localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
 }
 
 function getTheme() {
   const savedDarkMode =
     JSON.parse(localStorage.getItem("darkMode")) ||
-    window.matchMedia("(prefers-color-scheme: dark)").matches
+    window.matchMedia("(prefers-color-scheme: dark)").matches;
 
-  setDarkMode(savedDarkMode)
+  setDarkMode(savedDarkMode);
 }
 
 /***************************************************
@@ -315,40 +314,40 @@ function getTheme() {
  **************************************************/
 async function getUnmintedColorIds() {
   try {
-    const unmintedIds = await svgContract.getUnmintedColorIds()
+    const unmintedIds = await svgContract.getUnmintedColorIds();
 
-    return unmintedIds.map((id) => Number(id))
+    return unmintedIds.map((id) => Number(id));
   } catch (error) {
-    console.error("Failed to fetch unminted color IDs:", error)
-    return []
+    console.error("Failed to fetch unminted color IDs:", error);
+    return [];
   }
 }
 
 function createSquareWithButton(color, id, isClaimed, allClaimed) {
-  const container = document.createElement("div")
-  container.classList.add("square-container")
+  const container = document.createElement("div");
+  container.classList.add("square-container");
 
-  const svgNamespace = "http://www.w3.org/2000/svg"
-  const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100%")
-  svg.setAttribute("height", "100%")
-  svg.setAttribute("viewBox", "0 0 100 100")
-  svg.setAttribute("preserveAspectRatio", "none")
-  svg.setAttribute("xmlns", svgNamespace)
-  svg.setAttribute("id", `svg-${id}`)
+  const svgNamespace = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNamespace, "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("xmlns", svgNamespace);
+  svg.setAttribute("id", `svg-${id}`);
 
-  const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100%")
-  rect.setAttribute("height", "100%")
-  rect.setAttribute("fill", color)
-  svg.appendChild(rect)
+  const rect = document.createElementNS(svgNamespace, "rect");
+  rect.setAttribute("width", "100%");
+  rect.setAttribute("height", "100%");
+  rect.setAttribute("fill", color);
+  svg.appendChild(rect);
 
-  const button = document.createElement("button")
-  button.classList.add("claim-button")
+  const button = document.createElement("button");
+  button.classList.add("claim-button");
 
   if (allClaimed) {
-    button.textContent = `SVG #${id}`
-    button.disabled = true
+    button.textContent = `SVG #${id}`;
+    button.disabled = true;
     Object.assign(button.style, {
       opacity: "0.6",
       backgroundColor: "transparent",
@@ -356,137 +355,137 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
       display: "flex",
       justifyContent: "flex-end",
       height: "20px",
-    })
+    });
   } else {
-    button.textContent = isClaimed ? "Claimed!" : `Claim #${id}`
-    button.disabled = isClaimed
+    button.textContent = isClaimed ? "Claimed!" : `Claim #${id}`;
+    button.disabled = isClaimed;
 
     if (isClaimed) {
       Object.assign(button.style, {
         opacity: "0.3",
         backgroundColor: "transparent",
         color: "rgb(250, 250, 250)",
-      })
-      svg.style.filter = "brightness(0.6)"
+      });
+      svg.style.filter = "brightness(0.6)";
     } else {
       button.addEventListener("click", async function () {
-        const user = await getAccount()
-        if (!user) return console.error("No provider selected or available.")
+        const user = await getAccount();
+        if (!user) return console.error("No provider selected or available.");
 
         try {
           const { contract: sContract } = await getSignerContract(
             svgAddress,
             svgAbi
-          )
-          showNotification(`Claiming SVG #${id}`, "info", true)
+          );
+          showNotification(`Claiming SVG #${id}`, "info", true);
 
-          const tx = await sContract.mint(id)
-          await tx.wait()
+          const tx = await sContract.mint(id);
+          await tx.wait();
 
-          button.textContent = "Claimed!"
-          button.disabled = true
+          button.textContent = "Claimed!";
+          button.disabled = true;
           Object.assign(button.style, {
             opacity: "0.3",
             backgroundColor: "transparent",
             color: "rgb(250, 250, 250)",
-          })
-          svg.style.filter = "brightness(0.6)"
-          showNotification(`Claimed SVG #${id}!`, "success")
-          showMySVGs()
+          });
+          svg.style.filter = "brightness(0.6)";
+          showNotification(`Claimed SVG #${id}!`, "success");
+          showMySVGs();
         } catch (error) {
-          showNotification(error.message.split("(")[0].trim(), "warning")
-          console.error(error)
+          showNotification(error.message.split("(")[0].trim(), "warning");
+          console.error(error);
         }
-      })
+      });
     }
   }
-  container.append(svg, button)
-  return container
+  container.append(svg, button);
+  return container;
 }
 
 async function renderSVGsClaim(colors) {
-  const unmintedIds = await getUnmintedColorIds()
-  const unmintedIdsSet = new Set(unmintedIds)
-  const allClaimed = unmintedIds.length === 0
+  const unmintedIds = await getUnmintedColorIds();
+  const unmintedIdsSet = new Set(unmintedIds);
+  const allClaimed = unmintedIds.length === 0;
 
   colors.forEach((color, index) => {
-    const colorId = index + 1
-    const isClaimed = allClaimed || !unmintedIdsSet.has(colorId)
+    const colorId = index + 1;
+    const isClaimed = allClaimed || !unmintedIdsSet.has(colorId);
     const squareWithButton = createSquareWithButton(
       color,
       colorId,
       isClaimed,
       allClaimed
-    )
-    squaresBox.appendChild(squareWithButton)
-  })
+    );
+    squaresBox.appendChild(squareWithButton);
+  });
 }
 
 function generateRainbowColors(numColors) {
-  const colors = []
+  const colors = [];
 
   for (let i = 1; i <= numColors; i++) {
-    const hue = Math.floor((i - 1) * (360 / numColors))
-    const color = `hsl(${hue}, 100%, 50%)`
-    colors.push(color)
+    const hue = Math.floor((i - 1) * (360 / numColors));
+    const color = `hsl(${hue}, 100%, 50%)`;
+    colors.push(color);
   }
 
-  return colors
+  return colors;
 }
 
-const rainbowColors = generateRainbowColors(250)
+const rainbowColors = generateRainbowColors(250);
 
 /***************************************************
  *                  DISPLAY MY SVG
  **************************************************/
 function toggleMySVGs() {
-  const isVisible = mySVGs.classList.toggle("open")
+  const isVisible = mySVGs.classList.toggle("open");
 
-  localStorage.setItem("mySVGsVisible", isVisible)
+  localStorage.setItem("mySVGsVisible", isVisible);
 
   if (squaresBox) {
-    squaresBox.classList.toggle("mySVGs-open")
-    explanation.classList.toggle("mySVGs-open")
+    squaresBox.classList.toggle("mySVGs-open");
+    explanation.classList.toggle("mySVGs-open");
   }
-  if (market) market.classList.toggle("mySVGs-open")
-  footer.classList.toggle("mySVGs-open")
+  if (market) market.classList.toggle("mySVGs-open");
+  footer.classList.toggle("mySVGs-open");
 
   if (isVisible) {
-    showMySVGs()
+    showMySVGs();
   }
 }
 
 async function showMySVGs() {
   if (!rainbowRpc) {
-    rpcCheck()
-    return
+    rpcCheck();
+    return;
   }
-  const user = await getAccount()
+  const user = await getAccount();
 
   if (user) {
     try {
-      const ownedToken = await svgContract.tokensOfOwner(user)
+      const ownedToken = await svgContract.tokensOfOwner(user);
 
-      mySVGs.innerHTML = ""
+      mySVGs.innerHTML = "";
       mySVGBtns.forEach((btn) => {
         btn.innerHTML = `${ownedToken.length} SVG${
           ownedToken.length > 1 ? "s" : ""
-        }`
-      })
+        }`;
+      });
 
       if (ownedToken.length === "0") {
-        mySVGs.textContent = "You don't own any Rainbow SVGs yet."
-        return
+        mySVGs.textContent = "You don't own any Rainbow SVGs yet.";
+        return;
       }
-      displaySVG(ownedToken)
+      displaySVG(ownedToken);
     } catch (error) {
-      console.error(error)
-      const errorMessage = `${error.message.split("(")[0].trim()}`
-      showNotification(errorMessage, "warning")
-      mySVGs.textContent = "Error fetching your SVGs"
+      console.error(error);
+      const errorMessage = `${error.message.split("(")[0].trim()}`;
+      showNotification(errorMessage, "warning");
+      mySVGs.textContent = "Error fetching your SVGs";
     }
   } else {
-    mySVGs.textContent = "Please connect your wallet"
+    mySVGs.textContent = "Please connect your wallet";
   }
 }
 
@@ -495,24 +494,24 @@ async function displaySVG(tokenIds) {
     const [listedItems, allOffers] = await Promise.all([
       getAllListedItems(),
       getAllOffers(),
-    ])
+    ]);
 
     const itemMap = new Map(
       tokenIds.map((id) => [
         id.toString(),
         { tokenId: id.toString(), isActive: false, price: "0" },
       ])
-    )
-    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
+    );
+    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]));
 
     listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-    )
+    );
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
 
       return BigInt(a.price) !== BigInt(b.price)
         ? BigInt(a.price) < BigInt(b.price)
@@ -520,14 +519,14 @@ async function displaySVG(tokenIds) {
           : 1
         : BigInt(a.tokenId) < BigInt(b.tokenId)
         ? -1
-        : 1
-    })
+        : 1;
+    });
 
-    mySVGs.innerHTML = ""
+    mySVGs.innerHTML = "";
 
     sortedItems.forEach(({ tokenId, isActive, price }) => {
-      const color = rainbowColors[parseInt(tokenId) - 1]
-      const offer = offerMap.get(tokenId) || {}
+      const color = rainbowColors[parseInt(tokenId) - 1];
+      const offer = offerMap.get(tokenId) || {};
 
       const buttons = [
         { text: isActive ? "Edit" : "List", className: "list-btn" },
@@ -535,7 +534,7 @@ async function displaySVG(tokenIds) {
         ...(offer.amount > 0
           ? [{ text: "Sell", className: "accept-offer-btn" }]
           : []),
-      ]
+      ];
 
       const card = createSVGCard(tokenId, color, {
         priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
@@ -544,11 +543,11 @@ async function displaySVG(tokenIds) {
             ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
             : "",
         buttons,
-      })
-      mySVGs.appendChild(card)
-    })
+      });
+      mySVGs.appendChild(card);
+    });
   } catch (error) {
-    console.error("Error displaying SVGs:", error)
+    console.error("Error displaying SVGs:", error);
   }
 }
 
@@ -557,30 +556,30 @@ async function displaySVG(tokenIds) {
  **************************************************/
 async function getAllListedItems() {
   try {
-    const [tokenIds, listings] = await marketContract.getAllListedItems()
+    const [tokenIds, listings] = await marketContract.getAllListedItems();
     return tokenIds.map((id, index) => ({
       tokenId: id.toString(),
       seller: listings[index].seller,
       price: listings[index].price.toString(),
       isActive: listings[index].isActive,
-    }))
+    }));
   } catch (error) {
-    console.error("Error getting all listed items:", error)
-    return []
+    console.error("Error getting all listed items:", error);
+    return [];
   }
 }
 
 async function getAllOffers() {
   try {
-    const [tokenIds, offers] = await marketContract.getAllOffers()
+    const [tokenIds, offers] = await marketContract.getAllOffers();
     return tokenIds.map((id, index) => ({
       tokenId: id.toString(),
       bidder: offers[index].bidder,
       amount: offers[index].amount.toString(),
-    }))
+    }));
   } catch (error) {
-    console.error("Error getting all offers:", error)
-    return []
+    console.error("Error getting all offers:", error);
+    return [];
   }
 }
 
@@ -589,42 +588,42 @@ async function listItem(tokenId, priceInEther) {
     const { contract: sContract, signer } = await getSignerContract(
       svgAddress,
       svgAbi
-    )
+    );
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
+    );
 
     const isApproved = await sContract.isApprovedForAll(
       await signer.getAddress(),
       marketAddress
-    )
+    );
 
     if (!isApproved) {
-      showNotification("Approving marketplace...", "info", true)
-      const tx = await sContract.setApprovalForAll(marketAddress, true)
-      await tx.wait()
-      showNotification("Marketplace approved!", "success")
+      showNotification("Approving marketplace...", "info", true);
+      const tx = await sContract.setApprovalForAll(marketAddress, true);
+      await tx.wait();
+      showNotification("Marketplace approved!", "success");
     }
 
-    const priceInWei = ethers.parseEther(priceInEther)
+    const priceInWei = ethers.parseEther(priceInEther);
 
     showNotification(
       `Listing SVG #${tokenId} for ${priceInEther} ETH`,
       "info",
       true
-    )
+    );
 
-    const tx = await mContract.listItem(tokenId, priceInWei)
-    await tx.wait()
+    const tx = await mContract.listItem(tokenId, priceInWei);
+    await tx.wait();
 
-    showNotification(`Listed SVG #${tokenId}`, "success")
+    showNotification(`Listed SVG #${tokenId}`, "success");
 
-    refreshDisplay()
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -633,19 +632,19 @@ async function cancelListing(tokenId) {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
+    );
 
-    showNotification(`Cancelling listing of svg #${tokenId}`, "info", true)
+    showNotification(`Cancelling listing of svg #${tokenId}`, "info", true);
 
-    const tx = await mContract.cancelListing(tokenId)
-    await tx.wait()
+    const tx = await mContract.cancelListing(tokenId);
+    await tx.wait();
 
-    showNotification(`Listing of svg #${tokenId} cancelled`, "success")
-    refreshDisplay()
+    showNotification(`Listing of svg #${tokenId} cancelled`, "success");
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -654,19 +653,19 @@ async function acceptOffer(tokenId) {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
+    );
 
-    showNotification(`Selling SVG #${tokenId}`, "info", true)
+    showNotification(`Selling SVG #${tokenId}`, "info", true);
 
-    const tx = await mContract.acceptOffer(tokenId)
-    await tx.wait()
+    const tx = await mContract.acceptOffer(tokenId);
+    await tx.wait();
 
-    showNotification(`Sold SVG #${tokenId}`, "success")
-    refreshDisplay()
+    showNotification(`Sold SVG #${tokenId}`, "success");
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -675,20 +674,20 @@ async function buyItem(tokenId, priceInWei) {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
+    );
 
-    showNotification(`Buying SVG #${tokenId}`, "info", true)
+    showNotification(`Buying SVG #${tokenId}`, "info", true);
 
-    const tx = await mContract.buyItem(tokenId, { value: priceInWei })
-    await tx.wait()
+    const tx = await mContract.buyItem(tokenId, { value: priceInWei });
+    await tx.wait();
 
-    showNotification(`You bought SVG #${tokenId}`, "success")
+    showNotification(`You bought SVG #${tokenId}`, "success");
 
-    refreshDisplay()
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -697,24 +696,24 @@ async function placeOffer(tokenId, offerAmount) {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
-    const offerInWei = ethers.parseEther(offerAmount)
+    );
+    const offerInWei = ethers.parseEther(offerAmount);
 
     showNotification(
       `Offering ${offerAmount} ETH for SVG #${tokenId}`,
       "info",
       true
-    )
+    );
 
-    const tx = await mContract.placeOffer(tokenId, { value: offerInWei })
-    await tx.wait()
+    const tx = await mContract.placeOffer(tokenId, { value: offerInWei });
+    await tx.wait();
 
-    showNotification(`Offered ${offerAmount} ETH for SVG #${tokenId}`)
-    refreshDisplay()
+    showNotification(`Offered ${offerAmount} ETH for SVG #${tokenId}`);
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -723,19 +722,19 @@ async function cancelOffer(tokenId) {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
       marketAbi
-    )
+    );
 
-    showNotification(`Cancelling offer for SVG #${tokenId}`, "info", true)
+    showNotification(`Cancelling offer for SVG #${tokenId}`, "info", true);
 
-    const tx = await mContract.cancelOffer(tokenId)
-    await tx.wait()
+    const tx = await mContract.cancelOffer(tokenId);
+    await tx.wait();
 
-    showNotification(`Cancelled offer for SVG #${tokenId}`, "success")
-    refreshDisplay()
+    showNotification(`Cancelled offer for SVG #${tokenId}`, "success");
+    refreshDisplay();
   } catch (error) {
-    const errorMessage = `${error.message.split("(")[0].trim()}`
-    showNotification(errorMessage, "warning")
-    console.error(error)
+    const errorMessage = `${error.message.split("(")[0].trim()}`;
+    showNotification(errorMessage, "warning");
+    console.error(error);
   }
 }
 
@@ -743,41 +742,41 @@ async function getSignerContract(contractAddress, contractAbi) {
   try {
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    )
+    );
 
-    await selectedProvider.provider.request({ method: "eth_requestAccounts" })
-    const provider = new ethers.BrowserProvider(selectedProvider.provider)
-    const signer = await provider.getSigner()
+    await selectedProvider.provider.request({ method: "eth_requestAccounts" });
+    const provider = new ethers.BrowserProvider(selectedProvider.provider);
+    const signer = await provider.getSigner();
 
-    const contract = new ethers.Contract(contractAddress, contractAbi, signer)
+    const contract = new ethers.Contract(contractAddress, contractAbi, signer);
 
-    return { contract, signer }
+    return { contract, signer };
   } catch (error) {
-    console.error(`Error getting contract at ${contractAddress}:`, error)
-    throw error
+    console.error(`Error getting contract at ${contractAddress}:`, error);
+    throw error;
   }
 }
 
 function displayOfflineMarket(tokenIds) {
   const allTokenIds = tokenIds.length
     ? tokenIds.map((id) => id.toString())
-    : rainbowColors.map((_, index) => (index + 1).toString())
-  market.innerHTML = ""
+    : rainbowColors.map((_, index) => (index + 1).toString());
+  market.innerHTML = "";
   allTokenIds.forEach((tokenId) => {
-    const color = rainbowColors[parseInt(tokenId) - 1]
+    const color = rainbowColors[parseInt(tokenId) - 1];
     const card = createSVGCard(tokenId, color, {
       priceText: "",
       bidText: "",
       buttons: [],
-    })
-    market.appendChild(card)
-  })
+    });
+    market.appendChild(card);
+  });
 }
 
 async function displayAllSVGs(tokenIds = []) {
   if (!rainbowRpc) {
-    displayOfflineMarket(tokenIds)
-    return
+    displayOfflineMarket(tokenIds);
+    return;
   }
 
   try {
@@ -785,45 +784,45 @@ async function displayAllSVGs(tokenIds = []) {
       getAccount(),
       getAllListedItems(),
       getAllOffers(),
-    ])
-    const isAccountConnected = user !== null
+    ]);
+    const isAccountConnected = user !== null;
     const ownedTokenIds = isAccountConnected
       ? await svgContract.tokensOfOwner(user)
-      : []
+      : [];
 
-    const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()))
-    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]))
+    const ownedTokenIdsSet = new Set(ownedTokenIds.map((id) => id.toString()));
+    const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]));
     const allTokenIds = tokenIds.length
       ? tokenIds.map((id) => id.toString())
-      : rainbowColors.map((_, index) => (index + 1).toString())
+      : rainbowColors.map((_, index) => (index + 1).toString());
 
     const itemMap = new Map(
       allTokenIds.map((id) => [
         id,
         { tokenId: id, isActive: false, price: "0" },
       ])
-    )
+    );
 
     listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
         itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
-    )
+    );
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
-      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1
+      if (a.isActive !== b.isActive) return a.isActive ? -1 : 1;
       if (BigInt(a.price) !== BigInt(b.price))
-        return BigInt(a.price) < BigInt(b.price) ? -1 : 1
+        return BigInt(a.price) < BigInt(b.price) ? -1 : 1;
 
-      return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1
-    })
+      return BigInt(a.tokenId) < BigInt(b.tokenId) ? -1 : 1;
+    });
 
-    market.innerHTML = ""
+    market.innerHTML = "";
     sortedItems.forEach(({ tokenId, isActive, price }) => {
-      const color = rainbowColors[parseInt(tokenId) - 1]
-      const offer = offerMap.get(tokenId) || {}
-      const currentBidder = offer.bidder || null
-      const isOwned = ownedTokenIdsSet.has(tokenId)
+      const color = rainbowColors[parseInt(tokenId) - 1];
+      const offer = offerMap.get(tokenId) || {};
+      const currentBidder = offer.bidder || null;
+      const isOwned = ownedTokenIdsSet.has(tokenId);
 
       const buttons = [
         {
@@ -848,7 +847,7 @@ async function displayAllSVGs(tokenIds = []) {
           className: "buy-btn",
           disabled: !isAccountConnected || isOwned || !isActive,
         },
-      ]
+      ];
 
       const card = createSVGCard(tokenId, color, {
         priceText: isActive ? `${ethers.formatEther(price)} ETH` : "",
@@ -857,11 +856,11 @@ async function displayAllSVGs(tokenIds = []) {
             ? `Offer: ${ethers.formatEther(offer.amount)} ETH`
             : "",
         buttons,
-      })
-      market.appendChild(card)
-    })
+      });
+      market.appendChild(card);
+    });
   } catch (error) {
-    console.error("Error displaying SVGs:", error)
+    console.error("Error displaying SVGs:", error);
   }
 }
 
@@ -871,78 +870,78 @@ function createSVGCard(tokenId, color, options = {}) {
     priceText = "",
     bidText = "",
     buttons = [],
-  } = options
+  } = options;
 
-  container.classList.add("svg-card")
+  container.classList.add("svg-card");
 
-  const svgNamespace = "http://www.w3.org/2000/svg"
-  const svg = document.createElementNS(svgNamespace, "svg")
-  svg.setAttribute("width", "100%")
-  svg.setAttribute("height", "100%")
-  svg.setAttribute("viewBox", "0 0 100 100")
-  svg.setAttribute("preserveAspectRatio", "none")
-  svg.setAttribute("xmlns", svgNamespace)
-  svg.setAttribute("id", `svg-${tokenId}`)
+  const svgNamespace = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNamespace, "svg");
+  svg.setAttribute("width", "100%");
+  svg.setAttribute("height", "100%");
+  svg.setAttribute("viewBox", "0 0 100 100");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("xmlns", svgNamespace);
+  svg.setAttribute("id", `svg-${tokenId}`);
 
-  const rect = document.createElementNS(svgNamespace, "rect")
-  rect.setAttribute("width", "100%")
-  rect.setAttribute("height", "100%")
-  rect.setAttribute("fill", color)
-  svg.appendChild(rect)
+  const rect = document.createElementNS(svgNamespace, "rect");
+  rect.setAttribute("width", "100%");
+  rect.setAttribute("height", "100%");
+  rect.setAttribute("fill", color);
+  svg.appendChild(rect);
 
-  const label = document.createElement("p")
-  label.textContent = `SVG #${tokenId}`
-  label.classList.add("svg-label")
+  const label = document.createElement("p");
+  label.textContent = `SVG #${tokenId}`;
+  label.classList.add("svg-label");
 
-  const priceInfo = document.createElement("p")
-  priceInfo.classList.add("price-info")
-  priceInfo.id = `price-info-${tokenId}`
-  priceInfo.textContent = priceText
+  const priceInfo = document.createElement("p");
+  priceInfo.classList.add("price-info");
+  priceInfo.id = `price-info-${tokenId}`;
+  priceInfo.textContent = priceText;
 
-  const bidInfo = document.createElement("p")
-  bidInfo.classList.add("bid-info")
-  bidInfo.id = `bid-info-${tokenId}`
-  bidInfo.textContent = bidText
+  const bidInfo = document.createElement("p");
+  bidInfo.classList.add("bid-info");
+  bidInfo.id = `bid-info-${tokenId}`;
+  bidInfo.textContent = bidText;
 
-  const buttonContainer = document.createElement("div")
-  buttonContainer.classList.add("button-container")
+  const buttonContainer = document.createElement("div");
+  buttonContainer.classList.add("button-container");
 
   buttons.forEach(({ text, className, disabled }) => {
-    const button = document.createElement("button")
-    button.textContent = text
-    button.classList.add(className)
+    const button = document.createElement("button");
+    button.textContent = text;
+    button.classList.add(className);
     if (disabled) {
-      button.disabled = true
-      button.classList.add("disabled")
+      button.disabled = true;
+      button.classList.add("disabled");
     }
-    buttonContainer.appendChild(button)
-  })
+    buttonContainer.appendChild(button);
+  });
 
-  container.append(svg, label, priceInfo, bidInfo, buttonContainer)
+  container.append(svg, label, priceInfo, bidInfo, buttonContainer);
 
-  return container
+  return container;
 }
 
 function refreshDisplay() {
-  market.innerHTML = ""
-  displayAllSVGs()
-  showMySVGs()
+  market.innerHTML = "";
+  displayAllSVGs();
+  showMySVGs();
 }
 
 async function getAccount() {
   try {
     const selectedProvider = providers.find(
       (provider) => provider.info.name === localStorage.getItem("lastWallet")
-    )
+    );
 
     const accounts = await selectedProvider.provider.request({
       method: "eth_requestAccounts",
-    })
+    });
 
-    return accounts[0]
+    return accounts[0];
   } catch (error) {
-    console.error("Error getting account:", error)
-    return null
+    console.error("Error getting account:", error);
+    return null;
   }
 }
 
@@ -952,36 +951,36 @@ async function getAccount() {
 function showTokenById(tokenIdInput) {
   if (tokenIdInput === "") {
     if (squaresBox) {
-      squaresBox.innerHTML = ""
-      renderSVGsClaim(rainbowColors)
+      squaresBox.innerHTML = "";
+      renderSVGsClaim(rainbowColors);
     }
     if (market) {
-      market.innerHTML = ""
-      displayAllSVGs()
+      market.innerHTML = "";
+      displayAllSVGs();
     }
-    return
+    return;
   }
 
-  const tokenIds = tokenIdInput.split(",").map((id) => id.trim())
+  const tokenIds = tokenIdInput.split(",").map((id) => id.trim());
   const validTokenIds = tokenIds
     .filter((id) => {
-      const num = Number(id)
+      const num = Number(id);
       if (isNaN(num) || num < 1 || num > rainbowColors.length) {
-        console.error(`Invalid Token ID: ${id}`)
-        return false
+        console.error(`Invalid Token ID: ${id}`);
+        return false;
       }
-      return true
+      return true;
     })
-    .map(Number)
+    .map(Number);
 
   if (validTokenIds.length === 0) {
-    console.error("No valid Token IDs provided")
-    return
+    console.error("No valid Token IDs provided");
+    return;
   }
 
-  market.innerHTML = ""
+  market.innerHTML = "";
 
-  displayAllSVGs(validTokenIds)
+  displayAllSVGs(validTokenIds);
 }
 
 async function getBids() {
@@ -989,7 +988,7 @@ async function getBids() {
     const [currentAccount, allOffers] = await Promise.all([
       getAccount(),
       getAllOffers(),
-    ])
+    ]);
 
     return allOffers
       .filter(
@@ -998,162 +997,162 @@ async function getBids() {
           offer.amount > 0 &&
           offer.bidder.toLowerCase() === currentAccount.toLowerCase()
       )
-      .map((offer) => offer.tokenId)
+      .map((offer) => offer.tokenId);
   } catch (error) {
-    console.error("Error getting user bidded tokens:", error)
-    return []
+    console.error("Error getting user bidded tokens:", error);
+    return [];
   }
 }
 
 async function showUserBids() {
-  const bids = await getBids()
+  const bids = await getBids();
   if (bids.length === 0) {
     market.innerHTML =
-      "<p class='no-bids-message'>You haven't placed any bids yet</p>"
-    return
+      "<p class='no-bids-message'>You haven't placed any bids yet</p>";
+    return;
   }
-  await displayAllSVGs(bids)
+  await displayAllSVGs(bids);
 }
 
 /***************************************************
  *         EVENTS AND INITIALIZATION FUNCTIONS
  **************************************************/
 window.addEventListener("eip6963:announceProvider", (event) => {
-  const providerDetail = event.detail
-  providers.push(providerDetail)
-  renderWallets()
+  const providerDetail = event.detail;
+  providers.push(providerDetail);
+  renderWallets();
   if (localStorage.getItem("connected"))
-    connectWallet(localStorage.getItem("lastWallet"))
+    connectWallet(localStorage.getItem("lastWallet"));
 
-  console.log(`Discovered provider: ${providerDetail.info.name}`)
-})
+  console.log(`Discovered provider: ${providerDetail.info.name}`);
+});
 
 window.addEventListener("load", () => {
-  const currentPage = document.body.id
+  const currentPage = document.body.id;
   const selectedProvider = providers.find(
     (provider) => provider.info.name === localStorage.getItem("lastWallet")
-  )
+  );
 
   if (selectedProvider) {
-    providerEvent(selectedProvider)
-    updateNetworkStatus(TARGET_NETWORK.chainIdHex)
+    providerEvent(selectedProvider);
+    updateNetworkStatus(TARGET_NETWORK.chainIdHex);
   }
 
-  getTheme()
-  root.classList.remove("no-flash")
+  getTheme();
+  root.classList.remove("no-flash");
 
-  const isVisible = localStorage.getItem("mySVGsVisible") === "true"
+  const isVisible = localStorage.getItem("mySVGsVisible") === "true";
 
-  if (isVisible) toggleMySVGs()
+  if (isVisible) toggleMySVGs();
   if (currentPage === "index-page") {
-    renderSVGsClaim(rainbowColors)
-    searchBox.forEach((div) => (div.style.display = "none"))
-    filtersBtns.forEach((btn) => (btn.style.display = "none"))
+    renderSVGsClaim(rainbowColors);
+    searchBox.forEach((div) => (div.style.display = "none"));
+    filtersBtns.forEach((btn) => (btn.style.display = "none"));
   }
-  if (currentPage === "market-page") displayAllSVGs()
-  if (!rainbowRpc) rpcCheck()
-})
+  if (currentPage === "market-page") displayAllSVGs();
+  if (!rainbowRpc) rpcCheck();
+});
 
 window
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", (event) => {
-    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"))
+    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
     if (savedDarkMode === null) {
-      setDarkMode(event.matches)
+      setDarkMode(event.matches);
     }
-  })
+  });
 
 connectBtn.addEventListener("click", (event) => {
-  event.stopPropagation()
-  togglewalletList()
-})
+  event.stopPropagation();
+  togglewalletList();
+});
 
 filtersBtns.forEach((btn, index) => {
   btn.addEventListener("click", (event) => {
-    event.stopPropagation()
-    filterLists[index].classList.toggle("show")
-    walletList.classList.remove("show")
-  })
-})
+    event.stopPropagation();
+    filterLists[index].classList.toggle("show");
+    walletList.classList.remove("show");
+  });
+});
 
 document.addEventListener("click", () => {
-  walletList.classList.remove("show")
-  filterLists.forEach((list) => list.classList.remove("show"))
-})
+  walletList.classList.remove("show");
+  filterLists.forEach((list) => list.classList.remove("show"));
+});
 
-walletList.addEventListener("click", (event) => event.stopPropagation())
+walletList.addEventListener("click", (event) => event.stopPropagation());
 
-themeToggle.addEventListener("change", toggleDarkMode)
+themeToggle.addEventListener("change", toggleDarkMode);
 
-disconnectBtn.addEventListener("click", disconnect)
+disconnectBtn.addEventListener("click", disconnect);
 
 document.getElementById("rpcBtn").addEventListener("click", () => {
-  const rpc = prompt("Enter a RPC URL:")
+  const rpc = prompt("Enter a RPC URL:");
   if (rpc) {
-    localStorage.setItem("rainbowRpc", rpc)
-    window.location.reload()
+    localStorage.setItem("rainbowRpc", rpc);
+    window.location.reload();
   }
-})
+});
 
 mySVGBtns.forEach((btn) => {
-  btn.addEventListener("click", toggleMySVGs)
-})
+  btn.addEventListener("click", toggleMySVGs);
+});
 
 searchInputs.forEach((input) => {
   input.addEventListener("input", (event) => {
-    const tokenIdInput = event.target.value.trim()
-    showTokenById(tokenIdInput)
-  })
-})
+    const tokenIdInput = event.target.value.trim();
+    showTokenById(tokenIdInput);
+  });
+});
 
 showBids.forEach((btn) => {
-  btn.addEventListener("click", showUserBids)
-})
+  btn.addEventListener("click", showUserBids);
+});
 
 clearFil.forEach((btn) => {
-  btn.addEventListener("click", displayAllSVGs)
-})
+  btn.addEventListener("click", displayAllSVGs);
+});
 
 document.addEventListener("click", async function (e) {
-  if (!e.target.matches("button") || e.target.disabled) return
-  const card = e.target.closest(".svg-card")
-  if (!card) return
-  const tokenId = card.querySelector(".svg-label").textContent.split("#")[1]
+  if (!e.target.matches("button") || e.target.disabled) return;
+  const card = e.target.closest(".svg-card");
+  if (!card) return;
+  const tokenId = card.querySelector(".svg-label").textContent.split("#")[1];
 
   if (e.target.classList.contains("buy-btn")) {
-    const priceInfo = card.querySelector(".price-info").textContent
-    console.log("Price Info on Click:", priceInfo)
+    const priceInfo = card.querySelector(".price-info").textContent;
+    console.log("Price Info on Click:", priceInfo);
     if (priceInfo) {
-      const price = priceInfo.split(" ")[0]
-      const priceInWei = ethers.parseEther(price)
-      await buyItem(tokenId, priceInWei)
+      const price = priceInfo.split(" ")[0];
+      const priceInWei = ethers.parseEther(price);
+      await buyItem(tokenId, priceInWei);
     } else {
-      console.log("This item is not listed for sale.")
+      console.log("This item is not listed for sale.");
     }
   } else if (e.target.classList.contains("accept-offer-btn")) {
-    await acceptOffer(tokenId)
+    await acceptOffer(tokenId);
   } else if (e.target.classList.contains("offer-btn")) {
-    const offerAmount = prompt("Enter your offer amount in ETH:")
-    if (offerAmount) await placeOffer(tokenId, offerAmount)
+    const offerAmount = prompt("Enter your offer amount in ETH:");
+    if (offerAmount) await placeOffer(tokenId, offerAmount);
   } else if (e.target.classList.contains("cancel-offer-btn")) {
-    await cancelOffer(tokenId)
+    await cancelOffer(tokenId);
   } else if (e.target.classList.contains("list-btn")) {
-    const listingPrice = prompt("Enter listing price in ETH:")
+    const listingPrice = prompt("Enter listing price in ETH:");
     if (listingPrice) {
       try {
-        const priceInEther = parseFloat(listingPrice)
+        const priceInEther = parseFloat(listingPrice);
         if (isNaN(priceInEther) || priceInEther <= 0) {
-          throw new Error("Invalid price")
+          throw new Error("Invalid price");
         }
-        await listItem(tokenId, priceInEther.toString())
+        await listItem(tokenId, priceInEther.toString());
       } catch (error) {
-        console.error("Error listing item:", error)
-        alert("Invalid price. Please enter a valid number greater than 0.")
+        console.error("Error listing item:", error);
+        alert("Invalid price. Please enter a valid number greater than 0.");
       }
     }
   } else if (e.target.classList.contains("cancel-list-btn")) {
-    await cancelListing(tokenId)
+    await cancelListing(tokenId);
   }
-})
+});
 
-window.dispatchEvent(new Event("eip6963:requestProvider"))
+window.dispatchEvent(new Event("eip6963:requestProvider"));
