@@ -1,92 +1,108 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" class="no-flash">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>rainbow</title>
-  <link rel="stylesheet" href="./css/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
-    integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
-    crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body id="market-page">
-  <div class="box">
-    <header>
-      <div class="head">
-        <div class="title">
-          <a href="./index.html">
-            <img src="./logo/claim.png" alt="">
-          </a>
-          <a href="./index.html" class="link">Home</a>
-          <a href="./market.html" class="link">Market</a>
-        </div>
-        <!--  connectivity  -->
-        <div class="wrapper">
-          <div class="filter-bar">
-            <div class="search-box">
-              <input class="search-input" placeholder="Token ID" autocomplete="off">
-              <i class="search-icon fa-solid fa-magnifying-glass"></i>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>rainbow</title>
+    <link rel="stylesheet" href="./css/styles.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
+      integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+  </head>
+  <body id="market-page">
+    <div class="box">
+      <header>
+        <div class="head">
+          <div class="title">
+            <a href="./index.html">
+              <img src="./img/claim.png" alt="" />
+            </a>
+            <a href="./index.html" class="link">Home</a>
+            <a href="./market.html" class="link">Market</a>
+          </div>
+          <!--  connectivity  -->
+          <div class="wrapper">
+            <div class="filter-bar">
+              <div class="search-box">
+                <input
+                  class="search-input"
+                  placeholder="Token ID"
+                  autocomplete="off"
+                />
+                <i class="search-icon fa-solid fa-magnifying-glass"></i>
+              </div>
+              <button class="filters-btn">Filters</button>
+              <div class="filter-list">
+                <button id="showBids">Offers made</button>
+                <button id="clearFil">Clear</button>
+              </div>
+              <button class="my-svg-btn">My SVGs</button>
             </div>
+            <div class="connectivity">
+              <button id="connectBtn">Connect</button>
+              <div id="walletList" class="wallet-list">
+                <div id="settings">
+                  <label class="theme">
+                    <input id="checkbox" type="checkbox" />
+                    <span class="slider">
+                      <i class="fa-solid fa-sun"></i>
+                      <i class="fa-solid fa-moon"></i>
+                    </span>
+                  </label>
+                  <div id="whats">
+                    <a href="https://ethereum.org/en/wallets/" target="_blank"
+                      >What's a Wallet?</a
+                    >
+                  </div>
+                  <button id="disconnect">
+                    <i class="fa-solid fa-power-off"></i>
+                  </button>
+                </div>
+                <button id="rpcBtn">+ ADD RPC URL</button>
+                <div id="chain"></div>
+                <div id="wallets"></div>
+              </div>
+            </div>
+          </div>
+          <!--  connectivity  -->
+        </div>
+        <div class="filter-bar-phone">
+          <div>
             <button class="filters-btn">Filters</button>
             <div class="filter-list">
               <button id="showBids">Offers made</button>
               <button id="clearFil">Clear</button>
             </div>
-            <button class="my-svg-btn">My SVGs</button>
           </div>
-          <div class="connectivity">
-            <button id="connectBtn">Connect</button>
-            <div id="walletList" class="wallet-list">
-              <div id="settings">
-                <label class="theme">
-                  <input id="checkbox" type="checkbox">
-                  <span class="slider">
-                    <i class="fa-solid fa-sun"></i>
-                    <i class="fa-solid fa-moon"></i>
-                  </span>
-                </label>
-                <div id="whats">
-                  <a href="https://ethereum.org/en/wallets/" target="_blank">What's a Wallet?</a>
-                </div>
-                <button id="disconnect"><i class="fa-solid fa-power-off"></i></button>
-              </div>
-              <button id="rpcBtn">+ ADD RPC URL</button>
-              <div id="chain"></div>
-              <div id="wallets"></div>
-            </div>
+          <div class="search-box">
+            <input
+              class="search-input"
+              placeholder="Token ID"
+              autocomplete="off"
+            />
+            <i class="search-icon fa-solid fa-magnifying-glass"></i>
+          </div>
+          <button class="my-svg-btn">My SVGs</button>
+        </div>
+      </header>
+      <main>
+        <div id="market"></div>
+        <div id="mySVGs"></div>
+        <div id="notificationBox">
+          <div id="notification">
+            <div class="notif-content"></div>
           </div>
         </div>
-        <!--  connectivity  -->
-      </div>
-      <div class="filter-bar-phone">
-        <div>
-          <button class="filters-btn">Filters</button>
-          <div class="filter-list">
-            <button id="showBids">Offers made</button>
-            <button id="clearFil">Clear</button>
-          </div>
-        </div>
-        <div class="search-box">
-          <input class="search-input" placeholder="Token ID" autocomplete="off">
-          <i class="search-icon fa-solid fa-magnifying-glass"></i>
-        </div>
-        <button class="my-svg-btn">My SVGs</button>
-      </div>
-    </header>
-    <main>
-      <div id="market"></div>
-      <div id="mySVGs"></div>
-      <div id="notificationBox">
-        <div id="notification">
-          <div class="notif-content"></div>
-        </div>
-      </div>
-    </main>
-    <footer>
-      <p>☺︎ 2024 rainbow</p>
-    </footer>
-    <div id="overlay"></div>
-  </div>
-  <script src="./js/script.js" type="module"></script>
-</body>
+      </main>
+      <footer>
+        <p>☺︎ 2024 rainbow</p>
+      </footer>
+      <div id="overlay"></div>
+    </div>
+    <script src="./js/script.js" type="module"></script>
+  </body>
 </html>
