@@ -36,8 +36,18 @@ html {
   padding: 0;
   height: 100vh;
   overflow-x: hidden;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Oxygen,
+    Ubuntu,
+    Cantarell,
+    "Open Sans",
+    "Helvetica Neue",
+    sans-serif;
   background-color: rgb(var(--color-bg));
   color: var(--color-txt);
 }
@@ -247,7 +257,9 @@ header {
   padding: 2.5px 5px;
   border-radius: 2px;
   opacity: 0;
-  transition: background-color 0.3s ease-in-out, opacity 0.3s ease-in-out,
+  transition:
+    background-color 0.3s ease-in-out,
+    opacity 0.3s ease-in-out,
     transform 0.3s ease-in-out;
   transform: scale(0.9);
   pointer-events: none;
@@ -316,7 +328,9 @@ header {
   border-radius: 32px;
   padding: 5px;
   background-color: var(--color-hvr);
-  transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out;
+  transition:
+    box-shadow 0.3s ease-in-out,
+    background-color 0.3s ease-in-out;
 }
 
 .slider:hover,
@@ -346,7 +360,9 @@ header {
   bottom: 0;
   background-color: var(--color-hvr);
   border-radius: 32px;
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  transition:
+    background-color 0.3s ease-in-out,
+    box-shadow 0.3s ease-in-out;
 }
 
 .slider:before {
@@ -401,7 +417,9 @@ main {
   width: 100%;
   padding: 10px;
   margin-top: 22px;
-  transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+  transition:
+    width 0.3s ease-in-out,
+    margin-right 0.3s ease-in-out;
 }
 
 #market,
@@ -411,7 +429,9 @@ main {
   grid-auto-rows: 1fr;
   gap: 10px;
   justify-content: center;
-  transition: width 0.3s ease-in-out, margin-right 0.3s ease-in-out;
+  transition:
+    width 0.3s ease-in-out,
+    margin-right 0.3s ease-in-out;
   width: 100%;
   margin: 22px auto;
 }
@@ -547,7 +567,9 @@ footer.mySVGs-open {
   overflow: hidden;
   background-color: rgb(var(--color-bg));
   background-color: transparent;
-  transition: opacity 0.3s ease-in-out, bottom 0.3s ease-in-out;
+  transition:
+    opacity 0.3s ease-in-out,
+    bottom 0.3s ease-in-out;
 }
 
 .svg-card:hover .button-container {
@@ -581,6 +603,16 @@ footer {
   padding: 1px 0;
 }
 
+footer a {
+  color: var(--color-bdr);
+  text-decoration: none;
+  transition: color 0.3s ease-in-out;
+}
+
+footer a:hover {
+  color: var(--color-txt);
+}
+
 #notificationBox {
   position: fixed;
   bottom: 15px;
@@ -597,7 +629,9 @@ footer {
   border-radius: 2px;
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  transition: opacity 0.5s ease-in-out, right 0.5s ease-in-out;
+  transition:
+    opacity 0.5s ease-in-out,
+    right 0.5s ease-in-out;
 }
 
 #notification.show {
