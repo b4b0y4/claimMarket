@@ -36,7 +36,7 @@ const svgContract = new ethers.Contract(svgAddress, svgAbi, sepoliaProvider);
 const marketContract = new ethers.Contract(
   marketAddress,
   marketAbi,
-  sepoliaProvider
+  sepoliaProvider,
 );
 
 const TARGET_NETWORK = networkConfigs.sepolia;
@@ -107,7 +107,7 @@ function renderWallets() {
 
 function shortAddress(address) {
   connectBtn.innerHTML = `${address.substring(0, 5)}...${address.substring(
-    address.length - 4
+    address.length - 4,
   )}`;
   getEns(address);
 }
@@ -115,7 +115,7 @@ function shortAddress(address) {
 async function getEns(address) {
   try {
     const mainnetProvider = new ethers.JsonRpcProvider(
-      networkConfigs.ethereum.rpcUrl
+      networkConfigs.ethereum.rpcUrl,
     );
     const ensName = await mainnetProvider.lookupAddress(address);
     if (!ensName) return;
@@ -173,7 +173,7 @@ function updateNetworkStatus(currentChainId) {
 
 async function switchNetwork() {
   const selectedProvider = providers.find(
-    (p) => p.info.name === localStorage.getItem("lastWallet")
+    (p) => p.info.name === localStorage.getItem("lastWallet"),
   );
 
   try {
@@ -189,7 +189,7 @@ async function switchNetwork() {
 
 async function disconnect() {
   const selectedProvider = providers.find(
-    (p) => p.info.name === localStorage.getItem("lastWallet")
+    (p) => p.info.name === localStorage.getItem("lastWallet"),
   );
 
   try {
@@ -218,7 +218,7 @@ async function disconnect() {
   });
   connectBtn.innerHTML = "Connect";
   [walletList, connectBtn].forEach((el) =>
-    el.classList.remove("show", "connected")
+    el.classList.remove("show", "connected"),
   );
   toggleDisplay(overlay, false);
   renderWallets();
@@ -277,7 +277,7 @@ function rpcCheck() {
     ? showNotification(
         `Add a rpc Url! Click on the Connect button`,
         "warning",
-        true
+        true,
       )
     : showNotification("");
 }
@@ -375,7 +375,7 @@ function createSquareWithButton(color, id, isClaimed, allClaimed) {
         try {
           const { contract: sContract } = await getSignerContract(
             svgAddress,
-            svgAbi
+            svgAbi,
           );
           showNotification(`Claiming SVG #${id}`, "info", true);
 
@@ -415,7 +415,7 @@ async function renderSVGsClaim(colors) {
       color,
       colorId,
       isClaimed,
-      allClaimed
+      allClaimed,
     );
     squaresBox.appendChild(squareWithButton);
   });
@@ -500,14 +500,14 @@ async function displaySVG(tokenIds) {
       tokenIds.map((id) => [
         id.toString(),
         { tokenId: id.toString(), isActive: false, price: "0" },
-      ])
+      ]),
     );
     const offerMap = new Map(allOffers.map((offer) => [offer.tokenId, offer]));
 
     listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
-        itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
+        itemMap.set(item.tokenId, { ...item, isActive: item.isActive }),
     );
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
@@ -518,8 +518,8 @@ async function displaySVG(tokenIds) {
           ? -1
           : 1
         : BigInt(a.tokenId) < BigInt(b.tokenId)
-        ? -1
-        : 1;
+          ? -1
+          : 1;
     });
 
     mySVGs.innerHTML = "";
@@ -587,16 +587,16 @@ async function listItem(tokenId, priceInEther) {
   try {
     const { contract: sContract, signer } = await getSignerContract(
       svgAddress,
-      svgAbi
+      svgAbi,
     );
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
 
     const isApproved = await sContract.isApprovedForAll(
       await signer.getAddress(),
-      marketAddress
+      marketAddress,
     );
 
     if (!isApproved) {
@@ -611,7 +611,7 @@ async function listItem(tokenId, priceInEther) {
     showNotification(
       `Listing SVG #${tokenId} for ${priceInEther} ETH`,
       "info",
-      true
+      true,
     );
 
     const tx = await mContract.listItem(tokenId, priceInWei);
@@ -631,7 +631,7 @@ async function cancelListing(tokenId) {
   try {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
 
     showNotification(`Cancelling listing of svg #${tokenId}`, "info", true);
@@ -652,7 +652,7 @@ async function acceptOffer(tokenId) {
   try {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
 
     showNotification(`Selling SVG #${tokenId}`, "info", true);
@@ -673,7 +673,7 @@ async function buyItem(tokenId, priceInWei) {
   try {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
 
     showNotification(`Buying SVG #${tokenId}`, "info", true);
@@ -695,14 +695,14 @@ async function placeOffer(tokenId, offerAmount) {
   try {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
     const offerInWei = ethers.parseEther(offerAmount);
 
     showNotification(
       `Offering ${offerAmount} ETH for SVG #${tokenId}`,
       "info",
-      true
+      true,
     );
 
     const tx = await mContract.placeOffer(tokenId, { value: offerInWei });
@@ -721,7 +721,7 @@ async function cancelOffer(tokenId) {
   try {
     const { contract: mContract } = await getSignerContract(
       marketAddress,
-      marketAbi
+      marketAbi,
     );
 
     showNotification(`Cancelling offer for SVG #${tokenId}`, "info", true);
@@ -741,7 +741,7 @@ async function cancelOffer(tokenId) {
 async function getSignerContract(contractAddress, contractAbi) {
   try {
     const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+      (provider) => provider.info.name === localStorage.getItem("lastWallet"),
     );
 
     await selectedProvider.provider.request({ method: "eth_requestAccounts" });
@@ -800,13 +800,13 @@ async function displayAllSVGs(tokenIds = []) {
       allTokenIds.map((id) => [
         id,
         { tokenId: id, isActive: false, price: "0" },
-      ])
+      ]),
     );
 
     listedItems.forEach(
       (item) =>
         itemMap.has(item.tokenId) &&
-        itemMap.set(item.tokenId, { ...item, isActive: item.isActive })
+        itemMap.set(item.tokenId, { ...item, isActive: item.isActive }),
     );
 
     const sortedItems = Array.from(itemMap.values()).sort((a, b) => {
@@ -931,7 +931,7 @@ function refreshDisplay() {
 async function getAccount() {
   try {
     const selectedProvider = providers.find(
-      (provider) => provider.info.name === localStorage.getItem("lastWallet")
+      (provider) => provider.info.name === localStorage.getItem("lastWallet"),
     );
 
     const accounts = await selectedProvider.provider.request({
@@ -995,7 +995,7 @@ async function getBids() {
         (offer) =>
           offer.bidder &&
           offer.amount > 0 &&
-          offer.bidder.toLowerCase() === currentAccount.toLowerCase()
+          offer.bidder.toLowerCase() === currentAccount.toLowerCase(),
       )
       .map((offer) => offer.tokenId);
   } catch (error) {
@@ -1019,18 +1019,24 @@ async function showUserBids() {
  **************************************************/
 window.addEventListener("eip6963:announceProvider", (event) => {
   const providerDetail = event.detail;
-  providers.push(providerDetail);
-  renderWallets();
-  if (localStorage.getItem("connected"))
-    connectWallet(localStorage.getItem("lastWallet"));
+  const providerName = providerDetail.info.name;
 
-  console.log(`Discovered provider: ${providerDetail.info.name}`);
+  if (!providers.some((p) => p.info.name === providerName)) {
+    providers.push(providerDetail);
+    renderWallets();
+
+    if (localStorage.getItem("connected")) {
+      selectWallet(localStorage.getItem("lastWallet"));
+    }
+
+    console.log(`Discovered provider: ${providerName}`);
+  }
 });
 
 window.addEventListener("load", () => {
   const currentPage = document.body.id;
   const selectedProvider = providers.find(
-    (provider) => provider.info.name === localStorage.getItem("lastWallet")
+    (provider) => provider.info.name === localStorage.getItem("lastWallet"),
   );
 
   if (selectedProvider) {
