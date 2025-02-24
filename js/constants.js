@@ -4,7 +4,7 @@ export const networkConfigs = {
     rpcUrl: "https://ethereum-rpc.publicnode.com",
     chainId: 1,
     chainIdHex: "0x1",
-    icon: "./logo/eth.png",
+    icon: "./img/eth.png",
     showInUI: false,
   },
   arbitrum: {
@@ -12,7 +12,7 @@ export const networkConfigs = {
     rpcUrl: "https://1rpc.io/arb",
     chainId: 42161,
     chainIdHex: "0xa4b1",
-    icon: "./logo/arb.png",
+    icon: "./img/arb.png",
     showInUI: false,
   },
   optimism: {
@@ -20,7 +20,7 @@ export const networkConfigs = {
     rpcUrl: "https://mainnet.optimism.io",
     chainId: 10,
     chainIdHex: "0xa",
-    icon: "./logo/op.png",
+    icon: "./img/op.png",
     showInUI: false,
   },
   base: {
@@ -28,7 +28,7 @@ export const networkConfigs = {
     rpcUrl: "https://base-rpc.publicnode.com",
     chainId: 8453,
     chainIdHex: "0x2105",
-    icon: "./logo/base.png",
+    icon: "./img/base.png",
     showInUI: false,
   },
   zksync: {
@@ -36,7 +36,7 @@ export const networkConfigs = {
     rpcUrl: "https://mainnet.era.zksync.io",
     chainId: 324,
     chainIdHex: "0x144",
-    icon: "./logo/zksync.png",
+    icon: "./img/zksync.png",
     showInUI: false,
   },
   scroll: {
@@ -44,7 +44,7 @@ export const networkConfigs = {
     rpcUrl: "https://rpc.scroll.io",
     chainId: 534352,
     chainIdHex: "0x82750",
-    icon: "./logo/scroll.png",
+    icon: "./img/scroll.png",
     showInUI: false,
   },
   zkevm: {
@@ -52,7 +52,7 @@ export const networkConfigs = {
     rpcUrl: "https://zkevm-rpc.com",
     chainId: 1101,
     chainIdHex: "0x44d",
-    icon: "./logo/zkevm.png",
+    icon: "./img/zkevm.png",
     showInUI: false,
   },
   sepolia: {
@@ -60,12 +60,12 @@ export const networkConfigs = {
     rpcUrl: "https://ethereum-sepolia-rpc.publicnode.com",
     chainId: 11155111,
     chainIdHex: "0xaa36a7",
-    icon: "./logo/sepolia.png",
+    icon: "./img/sepolia.png",
     showInUI: true,
   },
-}
+};
 
-export const svgAddress = "0x19Ae8D33345eBc4599798980156Ad141BB355023"
+export const svgAddress = "0x19Ae8D33345eBc4599798980156Ad141BB355023";
 
 export const svgAbi = [
   { inputs: [], stateMutability: "payable", type: "constructor" },
@@ -363,9 +363,9 @@ export const svgAbi = [
     stateMutability: "nonpayable",
     type: "function",
   },
-]
+];
 
-export const marketAddress = "0xCf6b44911378DADCD890e9C7A08b0b265159bda4"
+export const marketAddress = "0xCf6b44911378DADCD890e9C7A08b0b265159bda4";
 
 export const marketAbi = [
   {
@@ -667,4 +667,4 @@ export const marketAbi = [
     stateMutability: "payable",
     type: "function",
   },
-]
+];
