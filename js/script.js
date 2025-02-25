@@ -59,6 +59,29 @@ function createButton(config, onClick) {
 /***************************************************
  *                 CONNECTIVITY
  ***************************************************/
+async function selectWallet(walletName) {
+  const selectedProvider = providers.find((p) => p.info.name === walletName);
+  if (!selectedProvider) return;
+
+  try {
+    const accounts = await selectedProvider.provider.request({
+      method: "eth_requestAccounts",
+    });
+    const chainId = await selectedProvider.provider.request({
+      method: "eth_chainId",
+    });
+
+    shortAddress(accounts[0]);
+    providerEvent(selectedProvider);
+    updateNetworkStatus(chainId);
+    connectBtn.classList.add("connected");
+
+    console.log(`Auto-connected to ${walletName} with account: ${accounts[0]}`);
+  } catch (error) {
+    console.error("Auto-connection failed:", error);
+  }
+}
+
 async function connectWallet(name) {
   const selectedProvider = providers.find((p) => p.info.name === name);
   if (!selectedProvider) return;
@@ -1025,8 +1048,11 @@ window.addEventListener("eip6963:announceProvider", (event) => {
     providers.push(providerDetail);
     renderWallets();
 
-    if (localStorage.getItem("connected")) {
-      selectWallet(localStorage.getItem("lastWallet"));
+    if (
+      localStorage.getItem("connected") &&
+      localStorage.getItem("lastWallet") === providerName
+    ) {
+      selectWallet(providerName);
     }
 
     console.log(`Discovered provider: ${providerName}`);
@@ -1042,6 +1068,13 @@ window.addEventListener("load", () => {
   if (selectedProvider) {
     providerEvent(selectedProvider);
     updateNetworkStatus(TARGET_NETWORK.chainIdHex);
+  }
+
+  if (localStorage.getItem("connected")) {
+    const lastWallet = localStorage.getItem("lastWallet");
+    if (lastWallet) {
+      selectWallet(lastWallet);
+    }
   }
 
   getTheme();
