@@ -46,21 +46,25 @@
               <button id="connectBtn">Connect</button>
               <div id="walletList" class="wallet-list">
                 <div id="settings">
-                  <label class="theme">
-                    <input id="checkbox" type="checkbox" />
-                    <span class="slider">
+                  <div class="theme-container">
+                    <button class="theme-button" data-theme="light">
                       <i class="fa-solid fa-sun"></i>
+                    </button>
+                    <button class="theme-button" data-theme="dark">
                       <i class="fa-solid fa-moon"></i>
-                    </span>
-                  </label>
-                  <div id="whats">
-                    <a href="https://ethereum.org/en/wallets/" target="_blank"
-                      >What's a Wallet?</a
-                    >
+                    </button>
+                    <button class="theme-button" data-theme="system">
+                      <i class="fa-solid fa-desktop"></i>
+                    </button>
                   </div>
                   <button id="disconnect">
                     <i class="fa-solid fa-power-off"></i>
                   </button>
+                </div>
+                <div id="getWallets">
+                  <a href="https://ethereum.org/en/wallets/" target="_blank"
+                    >What's a Wallet?</a
+                  >
                 </div>
                 <button id="rpcBtn">+ ADD RPC URL</button>
                 <div id="chain"></div>

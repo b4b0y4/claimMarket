@@ -159,8 +159,14 @@ function togglewalletList() {
 
   const connected = localStorage.getItem("connected");
 
-  toggleDisplay(whatsBtn, connected ? false : true);
   toggleDisplay(disconnectBtn, connected ? true : false);
+}
+
+function updateSettings() {
+  const hasProvider = providers.length > 0;
+  document.querySelector("#getWallets").style.display = hasProvider
+    ? "none"
+    : "block";
 }
 
 let networkWarning = false;
@@ -309,28 +315,53 @@ function rpcCheck() {
  *              DARK/LIGHT MODE TOGGLE
  **************************************************/
 const root = document.documentElement;
-const themeToggle = document.querySelector(".theme input");
-const themeLabel = document.querySelector(".theme");
+const themeButtons = document.querySelectorAll(".theme-button");
 
-function setDarkMode(isDarkMode) {
-  root.classList.toggle("dark-mode", isDarkMode);
-  themeToggle.checked = isDarkMode;
-  themeLabel.classList.toggle("dark", isDarkMode);
+function setTheme(themeName) {
+  themeButtons.forEach((btn) => btn.setAttribute("data-active", "false"));
+
+  const activeButton = document.querySelector(
+    `.theme-button[data-theme="${themeName}"]`,
+  );
+  activeButton.setAttribute("data-active", "true");
+
+  if (themeName === "light") {
+    root.classList.remove("dark-mode");
+  } else if (themeName === "dark") {
+    root.classList.add("dark-mode");
+  } else if (themeName === "system") {
+    const prefersDark = window.matchMedia(
+      "(prefers-color-scheme: dark)",
+    ).matches;
+    root.classList.toggle("dark-mode", prefersDark);
+  }
+
+  localStorage.setItem("themePreference", themeName);
 }
 
-function toggleDarkMode() {
-  const isDarkMode = themeToggle.checked;
-  setDarkMode(isDarkMode);
-  localStorage.setItem("darkMode", JSON.stringify(isDarkMode));
+function initTheme() {
+  const savedTheme = localStorage.getItem("themePreference");
+
+  const themeToUse = savedTheme || "system";
+  setTheme(themeToUse);
 }
 
-function getTheme() {
-  const savedDarkMode =
-    JSON.parse(localStorage.getItem("darkMode")) ||
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
+themeButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    const themeName = button.dataset.theme;
+    setTheme(themeName);
+  });
+});
 
-  setDarkMode(savedDarkMode);
-}
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", (e) => {
+    if (localStorage.getItem("themePreference") === "system") {
+      root.classList.toggle("dark-mode", e.matches);
+    }
+  });
+
+document.addEventListener("DOMContentLoaded", initTheme);
 
 /***************************************************
  *                   CLAIM UI
@@ -1047,6 +1078,7 @@ window.addEventListener("eip6963:announceProvider", (event) => {
   if (!providers.some((p) => p.info.name === providerName)) {
     providers.push(providerDetail);
     renderWallets();
+    updateSettings();
 
     if (
       localStorage.getItem("connected") &&
@@ -1077,7 +1109,6 @@ window.addEventListener("load", () => {
     }
   }
 
-  getTheme();
   root.classList.remove("no-flash");
 
   const isVisible = localStorage.getItem("mySVGsVisible") === "true";
@@ -1091,15 +1122,6 @@ window.addEventListener("load", () => {
   if (currentPage === "market-page") displayAllSVGs();
   if (!rainbowRpc) rpcCheck();
 });
-
-window
-  .matchMedia("(prefers-color-scheme: dark)")
-  .addEventListener("change", (event) => {
-    const savedDarkMode = JSON.parse(localStorage.getItem("darkMode"));
-    if (savedDarkMode === null) {
-      setDarkMode(event.matches);
-    }
-  });
 
 connectBtn.addEventListener("click", (event) => {
   event.stopPropagation();
@@ -1120,8 +1142,6 @@ document.addEventListener("click", () => {
 });
 
 walletList.addEventListener("click", (event) => event.stopPropagation());
-
-themeToggle.addEventListener("change", toggleDarkMode);
 
 disconnectBtn.addEventListener("click", disconnect);
 
